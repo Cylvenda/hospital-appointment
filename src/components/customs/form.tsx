@@ -9,9 +9,10 @@ import {
      SelectTrigger,
      SelectValue,
 } from "@/components/ui/select"
-import { Eye, EyeClosed } from 'lucide-react'
 import { useState } from 'react'
 import Link from 'next/link'
+import { HugeiconsIcon } from "@hugeicons/react"
+import { Eye, EyeOff } from '@hugeicons/core-free-icons'
 
 type FormInputProps = {
      title?: string
@@ -148,9 +149,9 @@ export const PasswordInput = <T extends FieldValues>({ label, name, placeholder,
                               <span className='border border-gray-300 dark:border-gray-700 cursor-pointer p-2 rounded-2xl '>
                                    {
                                         show ?
-                                             <EyeClosed onClick={() => setShow(false)} />
+                                             <HugeiconsIcon icon={EyeOff} strokeWidth={2} onClick={() => setShow(false)} />
                                              :
-                                             <Eye onClick={() => setShow(true)} />
+                                             <HugeiconsIcon icon={Eye} strokeWidth={2} onClick={() => setShow(true)} />
                                    }
                               </span>
                          </div>

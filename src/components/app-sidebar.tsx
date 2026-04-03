@@ -12,7 +12,8 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar"
 import { HugeiconsIcon } from "@hugeicons/react"
-import { LayoutBottomIcon, ComputerTerminalIcon, RoboticIcon, BookOpen02Icon, Settings05Icon } from "@hugeicons/core-free-icons"
+import { LayoutBottomIcon, RoboticIcon, BookOpen02Icon, Settings05Icon, DashboardCircleIcon, Doctor01Icon, WorkIcon, People, Person } from "@hugeicons/core-free-icons"
+import { Separator } from "./ui/separator"
 
 // This is sample data.
 const data = {
@@ -25,7 +26,7 @@ const data = {
   {
     name: "Acme Inc",
     logo: (
-      <HugeiconsIcon icon={LayoutBottomIcon} strokeWidth={2} />
+      <HugeiconsIcon  icon={LayoutBottomIcon} strokeWidth={2} />
     ),
     role: "Patient",
   },
@@ -34,42 +35,42 @@ const data = {
       title: "Dashboard",
       url: "#",
       icon: (
-        <HugeiconsIcon icon={ComputerTerminalIcon} strokeWidth={2} />
+        <HugeiconsIcon color="oklch(0.546 0.245 262.881)" icon={DashboardCircleIcon} strokeWidth={2} />
       )
     },
     {
       title: "Appointments",
       url: "#",
       icon: (
-        <HugeiconsIcon icon={RoboticIcon} strokeWidth={2} />
+        <HugeiconsIcon color="oklch(0.546 0.245 262.881)" icon={RoboticIcon} strokeWidth={2} />
       )
     },
     {
       title: "Doctors",
       url: "#",
       icon: (
-        <HugeiconsIcon icon={BookOpen02Icon} strokeWidth={2} />
+        <HugeiconsIcon color="oklch(0.546 0.245 262.881)" icon={Doctor01Icon} strokeWidth={2} />
       )
     },
     {
       title: "Receptionist",
       url: "#",
       icon: (
-        <HugeiconsIcon icon={BookOpen02Icon} strokeWidth={2} />
+        <HugeiconsIcon color="oklch(0.546 0.245 262.881)" icon={Person} strokeWidth={2} />
       )
     },
     {
       title: "Patients",
       url: "#",
       icon: (
-        <HugeiconsIcon icon={BookOpen02Icon} strokeWidth={2} />
+        <HugeiconsIcon color="oklch(0.546 0.245 262.881)" icon={People} strokeWidth={2} />
       )
     },
     {
       title: "Settings",
       url: "#",
       icon: (
-        <HugeiconsIcon icon={Settings05Icon} strokeWidth={2} />
+        <HugeiconsIcon color="oklch(0.546 0.245 262.881)" icon={Settings05Icon} strokeWidth={2} />
       )
     },
   ]
@@ -81,9 +82,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarHeader>
         <TeamSwitcher teams={data.teams} />
       </SidebarHeader>
+      <Separator />
       <SidebarContent>
         <NavMain items={data.navMain} />
       </SidebarContent>
+      <Separator />
       <SidebarFooter>
         <NavUser user={data.user} />
       </SidebarFooter>

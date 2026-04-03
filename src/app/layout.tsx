@@ -4,6 +4,7 @@ import "./globals.css";
 import { cn } from "@/lib/utils";
 import { ToastContainer } from "react-toastify";
 import { TooltipProvider } from "@/components/ui/tooltip"
+import { ThemeProvider } from "@/components/theme-provider";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -27,8 +28,30 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={cn("h-full antialiased", poppins.variable)}>
-      <head />
+    <html
+      lang="en"
+      suppressHydrationWarning
+      className={cn("h-full antialiased", poppins.variable)}
+    >
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(() => {
+              try {
+                const storedTheme = localStorage.getItem("theme");
+                const theme =
+                  storedTheme === "dark" || storedTheme === "light"
+                    ? storedTheme
+                    : window.matchMedia("(prefers-color-scheme: dark)").matches
+                      ? "dark"
+                      : "light";
+                document.documentElement.classList.toggle("dark", theme === "dark");
+                document.documentElement.style.colorScheme = theme;
+              } catch (_) {}
+            })();`,
+          }}
+        />
+      </head>
       <body
         className={cn(
           "min-h-screen bg-gray-50 text-gray-900 font-sans",
@@ -46,7 +69,9 @@ export default function RootLayout({
 
         <div className="flex min-h-screen flex-col">
           <main className="flex-1">
-            <TooltipProvider>{children}</TooltipProvider>
+            <ThemeProvider>
+              <TooltipProvider>{children}</TooltipProvider>
+            </ThemeProvider>
           </main>
         </div>
       </body>

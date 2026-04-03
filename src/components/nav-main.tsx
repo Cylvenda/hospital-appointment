@@ -2,7 +2,6 @@
 
 import {
   Collapsible,
-  CollapsibleTrigger,
 } from "@/components/ui/collapsible"
 import {
   SidebarGroup,
@@ -24,25 +23,22 @@ export function NavMain({
 }) {
   return (
     <SidebarGroup>
-      <SidebarGroupLabel>Platform</SidebarGroupLabel>
+      <SidebarGroupLabel>Menu</SidebarGroupLabel>
       <SidebarMenu>
         {items.map((item) => (
-          <Collapsible
+          <div
             key={item.title}
-            asChild
             className="group/collapsible"
           >
-            <SidebarMenuItem>
-              <CollapsibleTrigger asChild>
-                <SidebarMenuButton tooltip={item.title}>
-                  {item.icon}
-                  <Link href={item.url}>
-                    <span>{item.title}</span>
-                  </Link>
-                </SidebarMenuButton>
-              </CollapsibleTrigger>
+            <SidebarMenuItem className="p-1">
+              <SidebarMenuButton tooltip={item.title}>
+                {item.icon}
+                <Link href={item.url}>
+                  <span>{item.title}</span>
+                </Link>
+              </SidebarMenuButton>
             </SidebarMenuItem>
-          </Collapsible>
+          </div>
         ))}
       </SidebarMenu>
     </SidebarGroup>
