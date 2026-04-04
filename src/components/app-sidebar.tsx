@@ -12,7 +12,7 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar"
 import { HugeiconsIcon } from "@hugeicons/react"
-import { LayoutBottomIcon, RoboticIcon, BookOpen02Icon, Settings05Icon, DashboardCircleIcon, Doctor01Icon, WorkIcon, People, Person } from "@hugeicons/core-free-icons"
+import { LayoutBottomIcon, RoboticIcon, Settings05Icon, DashboardCircleIcon, Doctor01Icon, People, Person } from "@hugeicons/core-free-icons"
 import { Separator } from "./ui/separator"
 
 // This is sample data.
@@ -33,42 +33,42 @@ const data = {
   navMain: [
     {
       title: "Dashboard",
-      url: "#",
+      url: "/dashboard",
       icon: (
         <HugeiconsIcon color="oklch(0.546 0.245 262.881)" icon={DashboardCircleIcon} strokeWidth={2} />
       )
     },
     {
       title: "Appointments",
-      url: "#",
+      url: "/appointments",
       icon: (
         <HugeiconsIcon color="oklch(0.546 0.245 262.881)" icon={RoboticIcon} strokeWidth={2} />
       )
     },
     {
       title: "Doctors",
-      url: "#",
+      url: "/doctors",
       icon: (
         <HugeiconsIcon color="oklch(0.546 0.245 262.881)" icon={Doctor01Icon} strokeWidth={2} />
       )
     },
     {
       title: "Receptionist",
-      url: "#",
+      url: "/receptionist",
       icon: (
         <HugeiconsIcon color="oklch(0.546 0.245 262.881)" icon={Person} strokeWidth={2} />
       )
     },
     {
       title: "Patients",
-      url: "#",
+      url: "/patients",
       icon: (
         <HugeiconsIcon color="oklch(0.546 0.245 262.881)" icon={People} strokeWidth={2} />
       )
     },
     {
       title: "Settings",
-      url: "#",
+      url: "/settings",
       icon: (
         <HugeiconsIcon color="oklch(0.546 0.245 262.881)" icon={Settings05Icon} strokeWidth={2} />
       )
