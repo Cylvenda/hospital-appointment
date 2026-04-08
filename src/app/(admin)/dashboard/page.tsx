@@ -21,7 +21,7 @@ const stats = [
   {
     title: "Today’s Appointments",
     value: "128",
-    note: "+14 from yesterday",
+    note: "Only today",
     icon: CalendarCheckIn01Icon,
   },
   {
@@ -33,7 +33,7 @@ const stats = [
   {
     title: "Doctors On Duty",
     value: "19",
-    note: "3 specialists available online",
+    note: "3 specialists available today",
     icon: StethoscopeIcon,
   },
   {
@@ -165,7 +165,7 @@ export default function DashboardPage() {
                   Keep appointments moving smoothly from booking to consultation.
                 </h1>
                 <p className="max-w-2xl text-sm leading-6 text-white/80 md:text-base">
-                  Monitor today’s clinic flow, reduce waiting time, and help your
+                  Monitor today’s Hospital flow, reduce waiting time, and help your
                   team respond quickly to urgent patients, missed confirmations,
                   and doctor availability.
                 </p>
@@ -192,9 +192,9 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
 
-        <Card className="py-0">
+        <Card className="py-5">
           <CardHeader className="border-b">
-            <CardTitle>Clinic Snapshot</CardTitle>
+            <CardTitle>Our Hospital Snapshot</CardTitle>
             <CardDescription>
               What needs attention before the next appointment block.
             </CardDescription>
@@ -202,22 +202,22 @@ export default function DashboardPage() {
           <CardContent className="grid gap-4 py-6">
             <div className="rounded-3xl bg-muted/70 p-4">
               <p className="text-sm font-medium text-muted-foreground">
-                Average waiting time
+                Working hours
               </p>
               <div className="mt-2 flex items-end gap-2">
-                <span className="text-3xl font-semibold">18 min</span>
+                <span className="text-3xl font-semibold">24 HRS</span>
                 <span className="pb-1 text-xs text-emerald-600 dark:text-emerald-400">
-                  down by 6 min
+                  no down time
                 </span>
               </div>
             </div>
             <div className="grid gap-3 sm:grid-cols-2">
               <div className="rounded-3xl border bg-background p-4">
-                <p className="text-sm text-muted-foreground">Online bookings</p>
-                <p className="mt-2 text-2xl font-semibold">64%</p>
+                <p className="text-sm text-muted-foreground">Online Appointments</p>
+                <p className="mt-2 text-2xl font-semibold">64</p>
               </div>
               <div className="rounded-3xl border bg-background p-4">
-                <p className="text-sm text-muted-foreground">No-show risk</p>
+                <p className="text-sm text-muted-foreground">Local Created</p>
                 <p className="mt-2 text-2xl font-semibold">7 patients</p>
               </div>
             </div>
@@ -255,11 +255,11 @@ export default function DashboardPage() {
       </section>
 
       <section className="grid gap-6 xl:grid-cols-[1.4fr_0.9fr]">
-        <Card className="py-0">
+        <Card className="py-5">
           <CardHeader className="border-b">
             <CardTitle>Upcoming Appointments</CardTitle>
             <CardDescription>
-              Next patients expected at the clinic today.
+              Next patients expected at the hosptal today.
             </CardDescription>
           </CardHeader>
           <CardContent className="py-4">
@@ -297,7 +297,7 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
 
-        <Card className="py-0">
+        <Card className="py-5">
           <CardHeader className="border-b">
             <CardTitle>Doctors On Duty</CardTitle>
             <CardDescription>

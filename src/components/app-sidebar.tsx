@@ -12,7 +12,7 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar"
 import { HugeiconsIcon } from "@hugeicons/react"
-import { LayoutBottomIcon, RoboticIcon, Settings05Icon, DashboardCircleIcon, Doctor01Icon, People, Person } from "@hugeicons/core-free-icons"
+import { LayoutBottomIcon, RoboticIcon, Settings05Icon, DashboardCircleIcon, Doctor01Icon, People, Person, UserGroupIcon, UserAccountIcon } from "@hugeicons/core-free-icons"
 import { Separator } from "./ui/separator"
 
 // This is sample data.
@@ -64,6 +64,20 @@ const data = {
       url: "/patients",
       icon: (
         <HugeiconsIcon color="oklch(0.546 0.245 262.881)" icon={People} strokeWidth={2} />
+      )
+    },
+    {
+      title: "Users",
+      url: "/users",
+      icon: (
+        <HugeiconsIcon color="oklch(0.546 0.245 262.881)" icon={UserGroupIcon} strokeWidth={2} />
+      )
+    },
+    {
+      title: "Profile",
+      url: "/profile",
+      icon: (
+        <HugeiconsIcon color="oklch(0.546 0.245 262.881)" icon={UserAccountIcon} strokeWidth={2} />
       )
     },
     {
