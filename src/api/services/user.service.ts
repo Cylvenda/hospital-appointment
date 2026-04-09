@@ -13,6 +13,14 @@ export const userServices = {
           }
      },
 
+     async updateUserMe(payload: Partial<User>) {
+          const response = await api.patch<User>(API_ENDPOINTS.CURRENT_USER_PROFILE, payload)
+          return {
+               status: response.status,
+               data: response.data,
+          }
+     },
+
      async emailActivation(payload: string) {
           const response = await api.post(API_ENDPOINTS.USER_RESEND_ACTIVATION_EMAIL, { email: payload })
           return {

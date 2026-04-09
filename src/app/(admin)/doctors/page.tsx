@@ -1,5 +1,16 @@
+"use client"
+
+import { useEffect, useMemo, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet"
 import {
   Calendar01Icon,
   CallIcon,
@@ -11,49 +22,17 @@ import {
   Watch01Icon,
 } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
+import { toast } from "react-toastify"
+import { useAdminStore } from "@/store/admin/admin.store"
 
-const doctors = [
-  {
-    id: "DOC-001",
-    name: "Dr. Mary Njoroge",
-    specialty: "Cardiology",
-    email: "mary.njoroge@pams.com",
-    phone: "+255 754 112 301",
-    shift: "08:00 - 14:00",
-    nextClinic: "21/05/2026",
-    status: "Available",
-  },
-  {
-    id: "DOC-002",
-    name: "Dr. Anita Joseph",
-    specialty: "Pediatrics",
-    email: "anita.joseph@pams.com",
-    phone: "+255 717 300 812",
-    shift: "09:00 - 16:00",
-    nextClinic: "21/05/2026",
-    status: "In Session",
-  },
-  {
-    id: "DOC-003",
-    name: "Dr. Victor Ouma",
-    specialty: "General Medicine",
-    email: "victor.ouma@pams.com",
-    phone: "+255 742 611 220",
-    shift: "10:00 - 18:00",
-    nextClinic: "22/05/2026",
-    status: "Available",
-  },
-  {
-    id: "DOC-004",
-    name: "Dr. Rehema Ally",
-    specialty: "Dermatology",
-    email: "rehema.ally@pams.com",
-    phone: "+255 763 890 110",
-    shift: "07:30 - 13:30",
-    nextClinic: "22/05/2026",
-    status: "Off Duty",
-  },
-]
+const emptyDoctorForm = {
+  first_name: "",
+  last_name: "",
+  email: "",
+  phone: "",
+  password: "",
+  license_number: "",
+}
 
 function statusClasses(status: string) {
   if (status === "Available") {
@@ -68,6 +47,73 @@ function statusClasses(status: string) {
 }
 
 export default function DoctorsPage() {
+  const { doctors: doctorDirectory, fetchDoctors, createDoctor } = useAdminStore()
+  const [search, setSearch] = useState("")
+  const [sheetOpen, setSheetOpen] = useState(false)
+  const [form, setForm] = useState(emptyDoctorForm)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+
+  useEffect(() => {
+    void fetchDoctors()
+  }, [fetchDoctors])
+
+  const doctors = useMemo(
+    () =>
+      doctorDirectory
+        .filter((doctor) =>
+          [doctor.name, doctor.email, doctor.phone, doctor.categories.join(" ")]
+            .join(" ")
+            .toLowerCase()
+            .includes(search.trim().toLowerCase())
+        )
+        .map((doctor) => ({
+          id: doctor.uuid.slice(0, 8).toUpperCase(),
+          name: doctor.name,
+          specialty: doctor.categories[0] || "General",
+          email: doctor.email,
+          phone: doctor.phone,
+          shift: doctor.is_available ? "Available today" : "Unavailable",
+          nextClinic: "See schedule",
+          status: doctor.is_available ? "Available" : "Off Duty",
+        })),
+    [doctorDirectory, search]
+  )
+
+  const isFormValid =
+    form.first_name.trim() &&
+    form.last_name.trim() &&
+    form.email.trim() &&
+    form.phone.trim() &&
+    form.password.trim() &&
+    form.license_number.trim()
+
+  async function handleCreateDoctor() {
+    if (!isFormValid || isSubmitting) {
+      return
+    }
+
+    setIsSubmitting(true)
+
+    try {
+      await createDoctor({
+        first_name: form.first_name.trim(),
+        last_name: form.last_name.trim(),
+        email: form.email.trim(),
+        phone: form.phone.trim(),
+        password: form.password,
+        license_number: form.license_number.trim(),
+        is_available: true,
+      })
+      toast.success("Doctor added successfully.")
+      setForm(emptyDoctorForm)
+      setSheetOpen(false)
+    } catch {
+      toast.error("Failed to add doctor.")
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
   return (
     <div className="w-full space-y-6 p-4 md:p-6">
       <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-center">
@@ -86,6 +132,8 @@ export default function DoctorsPage() {
               className="pointer-events-none absolute top-1/2 left-4 size-4 -translate-y-1/2 text-muted-foreground"
             />
             <Input
+              value={search}
+              onChange={(event) => setSearch(event.target.value)}
               className="h-11 rounded-2xl border-2 border-sidebar-border pl-11"
               placeholder="Search doctor or specialty..."
             />
@@ -94,7 +142,7 @@ export default function DoctorsPage() {
             <HugeiconsIcon icon={FilterIcon} strokeWidth={1.8} />
             Filter
           </Button>
-          <Button size="lg" className="rounded-2xl">
+          <Button size="lg" className="rounded-2xl" onClick={() => setSheetOpen(true)}>
             <HugeiconsIcon icon={PlusSignIcon} strokeWidth={1.8} />
             Add Doctor
           </Button>
@@ -163,13 +211,96 @@ export default function DoctorsPage() {
 
             <div className="mt-5 flex flex-wrap gap-2">
               <Button className="rounded-2xl">View Profile</Button>
-              <Button variant="outline" className="rounded-2xl">
+              <Button variant="outline" className="rounded-2xl" disabled>
                 Update Schedule
               </Button>
             </div>
           </div>
         ))}
       </div>
+
+      <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
+        <SheetContent side="right" className="w-full sm:max-w-2xl">
+          <SheetHeader className="border-b border-sidebar-border">
+            <SheetTitle>Add Doctor</SheetTitle>
+            <SheetDescription>Create a doctor record in the database.</SheetDescription>
+          </SheetHeader>
+
+          <div className="space-y-4 p-6">
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-2">
+                <label className="text-sm font-medium">First Name</label>
+                <Input
+                  value={form.first_name}
+                  onChange={(event) =>
+                    setForm((current) => ({ ...current, first_name: event.target.value }))
+                  }
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Last Name</label>
+                <Input
+                  value={form.last_name}
+                  onChange={(event) =>
+                    setForm((current) => ({ ...current, last_name: event.target.value }))
+                  }
+                />
+              </div>
+            </div>
+
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Email</label>
+                <Input
+                  value={form.email}
+                  onChange={(event) =>
+                    setForm((current) => ({ ...current, email: event.target.value }))
+                  }
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Phone</label>
+                <Input
+                  value={form.phone}
+                  onChange={(event) =>
+                    setForm((current) => ({ ...current, phone: event.target.value }))
+                  }
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Password</label>
+              <Input
+                type="password"
+                value={form.password}
+                onChange={(event) =>
+                  setForm((current) => ({ ...current, password: event.target.value }))
+                }
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-medium">License Number</label>
+              <Input
+                value={form.license_number}
+                onChange={(event) =>
+                  setForm((current) => ({ ...current, license_number: event.target.value }))
+                }
+              />
+            </div>
+          </div>
+
+          <SheetFooter className="border-t border-sidebar-border">
+            <Button variant="outline" onClick={() => setSheetOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleCreateDoctor} disabled={!isFormValid || isSubmitting}>
+              {isSubmitting ? "Saving..." : "Save Doctor"}
+            </Button>
+          </SheetFooter>
+        </SheetContent>
+      </Sheet>
     </div>
   )
 }

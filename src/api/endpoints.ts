@@ -1,4 +1,4 @@
-const apiRootFromEnv = process.env.NEXT_PUBLIC_API_BASE || "http://localhost:8000/api/"
+const apiRootFromEnv = process.env.NEXT_PUBLIC_API_BASE || "/api/proxy/"
 const normalizedApiRoot = apiRootFromEnv.endsWith("/") ? apiRootFromEnv : `${apiRootFromEnv}/`
 
 export const API_ENDPOINTS = {
@@ -20,4 +20,14 @@ export const API_ENDPOINTS = {
 
      // Current user
      CURRENT_USER_PROFILE: "auth/users/me/",
+
+     // Appointments
+     APPOINTMENTS: "appointments/",
+     APPOINTMENT_DOCTORS: "appointments/doctors/",
+
+     // Admin
+     ADMIN_OVERVIEW: "admin/overview/",
+     ADMIN_USERS: "admin/users/",
+     ADMIN_DOCTORS: "admin/doctors/",
+     ADMIN_SETTINGS: "admin/settings/",
 }

@@ -39,9 +39,6 @@ export default function LoginPage() {
                const res = await authUserService.userLogin(data)
 
                if (res.status === 200) {
-                    // Wait briefly for cookie to sync (optional, helps in dev)
-                    await new Promise(resolve => setTimeout(resolve, 200))
-
                     const currentUser = await fetchUser()
 
                     if (!currentUser) {
@@ -56,9 +53,11 @@ export default function LoginPage() {
 
                     router.replace("/dashboard")
                     router.refresh()
+                    toast.success("Login successful.")
                }
-          } catch {
-               toast.error("Login failed. Check credentials.")
+          } catch (error: unknown) {
+               const errorData = (error as { response?: { data?: { detail?: string } } })?.response?.data
+               toast.error(errorData?.detail || "Login failed. Check credentials.")
           } finally {
                setLoading(false)
           }

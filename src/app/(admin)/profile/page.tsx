@@ -1,3 +1,6 @@
+"use client"
+
+import { useMemo, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {
@@ -10,8 +13,39 @@ import {
   UserAccountIcon,
 } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
+import { useAuthUserStore } from "@/store/auth/userAuth.store"
+import { toast } from "react-toastify"
 
 export default function ProfilePage() {
+  const user = useAuthUserStore((state) => state.user)
+  const updateProfile = useAuthUserStore((state) => state.updateProfile)
+  const [draft, setDraft] = useState<{
+    first_name?: string
+    last_name?: string
+    email?: string
+    phone?: string
+  }>({})
+  const roleLabel = useMemo(() => {
+    if (!user?.role) return "User"
+    return user.role.charAt(0).toUpperCase() + user.role.slice(1)
+  }, [user?.role])
+
+  async function handleSave() {
+    const updated = await updateProfile({
+      first_name: draft.first_name ?? user?.first_name ?? "",
+      last_name: draft.last_name ?? user?.last_name ?? "",
+      email: draft.email ?? user?.email ?? "",
+      phone: draft.phone ?? user?.phone ?? "",
+    })
+
+    if (updated) {
+      setDraft({})
+      toast.success("Profile updated successfully.")
+    } else {
+      toast.error("Failed to update profile.")
+    }
+  }
+
   return (
     <div className="w-full space-y-6 p-4 md:p-6">
       <div className="space-y-1">
@@ -27,26 +61,26 @@ export default function ProfilePage() {
             <div className="flex h-24 w-24 items-center justify-center rounded-4xl bg-primary/10 text-primary">
               <HugeiconsIcon icon={UserAccountIcon} strokeWidth={1.8} className="size-10" />
             </div>
-            <h2 className="mt-4 text-xl font-semibold">Amina Kassim</h2>
-            <p className="text-sm text-muted-foreground">System Administrator</p>
+            <h2 className="mt-4 text-xl font-semibold">{`${user?.first_name ?? ""} ${user?.last_name ?? ""}`.trim() || "Unnamed User"}</h2>
+            <p className="text-sm text-muted-foreground">{roleLabel}</p>
           </div>
 
           <div className="mt-6 space-y-4 text-sm text-muted-foreground">
             <p className="flex items-center gap-2">
               <HugeiconsIcon icon={Mail01Icon} strokeWidth={1.8} className="size-4" />
-              amina.kassim@pams.com
+              {user?.email || "No email available"}
             </p>
             <p className="flex items-center gap-2">
               <HugeiconsIcon icon={CallIcon} strokeWidth={1.8} className="size-4" />
-              +255 719 220 411
+              {user?.phone || "No phone available"}
             </p>
             <p className="flex items-center gap-2">
               <HugeiconsIcon icon={Location01Icon} strokeWidth={1.8} className="size-4" />
-              Dar es Salaam, Tanzania
+              User account
             </p>
             <p className="flex items-center gap-2">
               <HugeiconsIcon icon={Briefcase01Icon} strokeWidth={1.8} className="size-4" />
-              Platform Operations
+              {roleLabel}
             </p>
           </div>
 
@@ -69,7 +103,7 @@ export default function ProfilePage() {
                 Keep your admin information current for notifications and audit logs.
               </p>
             </div>
-            <Button className="rounded-2xl">
+            <Button className="rounded-2xl" onClick={() => void handleSave()}>
               <HugeiconsIcon icon={Edit02Icon} strokeWidth={1.8} />
               Save Changes
             </Button>
@@ -78,27 +112,47 @@ export default function ProfilePage() {
           <div className="mt-6 grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
               <label className="text-sm font-medium">First Name</label>
-              <Input defaultValue="Amina" />
+              <Input
+                value={draft.first_name ?? user?.first_name ?? ""}
+                onChange={(event) =>
+                  setDraft((current) => ({ ...current, first_name: event.target.value }))
+                }
+              />
             </div>
             <div className="space-y-2">
               <label className="text-sm font-medium">Last Name</label>
-              <Input defaultValue="Kassim" />
+              <Input
+                value={draft.last_name ?? user?.last_name ?? ""}
+                onChange={(event) =>
+                  setDraft((current) => ({ ...current, last_name: event.target.value }))
+                }
+              />
             </div>
             <div className="space-y-2">
               <label className="text-sm font-medium">Email</label>
-              <Input defaultValue="amina.kassim@pams.com" />
+              <Input
+                value={draft.email ?? user?.email ?? ""}
+                onChange={(event) =>
+                  setDraft((current) => ({ ...current, email: event.target.value }))
+                }
+              />
             </div>
             <div className="space-y-2">
               <label className="text-sm font-medium">Phone Number</label>
-              <Input defaultValue="+255 719 220 411" />
+              <Input
+                value={draft.phone ?? user?.phone ?? ""}
+                onChange={(event) =>
+                  setDraft((current) => ({ ...current, phone: event.target.value }))
+                }
+              />
             </div>
             <div className="space-y-2">
               <label className="text-sm font-medium">Department</label>
-              <Input defaultValue="Platform Operations" />
+              <Input value="Platform Access" readOnly />
             </div>
             <div className="space-y-2">
               <label className="text-sm font-medium">Role</label>
-              <Input defaultValue="Admin" disabled />
+              <Input value={roleLabel} disabled />
             </div>
           </div>
         </div>

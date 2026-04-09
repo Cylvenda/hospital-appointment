@@ -1,3 +1,6 @@
+"use client"
+
+import { useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {
@@ -9,14 +12,25 @@ import {
   Shield01Icon,
 } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
-
-const notificationSettings = [
-  "Send appointment reminder 24 hours before visit",
-  "Notify receptionist when a doctor is marked unavailable",
-  "Email admins when patient accounts are deactivated",
-]
+import { useAdminStore } from "@/store/admin/admin.store"
 
 export default function SettingsPage() {
+  const { settings, fetchSettings } = useAdminStore()
+
+  useEffect(() => {
+    void fetchSettings()
+  }, [fetchSettings])
+
+  const notificationSettings = [
+    settings?.patient_confirmation_emails
+      ? "Patient confirmation emails enabled"
+      : "Patient confirmation emails disabled",
+    settings?.secure_sessions
+      ? "Secure session cookies enabled"
+      : "Secure session cookies disabled",
+    `Default time slot is ${settings?.default_time_slot ?? "not configured"}`,
+  ]
+
   return (
     <div className="w-full space-y-6 p-4 md:p-6">
       <div className="space-y-1">
@@ -43,28 +57,28 @@ export default function SettingsPage() {
           <div className="mt-5 grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
               <label className="text-sm font-medium">Clinic Name</label>
-              <Input defaultValue="Patient Appointment Management System" />
+              <Input value={settings?.clinic_name ?? ""} readOnly />
             </div>
             <div className="space-y-2">
               <label className="text-sm font-medium">Support Email</label>
-              <Input defaultValue="support@pams.com" />
+              <Input value={settings?.support_email ?? ""} readOnly />
             </div>
             <div className="space-y-2">
               <label className="text-sm font-medium">Clinic Hours</label>
-              <Input defaultValue="07:30 AM - 06:00 PM" />
+              <Input value={settings?.clinic_hours ?? ""} readOnly />
             </div>
             <div className="space-y-2">
               <label className="text-sm font-medium">Default Time Slot</label>
-              <Input defaultValue="30 minutes" />
+              <Input value={settings?.default_time_slot ?? ""} readOnly />
             </div>
           </div>
 
           <div className="mt-5 flex gap-2">
-            <Button className="rounded-2xl">
+            <Button className="rounded-2xl" disabled>
               <HugeiconsIcon icon={Edit02Icon} strokeWidth={1.8} />
               Save Profile
             </Button>
-            <Button variant="outline" className="rounded-2xl">
+            <Button variant="outline" className="rounded-2xl" disabled>
               Reset
             </Button>
           </div>

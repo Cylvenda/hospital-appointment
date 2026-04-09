@@ -16,6 +16,7 @@ type AuthState = {
      resendRefreshToken: () => Promise<boolean>
      logout: () => Promise<void>
      initAuth: () => Promise<boolean>
+     updateProfile: (payload: Partial<User>) => Promise<User | null>
 }
 
 export const useAuthUserStore = create<AuthState>((set, get) => ({
@@ -95,5 +96,24 @@ export const useAuthUserStore = create<AuthState>((set, get) => ({
 
      initAuth: async () => {
           return get().checkAuth()
+     },
+
+     updateProfile: async (payload) => {
+          set({ loading: true, error: null })
+          try {
+               const res = await userServices.updateUserMe(payload)
+               set({
+                    user: res.data,
+                    loading: false,
+               })
+               return res.data
+          } catch (err: unknown) {
+               const message = err instanceof Error ? err.message : "Profile update failed"
+               set({
+                    loading: false,
+                    error: message,
+               })
+               return null
+          }
      },
 }))

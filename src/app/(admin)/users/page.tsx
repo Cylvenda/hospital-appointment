@@ -1,3 +1,6 @@
+"use client"
+
+import { useEffect, useMemo, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {
@@ -8,44 +11,7 @@ import {
   UserAccountIcon,
 } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
-
-const users = [
-  {
-    id: "USR-001",
-    name: "Amina Kassim",
-    email: "amina.kassim@pams.com",
-    role: "Admin",
-    status: "Active",
-  },
-  {
-    id: "USR-002",
-    name: "Janeth Paul",
-    email: "janeth.paul@pams.com",
-    role: "Receptionist",
-    status: "Active",
-  },
-  {
-    id: "USR-003",
-    name: "Dr. Mary Njoroge",
-    email: "mary.njoroge@pams.com",
-    role: "Doctor",
-    status: "Active",
-  },
-  {
-    id: "USR-004",
-    name: "Brayan Mlawa",
-    email: "brayan.mlawa@pams.com",
-    role: "Patient",
-    status: "Inactive",
-  },
-  {
-    id: "USR-005",
-    name: "Kelvin Nyangasa",
-    email: "kelvin.nyangasa@pams.com",
-    role: "Receptionist",
-    status: "Active",
-  },
-]
+import { useAdminStore } from "@/store/admin/admin.store"
 
 function roleClasses(role: string) {
   if (role === "Admin") {
@@ -64,6 +30,32 @@ function roleClasses(role: string) {
 }
 
 export default function UsersPage() {
+  const { users: directory, fetchUsers } = useAdminStore()
+  const [search, setSearch] = useState("")
+
+  useEffect(() => {
+    void fetchUsers()
+  }, [fetchUsers])
+
+  const users = useMemo(
+    () =>
+      directory
+        .filter((user) =>
+          [user.full_name, user.email, user.role, user.phone]
+            .join(" ")
+            .toLowerCase()
+            .includes(search.trim().toLowerCase())
+        )
+        .map((user, index) => ({
+          id: user.uuid.slice(0, 8).toUpperCase() || `USR-${index + 1}`,
+          name: user.full_name || user.email,
+          email: user.email,
+          role: user.role.charAt(0).toUpperCase() + user.role.slice(1),
+          status: user.is_active ? "Active" : "Inactive",
+        })),
+    [directory, search]
+  )
+
   return (
     <div className="w-full space-y-6 p-4 md:p-6">
       <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-center">
@@ -82,6 +74,8 @@ export default function UsersPage() {
               className="pointer-events-none absolute top-1/2 left-4 size-4 -translate-y-1/2 text-muted-foreground"
             />
             <Input
+              value={search}
+              onChange={(event) => setSearch(event.target.value)}
               className="h-11 rounded-2xl border-2 border-sidebar-border pl-11"
               placeholder="Search user or email..."
             />
@@ -149,7 +143,7 @@ export default function UsersPage() {
                   <HugeiconsIcon icon={Shield01Icon} strokeWidth={1.8} className="size-3.5" />
                   {user.status}
                 </span>
-                <Button variant="outline" className="rounded-2xl">
+                <Button variant="outline" className="rounded-2xl" disabled>
                   View
                 </Button>
               </div>

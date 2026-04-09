@@ -3,10 +3,13 @@
 import PasswordResetConfirmForm from "@/components/auth/password-reset-confirm-form"
 import { useParams } from "next/navigation"
 
-export default function ResetPasswordConfirmPage() {
+export default function ResetPasswordFromEmailPage() {
      const params = useParams<{ uid: string; token: string }>()
-     const uid = params?.uid ?? ""
-     const token = params?.token ?? ""
 
-     return <PasswordResetConfirmForm uid={uid} token={token} />
+     return (
+          <PasswordResetConfirmForm
+               uid={params?.uid ?? ""}
+               token={params?.token ?? ""}
+          />
+     )
 }

@@ -1,0 +1,62 @@
+import api from "../axios"
+import { API_ENDPOINTS } from "../endpoints"
+import type { ApiResponse } from "../types"
+import type { AppointmentApi, DoctorApi } from "@/store/appointments/appointment.types"
+
+type AssignAppointmentPayload = {
+     doctorId: string
+     startTime: string
+     endTime: string
+}
+
+export const appointmentService = {
+     async listAppointments(): Promise<ApiResponse<AppointmentApi[]>> {
+          const response = await api.get<AppointmentApi[]>(API_ENDPOINTS.APPOINTMENTS)
+          return {
+               status: response.status,
+               data: response.data,
+          }
+     },
+
+     async listDoctors(): Promise<ApiResponse<DoctorApi[]>> {
+          const response = await api.get<DoctorApi[]>(API_ENDPOINTS.APPOINTMENT_DOCTORS)
+          return {
+               status: response.status,
+               data: response.data,
+          }
+     },
+
+     async assignAppointment(
+          appointmentId: string,
+          payload: AssignAppointmentPayload
+     ): Promise<ApiResponse<AppointmentApi>> {
+          const response = await api.patch<AppointmentApi>(
+               `${API_ENDPOINTS.APPOINTMENTS}${appointmentId}/`,
+               {
+                    doctor_uuid: payload.doctorId,
+                    start_time: payload.startTime,
+                    end_time: payload.endTime,
+                    status: "accepted",
+               }
+          )
+
+          return {
+               status: response.status,
+               data: response.data,
+          }
+     },
+
+     async cancelAppointment(appointmentId: string): Promise<ApiResponse<AppointmentApi>> {
+          const response = await api.patch<AppointmentApi>(
+               `${API_ENDPOINTS.APPOINTMENTS}${appointmentId}/`,
+               {
+                    status: "cancelled",
+               }
+          )
+
+          return {
+               status: response.status,
+               data: response.data,
+          }
+     },
+}

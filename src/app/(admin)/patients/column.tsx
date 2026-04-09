@@ -16,28 +16,32 @@ import {
 import { HugeiconsIcon } from "@hugeicons/react"
 import { ColumnDef } from "@tanstack/react-table"
 
-function getInitials(firstName: string, lastName: string) {
-  return `${firstName[0] ?? ""}${lastName[0] ?? ""}`.toUpperCase()
+function getInitials(firstName?: string | null, lastName?: string | null) {
+  const firstInitial = firstName?.trim()?.[0] ?? ""
+  const lastInitial = lastName?.trim()?.[0] ?? ""
+  return `${firstInitial}${lastInitial}`.toUpperCase() || "NA"
 }
 
 type ColumnActions = {
   onView: (patient: User) => void
   onEdit: (patient: User) => void
   onDelete: (patient: User) => void
+  readOnly?: boolean
 }
+
 
 export function getColumns({
   onView,
   onEdit,
   onDelete,
+  readOnly = false,
 }: ColumnActions): ColumnDef<User>[] {
   return [
     {
-      accessorKey: "uuid",
       header: "ID",
       cell: ({ row }) => (
         <span className="font-mono text-xs text-muted-foreground">
-          {row.original.uuid}
+          {row.index + 1}
         </span>
       ),
     },
@@ -46,6 +50,10 @@ export function getColumns({
       header: "Patient",
       cell: ({ row }) => {
         const patient = row.original
+        const fullName =
+          `${patient.first_name ?? ""} ${patient.last_name ?? ""}`.trim() ||
+          patient.username ||
+          patient.email
 
         return (
           <div className="flex items-center gap-3">
@@ -55,9 +63,7 @@ export function getColumns({
               </AvatarFallback>
             </Avatar>
             <div className="min-w-0">
-              <p className="font-medium text-foreground">
-                {patient.first_name} {patient.last_name}
-              </p>
+              <p className="font-medium text-foreground">{fullName}</p>
               <p className="text-xs text-muted-foreground">@{patient.username}</p>
             </div>
           </div>
@@ -140,6 +146,7 @@ export function getColumns({
               variant="outline"
               className="rounded-xl"
               onClick={() => onEdit(patient)}
+              disabled={readOnly}
               aria-label={`Edit ${patient.first_name}`}
             >
               <HugeiconsIcon icon={Edit02Icon} strokeWidth={1.8} className="size-4" />
@@ -149,6 +156,7 @@ export function getColumns({
               variant="destructive"
               className="rounded-xl"
               onClick={() => onDelete(patient)}
+              disabled={readOnly}
               aria-label={`Delete ${patient.first_name}`}
             >
               <HugeiconsIcon icon={Delete02Icon} strokeWidth={1.8} className="size-4" />

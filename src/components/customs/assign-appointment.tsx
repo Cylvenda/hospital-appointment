@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import type { Appointment, Doctor } from "@/store/appointments/appointment.types"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
@@ -18,23 +19,9 @@ import {
      SelectTrigger,
      SelectValue,
 } from "@/components/ui/select"
+import { AlertCircleIcon } from "@hugeicons/core-free-icons"
+import { HugeiconsIcon } from "@hugeicons/react"
 import { cn } from "@/lib/utils"
-
-type Doctor = {
-     id: string
-     name: string
-}
-
-type Appointment = {
-     id: string
-     patient: string
-     illnessCategory: string
-     status: "pending" | "approved" | "cancelled"
-     doctor?: string | null
-     startTime?: string | null
-     endTime?: string | null
-     note: string
-}
 
 type Props = {
      appointment: Appointment
@@ -54,16 +41,14 @@ export default function AssignAppointment({
      onAssign,
      onCancel,
 }: Props) {
-     const [status, setStatus] = useState(appointment.status)
-     const [assignedDoctor, setAssignedDoctor] = useState(appointment.doctor ?? "")
-     const [assignedStartTime, setAssignedStartTime] = useState(appointment.startTime ?? "")
-     const [assignedEndTime, setAssignedEndTime] = useState(appointment.endTime ?? "")
-     const [doctorId, setDoctorId] = useState("")
-     const [startTime, setStartTime] = useState("")
-     const [endTime, setEndTime] = useState("")
+     const [doctorId, setDoctorId] = useState(appointment.doctorId ?? "")
+     const [startTime, setStartTime] = useState(appointment.startTime ?? "")
+     const [endTime, setEndTime] = useState(appointment.endTime ?? "")
      const [loading, setLoading] = useState(false)
 
-     const isPending = status === "pending"
+     const isPending = appointment.status === "pending"
+     const isApproved = appointment.status === "approved"
+     const isPaymentComplete = appointment.paymentStatus === "completed"
      const statusTone = {
           pending: "secondary",
           approved: "default",
@@ -74,8 +59,9 @@ export default function AssignAppointment({
           approved: "border-emerald-300/80",
           cancelled: "border-red-300/80",
      } as const
-     const canAssign = Boolean(doctorId && startTime && endTime && !loading)
-     const isApproved = status === "approved"
+     const canAssign = Boolean(
+          doctorId && startTime && endTime && isPaymentComplete && !loading
+     )
 
      const handleAssign = async () => {
           if (!doctorId || !startTime || !endTime) return
@@ -89,12 +75,6 @@ export default function AssignAppointment({
                     startTime,
                     endTime,
                })
-
-               const selectedDoctor = doctors.find((doc) => doc.id === doctorId)
-               setAssignedDoctor(selectedDoctor?.name ?? doctorId)
-               setAssignedStartTime(startTime)
-               setAssignedEndTime(endTime)
-               setStatus("approved")
           } finally {
                setLoading(false)
           }
@@ -105,7 +85,6 @@ export default function AssignAppointment({
 
           try {
                await onCancel?.(appointment.id)
-               setStatus("cancelled")
           } finally {
                setLoading(false)
           }
@@ -114,7 +93,8 @@ export default function AssignAppointment({
      return (
           <Card
                className={cn(
-                    "border bg-linear-to-br from-background via-background to-muted/20 shadow-sm transition-shadow hover:shadow-md"
+                    "border bg-linear-to-br from-background via-background to-muted/20 shadow-sm transition-shadow hover:shadow-md",
+                    statusBorder[appointment.status]
                )}
           >
                <CardHeader className="gap-4 border-b border-border/50 pb-5">
@@ -129,17 +109,17 @@ export default function AssignAppointment({
                          </div>
 
                          <Badge
-                              variant={statusTone[status]}
+                              variant={statusTone[appointment.status]}
                               className="capitalize self-start px-3 py-1"
                          >
-                              {status}
+                              {appointment.status}
                          </Badge>
                     </div>
                </CardHeader>
 
                <CardContent className="space-y-6 pt-6">
                     <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-                         <div className={`rounded-2xl border bg-muted/30 p-4 ${statusBorder[status]} `}>
+                         <div className={cn("rounded-2xl border bg-muted/30 p-4", statusBorder[appointment.status])}>
                               <p className="text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
                                    Category
                               </p>
@@ -148,30 +128,30 @@ export default function AssignAppointment({
                               </p>
                          </div>
 
-                         <div className={`rounded-2xl border bg-muted/30 p-4 ${statusBorder[status]} `}>
+                         <div className={cn("rounded-2xl border bg-muted/30 p-4", statusBorder[appointment.status])}>
                               <p className="text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
                                    Doctor
                               </p>
                               <p className="mt-2 text-sm font-medium text-foreground">
-                                   {assignedDoctor || "Unassigned"}
+                                   {appointment.doctor || "Unassigned"}
                               </p>
                          </div>
 
-                         <div className={`rounded-2xl border  bg-muted/30 p-4 ${statusBorder[status]} `}>
+                         <div className={cn("rounded-2xl border bg-muted/30 p-4", statusBorder[appointment.status])}>
                               <p className="text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
                                    Start
                               </p>
                               <p className="mt-2 text-sm font-medium text-foreground">
-                                   {assignedStartTime || "--:--"}
+                                   {appointment.startTime || "--:--"}
                               </p>
                          </div>
 
-                         <div className={`rounded-2xl border  bg-muted/30 p-4 ${statusBorder[status]}`} >
+                         <div className={cn("rounded-2xl border bg-muted/30 p-4", statusBorder[appointment.status])}>
                               <p className="text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
                                    End
                               </p>
                               <p className="mt-2 text-sm font-medium text-foreground">
-                                   {assignedEndTime || "--:--"}
+                                   {appointment.endTime || "--:--"}
                               </p>
                          </div>
                     </div>
@@ -187,14 +167,32 @@ export default function AssignAppointment({
                                    </p>
                               </div>
 
+                              {!isPaymentComplete && (
+                                   <div className="mb-4 flex items-start gap-3 rounded-2xl border border-amber-200 bg-amber-50/80 p-3 text-amber-800">
+                                       <HugeiconsIcon
+                                            icon={AlertCircleIcon}
+                                            strokeWidth={1.8}
+                                            className="mt-0.5 size-4 shrink-0"
+                                       />
+                                        <p className="text-sm">
+                                             This appointment is still awaiting payment. It can be
+                                             assigned or cancelled from this admin flow only after
+                                             payment is completed.
+                                        </p>
+                                   </div>
+                              )}
+
                               <div className="grid gap-4 lg:grid-cols-[1.4fr_1fr_1fr]">
-                                   <div className="space-y-2 w-full">
+                                   <div className="w-full space-y-2">
                                         <label className="text-sm font-medium text-foreground">
                                              Assign Doctor
                                         </label>
 
-                                        <Select onValueChange={setDoctorId}>
-                                             <SelectTrigger className="h-11 rounded-2xl border-border/70 bg-background w-full">
+                                        <Select value={doctorId} onValueChange={setDoctorId}>
+                                             <SelectTrigger
+                                                  className="h-11 w-full rounded-2xl border-border/70 bg-background"
+                                                  disabled={!isPaymentComplete || loading}
+                                             >
                                                   <SelectValue placeholder="Select doctor" />
                                              </SelectTrigger>
 
@@ -215,8 +213,9 @@ export default function AssignAppointment({
                                         <Input
                                              type="time"
                                              value={startTime}
-                                             onChange={(e) => setStartTime(e.target.value)}
+                                             onChange={(event) => setStartTime(event.target.value)}
                                              className="h-11 rounded-2xl border-border/70 bg-background"
+                                             disabled={!isPaymentComplete || loading}
                                         />
                                    </div>
 
@@ -227,8 +226,9 @@ export default function AssignAppointment({
                                         <Input
                                              type="time"
                                              value={endTime}
-                                             onChange={(e) => setEndTime(e.target.value)}
+                                             onChange={(event) => setEndTime(event.target.value)}
                                              className="h-11 rounded-2xl border-border/70 bg-background"
+                                             disabled={!isPaymentComplete || loading}
                                         />
                                    </div>
                               </div>
@@ -237,14 +237,14 @@ export default function AssignAppointment({
                                    <p
                                         className={cn(
                                              "text-sm transition-colors",
-                                             canAssign
-                                                  ? "text-emerald-600"
-                                                  : "text-muted-foreground"
+                                             canAssign ? "text-emerald-600" : "text-muted-foreground"
                                         )}
                                    >
                                         {canAssign
                                              ? "Ready to confirm this appointment."
-                                             : "Choose a doctor, start time, and end time to continue."}
+                                             : isPaymentComplete
+                                               ? "Choose a doctor, start time, and end time to continue."
+                                               : "Waiting for payment before scheduling can continue."}
                                    </p>
 
                                    <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
@@ -261,9 +261,9 @@ export default function AssignAppointment({
                                              className="h-11 rounded-2xl px-6 sm:min-w-40"
                                              type="button"
                                              onClick={handleCancel}
-                                             disabled={loading}
+                                             disabled={loading || !isPaymentComplete}
                                         >
-                                             Cancel Appointment
+                                             {loading ? "Cancelling..." : "Cancel Appointment"}
                                         </Button>
                                    </div>
                               </div>

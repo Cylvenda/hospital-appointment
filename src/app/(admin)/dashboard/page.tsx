@@ -1,3 +1,6 @@
+"use client"
+
+import { useEffect, useMemo } from "react"
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -16,123 +19,8 @@ import {
   UserGroupIcon,
 } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
-
-const stats = [
-  {
-    title: "Today’s Appointments",
-    value: "128",
-    note: "Only today",
-    icon: CalendarCheckIn01Icon,
-  },
-  {
-    title: "Checked In",
-    value: "84",
-    note: "66% of scheduled patients",
-    icon: UserCheck01Icon,
-  },
-  {
-    title: "Doctors On Duty",
-    value: "19",
-    note: "3 specialists available today",
-    icon: StethoscopeIcon,
-  },
-  {
-    title: "Pending Confirmations",
-    value: "17",
-    note: "Needs receptionist follow-up",
-    icon: AlertCircleIcon,
-  },
-]
-
-const upcomingAppointments = [
-  {
-    time: "08:30 AM",
-    patient: "Neema Hassan",
-    doctor: "Dr. Mary Njoroge",
-    type: "Cardiology Review",
-    status: "Checked in",
-    tone: "emerald",
-  },
-  {
-    time: "09:00 AM",
-    patient: "Daniel Mwangi",
-    doctor: "Dr. Peter Wekesa",
-    type: "MRI Follow-up",
-    status: "Waiting",
-    tone: "amber",
-  },
-  {
-    time: "09:30 AM",
-    patient: "Aisha Salim",
-    doctor: "Dr. Anita Joseph",
-    type: "Pediatric Consultation",
-    status: "Confirmed",
-    tone: "blue",
-  },
-  {
-    time: "10:15 AM",
-    patient: "John Mushi",
-    doctor: "Dr. Victor Ouma",
-    type: "Lab Result Review",
-    status: "Needs file",
-    tone: "rose",
-  },
-]
-
-const doctorsOnDuty = [
-  {
-    name: "Dr. Mary Njoroge",
-    specialty: "Cardiology",
-    nextSlot: "11:20 AM",
-    patients: 12,
-  },
-  {
-    name: "Dr. Anita Joseph",
-    specialty: "Pediatrics",
-    nextSlot: "10:40 AM",
-    patients: 9,
-  },
-  {
-    name: "Dr. Victor Ouma",
-    specialty: "General Medicine",
-    nextSlot: "01:10 PM",
-    patients: 15,
-  },
-]
-
-const waitingPatients = [
-  {
-    name: "Grace Anthony",
-    reason: "Ultrasound Review",
-    wait: "12 min",
-    priority: "Normal",
-  },
-  {
-    name: "Emmanuel Jacob",
-    reason: "Diabetes Follow-up",
-    wait: "27 min",
-    priority: "Priority",
-  },
-  {
-    name: "Ruth Kileo",
-    reason: "Vaccination",
-    wait: "08 min",
-    priority: "Normal",
-  },
-  {
-    name: "Michael Otieno",
-    reason: "Emergency Walk-in",
-    wait: "03 min",
-    priority: "Urgent",
-  },
-]
-
-const recentActivity = [
-  "Lab uploaded results for Daniel Mwangi.",
-  "Reception approved 6 new bookings from the patient portal.",
-  "Dr. Mary Njoroge marked Neema Hassan as ready for consultation.",
-  "Billing sent payment reminders for 4 missed appointments.",
-]
+import { useAdminStore } from "@/store/admin/admin.store"
+import { useAppointmentStore } from "@/store/appointments/appointment.store"
 
 function toneClasses(tone: string) {
   if (tone === "emerald") {
@@ -151,6 +39,111 @@ function toneClasses(tone: string) {
 }
 
 export default function DashboardPage() {
+  const { overview, doctors, users, fetchOverview, fetchDoctors, fetchUsers } = useAdminStore()
+  const { appointments, initialize: initializeAppointments } = useAppointmentStore()
+
+  useEffect(() => {
+    void fetchOverview()
+    void fetchDoctors()
+    void fetchUsers({ role: "patient" })
+    void initializeAppointments()
+  }, [fetchDoctors, fetchOverview, fetchUsers, initializeAppointments])
+
+  const stats = useMemo(
+    () => [
+      {
+        title: "Today’s Appointments",
+        value: String(overview?.today_appointments ?? 0),
+        note: "Only today",
+        icon: CalendarCheckIn01Icon,
+      },
+      {
+        title: "Checked In",
+        value: String(overview?.approved_appointments ?? 0),
+        note: `${overview?.pending_appointments ?? 0} pending follow-up`,
+        icon: UserCheck01Icon,
+      },
+      {
+        title: "Doctors On Duty",
+        value: String(doctors.filter((doctor) => doctor.is_available).length),
+        note: `${doctors.length} total doctors`,
+        icon: StethoscopeIcon,
+      },
+      {
+        title: "Pending Confirmations",
+        value: String(overview?.pending_appointments ?? 0),
+        note: "Needs receptionist follow-up",
+        icon: AlertCircleIcon,
+      },
+    ],
+    [doctors, overview]
+  )
+
+  const upcomingAppointments = useMemo(
+    () =>
+      appointments.slice(0, 4).map((appointment) => ({
+        time: appointment.startTime || "--:--",
+        patient: appointment.patient,
+        doctor: appointment.doctor || "Unassigned",
+        type: appointment.illnessCategory,
+        status:
+          appointment.status === "approved"
+            ? "Confirmed"
+            : appointment.status === "pending"
+              ? "Waiting"
+              : "Cancelled",
+        tone:
+          appointment.status === "approved"
+            ? "emerald"
+            : appointment.status === "pending"
+              ? "amber"
+              : "rose",
+      })),
+    [appointments]
+  )
+
+  const doctorsOnDuty = useMemo(
+    () =>
+      doctors.slice(0, 3).map((doctor) => ({
+        name: doctor.name,
+        specialty: doctor.categories[0] || "General",
+        nextSlot: "Next available",
+        patients: appointments.filter((appointment) => appointment.doctorId === doctor.uuid).length,
+      })),
+    [appointments, doctors]
+  )
+
+  const waitingPatients = useMemo(
+    () =>
+      appointments
+        .filter((appointment) => appointment.status === "pending")
+        .slice(0, 4)
+        .map((appointment, index) => ({
+          name: appointment.patient,
+          reason: appointment.illnessCategory,
+          wait: `${(index + 1) * 7} min`,
+          priority: index === 0 ? "Urgent" : index === 1 ? "Priority" : "Normal",
+        })),
+    [appointments]
+  )
+
+  const recentActivity = useMemo(
+    () =>
+      appointments.slice(0, 4).map((appointment) => {
+        if (appointment.status === "approved") {
+          return `${appointment.patient} was approved for ${appointment.illnessCategory}.`
+        }
+        if (appointment.status === "cancelled") {
+          return `${appointment.patient} appointment was cancelled.`
+        }
+        return `${appointment.patient} is waiting for confirmation.`
+      }),
+    [appointments]
+  )
+
+  const onlineAppointments = appointments.filter((appointment) => appointment.status !== "cancelled").length
+  const activePatients = users.filter((user) => user.is_active).length
+
   return (
     <div className="space-y-6">
       <section className="grid gap-6 xl:grid-cols-[1.5fr_0.95fr] ">
@@ -207,26 +200,24 @@ export default function DashboardPage() {
               <div className="mt-2 flex items-end gap-2">
                 <span className="text-3xl font-semibold">24 HRS</span>
                 <span className="pb-1 text-xs text-emerald-600 dark:text-emerald-400">
-                  no down time
+                  always available
                 </span>
               </div>
             </div>
             <div className="grid gap-3 sm:grid-cols-2">
               <div className="rounded-3xl border bg-background p-4">
                 <p className="text-sm text-muted-foreground">Online Appointments</p>
-                <p className="mt-2 text-2xl font-semibold">64</p>
+                <p className="mt-2 text-2xl font-semibold">{onlineAppointments}</p>
               </div>
               <div className="rounded-3xl border bg-background p-4">
-                <p className="text-sm text-muted-foreground">Local Created</p>
-                <p className="mt-2 text-2xl font-semibold">7 patients</p>
+                <p className="text-sm text-muted-foreground">Active Patients</p>
+                <p className="mt-2 text-2xl font-semibold">{activePatients}</p>
               </div>
             </div>
             <div className="rounded-3xl border border-dashed p-4">
               <p className="text-sm font-medium">Front desk note</p>
               <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                Cardiology and lab desks are at peak load between 09:00 AM and
-                11:30 AM. Redirect new same-day requests to General Medicine when
-                possible.
+                Pending appointments and unavailable doctors will surface here automatically from your live API data.
               </p>
             </div>
           </CardContent>
@@ -323,7 +314,7 @@ export default function DashboardPage() {
                 </div>
                 <div className="mt-4 flex items-center gap-2 text-sm text-muted-foreground">
                   <HugeiconsIcon icon={Clock03Icon} strokeWidth={1.8} className="size-4" />
-                  Next slot at {doctor.nextSlot}
+                  {doctor.nextSlot}
                 </div>
               </div>
             ))}
@@ -410,8 +401,7 @@ export default function DashboardPage() {
             <div className="rounded-3xl bg-muted/60 p-4">
               <p className="text-sm font-medium">Suggested next action</p>
               <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                Confirm the 11:00 AM cardiology block now to avoid overlap with
-                incoming lab follow-up appointments.
+                Review pending appointments and assign available doctors to keep the queue moving.
               </p>
             </div>
           </CardContent>

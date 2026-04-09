@@ -25,6 +25,12 @@ type PasswordResetConfirmPayload = {
      new_password: string
 }
 
+type LoginResponse = {
+     access?: string
+     refresh?: string
+     detail?: string
+}
+
 export const authUserService = {
      async userRegister(payload: RegisterPayload): Promise<ApiResponse<User>> {
           const response = await api.post<User>(API_ENDPOINTS.USER_REGISTRATION, payload)
@@ -34,8 +40,8 @@ export const authUserService = {
           }
      },
 
-     async userLogin(payload: LoginPayload): Promise<ApiResponse<User>> {
-          const response = await api.post<User>(API_ENDPOINTS.USER_LOGIN, payload)
+     async userLogin(payload: LoginPayload): Promise<ApiResponse<LoginResponse>> {
+          const response = await api.post<LoginResponse>(API_ENDPOINTS.USER_LOGIN, payload)
           return {
                data: response.data,
                status: response.status,

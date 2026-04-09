@@ -43,8 +43,8 @@ import {
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table"
+import { useAdminStore } from "@/store/admin/admin.store"
 import { getColumns } from "./column"
-import { patientTableData } from "./table-data"
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
@@ -52,6 +52,8 @@ interface DataTableProps<TData, TValue> {
 }
 
 function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData, TValue>) {
+  // TanStack Table is intentionally used here for this interactive table surface.
+  // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({
     data,
     columns,
@@ -119,12 +121,14 @@ const emptyPatient: User = {
 type SheetMode = "create" | "view" | "edit" | null
 
 export default function PatientsPage() {
-  const [patients, setPatients] = React.useState<User[]>(patientTableData)
+  const { users, fetchUsers, createUser, updateUser, deleteUser } = useAdminStore()
+  const [patients, setPatients] = React.useState<User[]>([])
   const [search, setSearch] = React.useState("")
   const [currentPage, setCurrentPage] = React.useState(1)
   const [sheetMode, setSheetMode] = React.useState<SheetMode>(null)
   const [activePatient, setActivePatient] = React.useState<User | null>(null)
   const [formPatient, setFormPatient] = React.useState<User>(emptyPatient)
+  const [createPassword, setCreatePassword] = React.useState("")
   const [deleteTarget, setDeleteTarget] = React.useState<User | null>(null)
 
   const filteredPatients = React.useMemo(() => {
@@ -147,6 +151,27 @@ export default function PatientsPage() {
   }, [patients, search])
 
   const totalPages = Math.max(1, Math.ceil(filteredPatients.length / PAGE_SIZE))
+
+  React.useEffect(() => {
+    void fetchUsers({ role: "patient" })
+  }, [fetchUsers])
+
+  React.useEffect(() => {
+    setPatients(
+      users.map((user) => ({
+        uuid: user.uuid,
+        first_name: user.first_name,
+        last_name: user.last_name,
+        email: user.email,
+        phone: user.phone,
+        username: user.username,
+        role: user.role,
+        is_active: user.is_active,
+        is_admin: user.is_admin,
+        is_staff: user.is_staff,
+      }))
+    )
+  }, [users])
 
   React.useEffect(() => {
     setCurrentPage(1)
@@ -196,6 +221,7 @@ export default function PatientsPage() {
         onView: handleView,
         onEdit: handleEdit,
         onDelete: handleDelete,
+        readOnly: false,
       }),
     [handleDelete, handleEdit, handleView]
   )
@@ -204,6 +230,7 @@ export default function PatientsPage() {
     setSheetMode(null)
     setActivePatient(null)
     setFormPatient(emptyPatient)
+    setCreatePassword("")
   }
 
   function closeDeletePopup() {
@@ -214,29 +241,39 @@ export default function PatientsPage() {
     setFormPatient((current) => ({ ...current, [key]: value }))
   }
 
-  function getRoleFlags(role: User["role"]) {
-    const normalizedRole = role.toLowerCase()
-
-    return {
-      is_admin: normalizedRole === "admin",
-      is_staff: normalizedRole === "doctor" || normalizedRole === "receptionist",
-    }
-  }
-
-  function handleSavePatient() {
+  async function handleSavePatient() {
     const normalizedUsername =
       formPatient.username.trim() ||
       `${formPatient.first_name}.${formPatient.last_name}`
         .toLowerCase()
         .replace(/\s+/g, ".")
-    const roleFlags = getRoleFlags(formPatient.role)
 
     if (sheetMode === "create") {
+      if (!createPassword.trim()) {
+        return
+      }
+
+      const createdPatient = await createUser({
+        first_name: formPatient.first_name,
+        last_name: formPatient.last_name,
+        email: formPatient.email,
+        phone: formPatient.phone,
+        password: createPassword,
+        role: formPatient.role.toLowerCase(),
+        is_active: formPatient.is_active,
+      })
+
       const newPatient: User = {
-        ...formPatient,
-        uuid: `usr_${Date.now()}`,
-        username: normalizedUsername,
-        ...roleFlags,
+        uuid: createdPatient.uuid,
+        first_name: createdPatient.first_name,
+        last_name: createdPatient.last_name,
+        email: createdPatient.email,
+        phone: createdPatient.phone,
+        username: createdPatient.username || normalizedUsername,
+        role: createdPatient.role,
+        is_active: createdPatient.is_active,
+        is_admin: createdPatient.is_admin,
+        is_staff: createdPatient.is_staff,
       }
 
       setPatients((current) => [newPatient, ...current])
@@ -246,11 +283,26 @@ export default function PatientsPage() {
     }
 
     if (sheetMode === "edit" && activePatient) {
+      const updated = await updateUser(activePatient.uuid, {
+        first_name: formPatient.first_name,
+        last_name: formPatient.last_name,
+        email: formPatient.email,
+        phone: formPatient.phone,
+        role: formPatient.role.toLowerCase(),
+        is_active: formPatient.is_active,
+      })
+
       const updatedPatient: User = {
-        ...formPatient,
-        uuid: activePatient.uuid,
-        username: normalizedUsername,
-        ...roleFlags,
+        uuid: updated.uuid,
+        first_name: updated.first_name,
+        last_name: updated.last_name,
+        email: updated.email,
+        phone: updated.phone,
+        username: updated.username || normalizedUsername,
+        role: updated.role,
+        is_active: updated.is_active,
+        is_admin: updated.is_admin,
+        is_staff: updated.is_staff,
       }
 
       setPatients((current) =>
@@ -263,11 +315,12 @@ export default function PatientsPage() {
     }
   }
 
-  function confirmDeletePatient() {
+  async function confirmDeletePatient() {
     if (!deleteTarget) {
       return
     }
 
+    await deleteUser(deleteTarget.uuid)
     setPatients((current) => current.filter((item) => item.uuid !== deleteTarget.uuid))
     setActivePatient((current) =>
       current?.uuid === deleteTarget.uuid ? null : current
@@ -421,6 +474,18 @@ export default function PatientsPage() {
               />
             </div>
 
+            {sheetMode === "create" && (
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Password</label>
+                <Input
+                  type="password"
+                  value={createPassword}
+                  onChange={(event) => setCreatePassword(event.target.value)}
+                  placeholder="Create password"
+                />
+              </div>
+            )}
+
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-2">
                 <label className="text-sm font-medium">Phone number</label>
@@ -484,7 +549,10 @@ export default function PatientsPage() {
               Close
             </Button>
             {sheetMode !== "view" && (
-              <Button onClick={handleSavePatient} >
+              <Button
+                onClick={handleSavePatient}
+                disabled={sheetMode === "create" && !createPassword.trim()}
+              >
                 {sheetMode === "create" ? "Create Patient" : "Save Changes"}
               </Button>
             )}

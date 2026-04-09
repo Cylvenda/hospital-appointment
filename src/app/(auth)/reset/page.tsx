@@ -16,6 +16,7 @@ type ResetFormValues = z.infer<typeof ResetFormSchema>
 
 const ForgetPassword = () => {
      const [loading, setLoading] = useState(false)
+     const [submittedEmail, setSubmittedEmail] = useState("")
 
      const form = useForm<ResetFormValues>({
           resolver: zodResolver(ResetFormSchema),
@@ -29,6 +30,7 @@ const ForgetPassword = () => {
                setLoading(true)
                await authUserService.requestPasswordReset({ email: data.email })
                toast.success("Password reset link sent. Please check your email.")
+               setSubmittedEmail(data.email)
                form.reset()
           } catch (error: unknown) {
                const errorMessage =
@@ -50,47 +52,65 @@ const ForgetPassword = () => {
                     <FormInput
                          title="Reset Password"
                          description="Enter your email and we’ll send you a reset link"
-                         className="border-0! shadow-none! ring-0! bg-transparent"
                     >
-                         <form
-                              onSubmit={form.handleSubmit(handleSubmit)}
-                              className="space-y-5 mt-4"
-                         >
-                              {/* EMAIL */}
-                              <FieldInput
-                                   name="email"
-                                   control={form.control}
-                                   type="email"
-                                   placeholder="Enter your email address"
-                                   label="Email Address"
-                              />
+                         {submittedEmail ? (
+                              <div className="mt-4 space-y-5">
+                                   <div className="rounded-2xl border border-emerald-200 bg-emerald-50/70 p-4 text-sm text-emerald-700">
+                                        A reset link has been sent to <span className="font-medium">{submittedEmail}</span>.
+                                        Open the email and follow the link to choose a new password.
+                                   </div>
 
-                              {/* LINKS */}
-                              <div className="flex justify-between text-sm">
-                                   <Link
-                                        href="/login"
-                                        className="text-blue-500 hover:underline"
-                                   >
-                                        Back to Login
-                                   </Link>
-
-                                   <Link
-                                        href="/register"
-                                        className="text-blue-500 hover:underline"
-                                   >
-                                        Create account
-                                   </Link>
+                                   <div className="flex flex-col gap-3 sm:flex-row">
+                                        <Button
+                                             type="button"
+                                             className="w-full bg-chart-3 p-5 hover:opacity-90"
+                                             onClick={() => setSubmittedEmail("")}
+                                        >
+                                             Send Another Link
+                                        </Button>
+                                        <Button asChild type="button" variant="outline" className="w-full p-5">
+                                             <Link href="/login">Back to Login</Link>
+                                        </Button>
+                                   </div>
                               </div>
-
-                              {/* SUBMIT */}
-                              <Button
-                                   type="submit"
-                                   disabled={loading}
-                                   className="w-full bg-chart-3 hover:opacity-90 transition p-5"
+                         ) : (
+                              <form
+                                   onSubmit={form.handleSubmit(handleSubmit)}
+                                   className="mt-4 space-y-5"
                               >
-                                   {loading ? <Spinner /> : "Send Reset Link"}
-                              </Button>
-                         </form>
+                                   <FieldInput
+                                        name="email"
+                                        control={form.control}
+                                        type="email"
+                                        placeholder="Enter your email address"
+                                        label="Email Address"
+                                   />
+
+                                   <div className="flex justify-between text-sm">
+                                        <Link
+                                             href="/login"
+                                             className="text-blue-500 hover:underline"
+                                        >
+                                             Back to Login
+                                        </Link>
+
+                                        <Link
+                                             href="/register"
+                                             className="text-blue-500 hover:underline"
+                                        >
+                                             Create account
+                                        </Link>
+                                   </div>
+
+                                   <Button
+                                        type="submit"
+                                        disabled={loading}
+                                        className="w-full bg-chart-3 p-5 transition hover:opacity-90"
+                                   >
+                                        {loading ? <Spinner /> : "Send Reset Link"}
+                                   </Button>
+                              </form>
+                         )}
                     </FormInput>
                </div>
           </div>
