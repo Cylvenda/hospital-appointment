@@ -7,6 +7,8 @@ import type {
      AppointmentStatus,
      Doctor,
      DoctorApi,
+     IllnessCategory,
+     IllnessCategoryApi,
 } from "./appointment.types"
 
 type AssignPayload = {
@@ -19,12 +21,19 @@ type AssignPayload = {
 type AppointmentStore = {
      appointments: Appointment[]
      doctors: Doctor[]
+     illnessCategories: IllnessCategory[]
      loading: boolean
      error: string | null
      initialized: boolean
      fetchAppointments: () => Promise<void>
      fetchDoctors: () => Promise<void>
+     fetchIllnessCategories: () => Promise<void>
      initialize: () => Promise<void>
+     createAppointment: (payload: {
+          illnessCategoryId: string
+          appointmentDate: string
+          description: string
+     }) => Promise<void>
      assignAppointment: (payload: AssignPayload) => Promise<void>
      cancelAppointment: (appointmentId: string) => Promise<void>
 }
@@ -59,6 +68,14 @@ function mapDoctor(apiDoctor: DoctorApi): Doctor {
      }
 }
 
+function mapIllnessCategory(apiCategory: IllnessCategoryApi): IllnessCategory {
+     return {
+          id: apiCategory.uuid,
+          name: apiCategory.name,
+          description: apiCategory.description,
+     }
+}
+
 function getApiErrorMessage(error: unknown, fallback: string) {
      const axiosError = error as AxiosError<{ detail?: string; non_field_errors?: string[] }>
      const detail = axiosError.response?.data?.detail
@@ -77,6 +94,7 @@ function getApiErrorMessage(error: unknown, fallback: string) {
 export const useAppointmentStore = create<AppointmentStore>((set) => ({
      appointments: [],
      doctors: [],
+     illnessCategories: [],
      loading: false,
      error: null,
      initialized: false,
@@ -108,6 +126,21 @@ export const useAppointmentStore = create<AppointmentStore>((set) => ({
           }
      },
 
+     fetchIllnessCategories: async () => {
+          try {
+               const response = await appointmentService.listIllnessCategories()
+               set({
+                    illnessCategories: response.data.map(mapIllnessCategory),
+               })
+          } catch (error: unknown) {
+               const message = getApiErrorMessage(
+                    error,
+                    "Failed to fetch illness categories"
+               )
+               set({ error: message })
+          }
+     },
+
      initialize: async () => {
           set({ loading: true, error: null })
 
@@ -133,6 +166,25 @@ export const useAppointmentStore = create<AppointmentStore>((set) => ({
                     loading: false,
                     initialized: true,
                })
+          }
+     },
+
+     createAppointment: async ({ illnessCategoryId, appointmentDate, description }) => {
+          try {
+               const response = await appointmentService.createAppointment({
+                    illnessCategoryId,
+                    appointmentDate,
+                    description,
+               })
+               const appointment = mapAppointment(response.data)
+
+               set((state) => ({
+                    appointments: [appointment, ...state.appointments],
+               }))
+          } catch (error: unknown) {
+               const message = getApiErrorMessage(error, "Failed to create appointment")
+               set({ error: message })
+               throw error
           }
      },
 

@@ -8,12 +8,14 @@ import {
      SidebarTrigger,
 } from "@/components/ui/sidebar"
 import { ThemeToggle } from "@/components/theme-toggle"
+import { RoleAccessGuard } from "@/components/role-access-guard"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { Bell } from "@hugeicons/core-free-icons"
 
 export default function Layout({ children }: { children: React.ReactNode }) {
      return (
           <SidebarProvider>
+               <RoleAccessGuard allowedRoles={["admin"]} />
                <AppSidebar />
                <SidebarInset>
                     <header className="flex h-18 shrink-0 sticky top-0 z-50 bg-sidebar items-center justify-between gap-2 border-b border-b-sidebar-border  px-4 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">

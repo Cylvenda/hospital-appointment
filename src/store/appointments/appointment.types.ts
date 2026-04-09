@@ -20,6 +20,12 @@ export type Doctor = {
      name: string
 }
 
+export type IllnessCategory = {
+     id: string
+     name: string
+     description: string | null
+}
+
 export type BackendAppointmentStatus =
      | "pending"
      | "accepted"
@@ -48,4 +54,10 @@ export type DoctorApi = {
      uuid: string
      name: string
      is_available: boolean
+}
+
+export type IllnessCategoryApi = {
+     uuid: string
+     name: string
+     description: string | null
 }

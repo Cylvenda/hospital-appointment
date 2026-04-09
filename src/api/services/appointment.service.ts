@@ -1,12 +1,22 @@
 import api from "../axios"
 import { API_ENDPOINTS } from "../endpoints"
 import type { ApiResponse } from "../types"
-import type { AppointmentApi, DoctorApi } from "@/store/appointments/appointment.types"
+import type {
+     AppointmentApi,
+     DoctorApi,
+     IllnessCategoryApi,
+} from "@/store/appointments/appointment.types"
 
 type AssignAppointmentPayload = {
      doctorId: string
      startTime: string
      endTime: string
+}
+
+type CreateAppointmentPayload = {
+     illnessCategoryId: string
+     appointmentDate: string
+     description: string
 }
 
 export const appointmentService = {
@@ -20,6 +30,29 @@ export const appointmentService = {
 
      async listDoctors(): Promise<ApiResponse<DoctorApi[]>> {
           const response = await api.get<DoctorApi[]>(API_ENDPOINTS.APPOINTMENT_DOCTORS)
+          return {
+               status: response.status,
+               data: response.data,
+          }
+     },
+
+     async listIllnessCategories(): Promise<ApiResponse<IllnessCategoryApi[]>> {
+          const response = await api.get<IllnessCategoryApi[]>(API_ENDPOINTS.ILLNESS_CATEGORIES)
+          return {
+               status: response.status,
+               data: response.data,
+          }
+     },
+
+     async createAppointment(
+          payload: CreateAppointmentPayload
+     ): Promise<ApiResponse<AppointmentApi>> {
+          const response = await api.post<AppointmentApi>(API_ENDPOINTS.APPOINTMENTS, {
+               illness_category_uuid: payload.illnessCategoryId,
+               appointment_date: payload.appointmentDate,
+               description: payload.description,
+          })
+
           return {
                status: response.status,
                data: response.data,

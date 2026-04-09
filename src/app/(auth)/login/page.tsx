@@ -14,6 +14,7 @@ import { useRouter } from "next/navigation"
 import { toast } from "react-toastify"
 import { Spinner } from "@/components/ui/spinner"
 import { LoginFormSchema } from "@/schema/user-form-schema"
+import { getDashboardPath } from "@/lib/role-dashboard"
 
 
 type LoginFormValues = z.infer<typeof LoginFormSchema>
@@ -51,7 +52,7 @@ export default function LoginPage() {
                          return
                     }
 
-                    router.replace("/dashboard")
+                    router.replace(getDashboardPath(currentUser.role))
                     router.refresh()
                     toast.success("Login successful.")
                }

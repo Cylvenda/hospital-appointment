@@ -24,6 +24,7 @@ export const API_ENDPOINTS = {
      // Appointments
      APPOINTMENTS: "appointments/",
      APPOINTMENT_DOCTORS: "appointments/doctors/",
+     ILLNESS_CATEGORIES: "illness_category/",
 
      // Admin
      ADMIN_OVERVIEW: "admin/overview/",

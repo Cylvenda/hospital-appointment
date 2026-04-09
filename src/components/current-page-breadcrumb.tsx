@@ -24,6 +24,11 @@ export function CurrentPageBreadcrumb() {
      const currentSegment = segments.at(-1) ?? "dashboard"
      const currentPage = formatSegment(currentSegment)
      const isDashboard = currentSegment === "dashboard"
+     const dashboardLink = pathname.startsWith("/patient-dashboard")
+          ? "/patient-dashboard"
+          : pathname.startsWith("/receptionist-dashboard")
+               ? "/receptionist-dashboard"
+               : "/dashboard"
 
      return (
           <Breadcrumb>
@@ -31,7 +36,7 @@ export function CurrentPageBreadcrumb() {
                     {!isDashboard && (
                          <>
                               <BreadcrumbItem className="hidden md:block">
-                                   <BreadcrumbLink href="/dashboard">
+                                   <BreadcrumbLink href={dashboardLink}>
                                         Dashboard
                                    </BreadcrumbLink>
                               </BreadcrumbItem>
