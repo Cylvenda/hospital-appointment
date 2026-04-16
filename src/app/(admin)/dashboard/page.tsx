@@ -87,13 +87,13 @@ export default function DashboardPage() {
         doctor: appointment.doctor || "Unassigned",
         type: appointment.illnessCategory,
         status:
-          appointment.status === "approved"
+          appointment.status === "accepted"
             ? "Confirmed"
             : appointment.status === "pending"
               ? "Waiting"
               : "Cancelled",
         tone:
-          appointment.status === "approved"
+          appointment.status === "accepted"
             ? "emerald"
             : appointment.status === "pending"
               ? "amber"
@@ -130,8 +130,8 @@ export default function DashboardPage() {
   const recentActivity = useMemo(
     () =>
       appointments.slice(0, 4).map((appointment) => {
-        if (appointment.status === "approved") {
-          return `${appointment.patient} was approved for ${appointment.illnessCategory}.`
+        if (appointment.status === "accepted") {
+          return `${appointment.patient} was accepted for ${appointment.illnessCategory}.`
         }
         if (appointment.status === "cancelled") {
           return `${appointment.patient} appointment was cancelled.`

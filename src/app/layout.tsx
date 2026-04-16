@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
-import Script from "next/script";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import { ToastContainer } from "react-toastify";
@@ -42,21 +41,6 @@ export default function RootLayout({
           poppins.className
         )}
       >
-        <Script id="theme-init" strategy="beforeInteractive">
-          {`(() => {
-            try {
-              const storedTheme = localStorage.getItem("theme");
-              const theme =
-                storedTheme === "dark" || storedTheme === "light"
-                  ? storedTheme
-                  : window.matchMedia("(prefers-color-scheme: dark)").matches
-                    ? "dark"
-                    : "light";
-              document.documentElement.classList.toggle("dark", theme === "dark");
-              document.documentElement.style.colorScheme = theme;
-            } catch (_) {}
-          })();`}
-        </Script>
         <ToastContainer
           position="top-right"
           autoClose={3000}

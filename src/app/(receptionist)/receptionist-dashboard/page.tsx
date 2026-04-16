@@ -50,7 +50,7 @@ export default function ReceptionistDashboardPage() {
      )
 
      return (
-          <div className="mx-auto w-full max-w-6xl space-y-6 p-4 md:p-6">
+          <div className="mx-auto w-full max-w-8xl space-y-6 p-4 md:p-6">
                <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
                     <div>
                          <h1 className="text-2xl font-semibold">Receptionist Dashboard</h1>
@@ -58,15 +58,6 @@ export default function ReceptionistDashboardPage() {
                               Front-desk view for today&apos;s queue and pending assignments.
                          </p>
                     </div>
-                    <Button
-                         variant="outline"
-                         onClick={async () => {
-                              await logout()
-                              router.replace("/login")
-                         }}
-                    >
-                         Logout
-                    </Button>
                </div>
 
                <div className="grid gap-4 sm:grid-cols-3">

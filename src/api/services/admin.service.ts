@@ -6,6 +6,7 @@ import type {
      AdminDoctorWritePayload,
      AdminOverview,
      AdminSettings,
+     AdminSettingsUpdatePayload,
      AdminUser,
      AdminUserWritePayload,
 } from "@/store/admin/admin.types"
@@ -41,6 +42,14 @@ export const AdminService = {
 
      async getSettings(): Promise<ApiResponse<AdminSettings>> {
           const response = await api.get<AdminSettings>(API_ENDPOINTS.ADMIN_SETTINGS)
+          return {
+               status: response.status,
+               data: response.data,
+          }
+     },
+
+     async updateSettings(payload: AdminSettingsUpdatePayload): Promise<ApiResponse<AdminSettings>> {
+          const response = await api.patch<AdminSettings>(API_ENDPOINTS.ADMIN_SETTINGS, payload)
           return {
                status: response.status,
                data: response.data,

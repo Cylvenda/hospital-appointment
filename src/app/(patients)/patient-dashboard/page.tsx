@@ -13,10 +13,11 @@ import { Button } from "@/components/ui/button"
 import { useAuthUserStore } from "@/store/auth/userAuth.store"
 import { useAppointmentStore } from "@/store/appointments/appointment.store"
 import { getDashboardPath } from "@/lib/role-dashboard"
+import { cn } from "@/lib/utils"
 
 export default function PatientDashboardPage() {
      const router = useRouter()
-     const { user, checkAuth, logout } = useAuthUserStore()
+     const { user, checkAuth } = useAuthUserStore()
      const { appointments, loading, error, fetchAppointments } = useAppointmentStore()
 
      useEffect(() => {
@@ -38,85 +39,129 @@ export default function PatientDashboardPage() {
      }, [checkAuth, fetchAppointments, router, user?.role])
 
      const stats = useMemo(() => {
-          const pending = appointments.filter((item) => item.status === "pending").length
-          const approved = appointments.filter((item) => item.status === "approved").length
-          const cancelled = appointments.filter((item) => item.status === "cancelled").length
+          const pending = appointments.filter((i) => i.status === "pending").length
+          const approved = appointments.filter((i) => i.status === "accepted").length
+          const cancelled = appointments.filter((i) => i.status === "cancelled").length
 
           return { pending, approved, cancelled }
      }, [appointments])
 
      return (
-          <div className="mx-auto w-full max-w-6xl space-y-6 p-4 md:p-6">
-               <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+          <div className="mx-auto w-full max-w-8xl space-y-6 p-4 md:p-6">
+               {/* HEADER */}
+               <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                     <div>
-                         <h1 className="text-2xl font-semibold">Patient Dashboard</h1>
+                         <h1 className="text-2xl font-semibold">
+                              Welcome back{user?.first_name ? `, ${user.first_name}` : ""}
+                         </h1>
                          <p className="text-sm text-muted-foreground">
-                              Track your appointments and review current status.
+                              Manage your appointments and track updates in real-time.
                          </p>
                     </div>
-                    <Button
-                         variant="outline"
-                         onClick={async () => {
-                              await logout()
-                              router.replace("/login")
-                         }}
-                    >
-                         Logout
-                    </Button>
+
+                    {/* QUICK ACTIONS */}
+                    <div className="flex gap-2">
+                         <Button className="rounded-md" onClick={() => router.push("/patient/appointments")}>
+                              + Book Appointment
+                         </Button>
+
+                         <Button
+                              className="rounded-md"
+                              variant="outline"
+                              onClick={() => fetchAppointments()}
+                         >
+                              Refresh
+                         </Button>
+                    </div>
                </div>
 
+               {/* STATS */}
                <div className="grid gap-4 sm:grid-cols-3">
-                    <Card>
-                         <CardContent className="p-5">
-                              <p className="text-sm text-muted-foreground">Pending</p>
-                              <p className="mt-2 text-3xl font-semibold">{stats.pending}</p>
-                         </CardContent>
-                    </Card>
-                    <Card>
-                         <CardContent className="p-5">
-                              <p className="text-sm text-muted-foreground">Approved</p>
-                              <p className="mt-2 text-3xl font-semibold">{stats.approved}</p>
-                         </CardContent>
-                    </Card>
-                    <Card>
-                         <CardContent className="p-5">
-                              <p className="text-sm text-muted-foreground">Cancelled</p>
-                              <p className="mt-2 text-3xl font-semibold">{stats.cancelled}</p>
-                         </CardContent>
-                    </Card>
+                    {[
+                         {
+                              label: "Pending",
+                              value: stats.pending,
+                              hint: "Awaiting approval",
+                              style: "border-yellow-300",
+                         },
+                         {
+                              label: "Approved",
+                              value: stats.approved,
+                              hint: "Ready for visit",
+                              style: "border-green-300",
+                         },
+                         {
+                              label: "Cancelled",
+                              value: stats.cancelled,
+                              hint: "Past cancellations",
+                              style: "border-red-300",
+                         },
+                    ].map((stat, i) => (
+                         <Card key={i} className={cn("border-l-4 shadow-sm", stat.style)}>
+                              <CardContent className="p-5">
+                                   <p className="text-sm text-muted-foreground">{stat.label}</p>
+                                   <p className="mt-1 text-3xl font-semibold">{stat.value}</p>
+                                   <p className="text-xs text-muted-foreground mt-1">
+                                        {stat.hint}
+                                   </p>
+                              </CardContent>
+                         </Card>
+                    ))}
                </div>
 
+               {/* RECENT APPOINTMENTS */}
                <Card>
                     <CardHeader>
-                         <CardTitle>My Appointments</CardTitle>
+                         <CardTitle>Recent Appointments</CardTitle>
                          <CardDescription>
                               {loading
-                                   ? "Loading your appointments..."
-                                   : "Live appointments from your account."}
+                                   ? "Loading..."
+                                   : "Your latest appointment activity."}
                          </CardDescription>
                     </CardHeader>
+
                     <CardContent>
                          {error ? (
                               <p className="text-sm text-red-600">{error}</p>
                          ) : appointments.length === 0 ? (
-                              <p className="text-sm text-muted-foreground">
-                                   You do not have any appointments yet.
-                              </p>
+                              <div className="text-center py-10 space-y-2">
+                                   <p className="text-sm text-muted-foreground">
+                                        No appointments yet.
+                                   </p>
+                                   <Button
+                                        size="sm"
+                                        onClick={() => router.push("/patient-dashboard/appointments")}
+                                   >
+                                        Book your first appointment
+                                   </Button>
+                              </div>
                          ) : (
                               <div className="space-y-3">
-                                   {appointments.map((appointment) => (
+                                   {appointments.slice(0, 5).map((appt) => (
                                         <div
-                                             key={appointment.id}
-                                             className="rounded-2xl border p-4"
+                                             key={appt.id}
+                                             className="flex items-center justify-between rounded-xl border p-4 hover:shadow-sm transition"
                                         >
-                                             <p className="font-medium">{appointment.illnessCategory}</p>
-                                             <p className="text-sm text-muted-foreground">
-                                                  Date: {appointment.date} | Status: {appointment.status}
-                                             </p>
-                                             <p className="text-sm text-muted-foreground">
-                                                  Time: {appointment.startTime || "--:--"} -{" "}
-                                                  {appointment.endTime || "--:--"}
-                                             </p>
+                                             <div>
+                                                  <p className="font-medium">{appt.illnessCategory}</p>
+                                                  <p className="text-xs text-muted-foreground">
+                                                       {appt.date} • {appt.startTime || "--:--"}
+                                                  </p>
+                                             </div>
+
+                                             <span
+                                                  className={cn(
+                                                       "text-xs px-2 py-1 rounded-full capitalize",
+                                                       appt.status === "pending" &&
+                                                       "bg-yellow-100 text-yellow-700",
+                                                       appt.status === "accepted" &&
+                                                       "bg-green-100 text-green-700",
+                                                       appt.status === "cancelled" &&
+                                                       "bg-red-100 text-red-700"
+                                                  )}
+                                             >
+                                                  {appt.status}
+                                             </span>
                                         </div>
                                    ))}
                               </div>

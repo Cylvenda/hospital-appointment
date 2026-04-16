@@ -24,6 +24,7 @@ export const API_ENDPOINTS = {
      // Appointments
      APPOINTMENTS: "appointments/",
      APPOINTMENT_DOCTORS: "appointments/doctors/",
+     APPOINTMENT_PAYING: "appointments/{uuid}/pay/",
      ILLNESS_CATEGORIES: "illness_category/",
 
      // Admin

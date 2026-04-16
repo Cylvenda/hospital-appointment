@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {
@@ -13,13 +13,21 @@ import {
 } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { useAdminStore } from "@/store/admin/admin.store"
+import { toast } from "react-toastify"
 
 export default function SettingsPage() {
-  const { settings, fetchSettings } = useAdminStore()
+  const { settings, fetchSettings, updateSettings } = useAdminStore()
+  const [appointmentFee, setAppointmentFee] = useState("")
+  const [saving, setSaving] = useState(false)
 
   useEffect(() => {
     void fetchSettings()
   }, [fetchSettings])
+
+  useEffect(() => {
+    if (!settings) return
+    setAppointmentFee(settings.appointment_fee)
+  }, [settings])
 
   const notificationSettings = [
     settings?.patient_confirmation_emails
@@ -71,14 +79,43 @@ export default function SettingsPage() {
               <label className="text-sm font-medium">Default Time Slot</label>
               <Input value={settings?.default_time_slot ?? ""} readOnly />
             </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Appointment Fee</label>
+              <Input
+                type="number"
+                min="0"
+                step="0.01"
+                value={appointmentFee}
+                onChange={(event) => setAppointmentFee(event.target.value)}
+              />
+            </div>
           </div>
 
           <div className="mt-5 flex gap-2">
-            <Button className="rounded-2xl" disabled>
+            <Button
+              className="rounded-2xl"
+              disabled={!appointmentFee || saving}
+              onClick={async () => {
+                setSaving(true)
+                try {
+                  await updateSettings({ appointment_fee: appointmentFee })
+                  toast.success("Appointment fee updated.")
+                } catch {
+                  toast.error("Failed to update appointment fee.")
+                } finally {
+                  setSaving(false)
+                }
+              }}
+            >
               <HugeiconsIcon icon={Edit02Icon} strokeWidth={1.8} />
-              Save Profile
+              {saving ? "Saving..." : "Save Profile"}
             </Button>
-            <Button variant="outline" className="rounded-2xl" disabled>
+            <Button
+              variant="outline"
+              className="rounded-2xl"
+              onClick={() => setAppointmentFee(settings?.appointment_fee ?? "")}
+              disabled={saving}
+            >
               Reset
             </Button>
           </div>

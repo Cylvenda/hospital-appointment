@@ -10,7 +10,7 @@ export default function ReceptionistSettingsPage() {
   const logout = useAuthUserStore((state) => state.logout)
 
   return (
-    <div className="w-full max-w-6xl">
+    <div className="w-full max-w-8xl">
       <Card>
         <CardHeader>
           <CardTitle>Settings</CardTitle>

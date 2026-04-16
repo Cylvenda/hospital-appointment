@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useState } from "react"
 import { toast } from "react-toastify"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -12,21 +12,23 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { Textarea } from "@/components/ui/textarea"
 import { useAppointmentStore } from "@/store/appointments/appointment.store"
+
+type Step = 1 | 2 | 3
 
 export default function PatientAppointmentsPage() {
   const {
-    appointments,
     illnessCategories,
-    loading,
-    error,
     fetchAppointments,
     fetchIllnessCategories,
     createAppointment,
   } = useAppointmentStore()
 
+  const [step, setStep] = useState<Step>(1)
+
   const [illnessCategoryId, setIllnessCategoryId] = useState("")
-  const [appointmentDate, setAppointmentDate] = useState("")
+  const [appointmentPreferredDate, setAppointmentPreferredDate] = useState("")
   const [description, setDescription] = useState("")
   const [submitting, setSubmitting] = useState(false)
 
@@ -35,28 +37,31 @@ export default function PatientAppointmentsPage() {
     void fetchIllnessCategories()
   }, [fetchAppointments, fetchIllnessCategories])
 
-  const history = useMemo(
-    () => [...appointments].sort((a, b) => b.date.localeCompare(a.date)),
-    [appointments]
-  )
+  const nextStep = () => setStep((s) => (s < 3 ? ((s + 1) as Step) : s))
+  const prevStep = () => setStep((s) => (s > 1 ? ((s - 1) as Step) : s))
 
-  const canSubmit = Boolean(illnessCategoryId && appointmentDate && description.trim())
+  const canProceedStep1 = !!illnessCategoryId
+  const canProceedStep2 = !!appointmentPreferredDate
+  const canSubmit = !!description.trim()
 
-  const handleCreateAppointment = async () => {
+  const handleSubmit = async () => {
     if (!canSubmit || submitting) return
 
     setSubmitting(true)
     try {
       await createAppointment({
         illnessCategoryId,
-        appointmentDate,
+        appointmentPreferredDate,
         description: description.trim(),
       })
 
-      setIllnessCategoryId("")
-      setAppointmentDate("")
-      setDescription("")
       toast.success("Appointment created successfully.")
+
+      // reset
+      setStep(1)
+      setIllnessCategoryId("")
+      setAppointmentPreferredDate("")
+      setDescription("")
     } catch {
       toast.error("Failed to create appointment.")
     } finally {
@@ -65,90 +70,121 @@ export default function PatientAppointmentsPage() {
   }
 
   return (
-    <div className="w-full max-w-6xl space-y-6">
+    <div className="w-full max-w-8xl mx-auto space-y-6">
+      {/* HEADER */}
       <div>
-        <h1 className="text-2xl font-semibold">Appointments</h1>
+        <h1 className="text-2xl font-semibold">Book Appointment</h1>
         <p className="text-sm text-muted-foreground">
-          Create a new appointment request and review your appointment history.
+          Follow the steps to request a consultation with a doctor.
         </p>
       </div>
 
-      <Card>
+      {/* PROGRESS */}
+      <div className="flex items-center gap-2 text-sm">
+        {[1, 2, 3].map((s) => (
+          <div
+            key={s}
+            className={`h-2 flex-1 rounded-full ${step >= s ? "bg-primary" : "bg-muted"
+              }`}
+          />
+        ))}
+      </div>
+
+      {/* CARD */}
+      <Card className="rounded-md">
         <CardHeader>
-          <CardTitle>Create New Appointment</CardTitle>
-          <CardDescription>Select category, date, and describe your concern.</CardDescription>
+          <CardTitle>
+            Step {step} of 3
+          </CardTitle>
+          <CardDescription>
+            {step === 1 && "Select your illness category"}
+            {step === 2 && "Choose your preferred appointment date"}
+            {step === 3 && "Describe your condition"}
+          </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid gap-4 md:grid-cols-2">
+
+        <CardContent className="space-y-6">
+          {/* STEP 1 */}
+          {step === 1 && (
             <div className="space-y-2">
               <label className="text-sm font-medium">Illness Category</label>
               <Select value={illnessCategoryId} onValueChange={setIllnessCategoryId}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select category" />
+                <SelectTrigger className="rounded-md w-full" >
+                  <SelectValue  placeholder="Select category" />
                 </SelectTrigger>
-                <SelectContent>
-                  {illnessCategories.map((category) => (
-                    <SelectItem key={category.id} value={category.id}>
-                      {category.name}
+                <SelectContent className="rounded-md">
+                  {illnessCategories.map((c) => (
+                    <SelectItem key={c.id} value={c.id}>
+                      {c.name}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
-            </div>
 
+              <Button
+                className="w-full mt-4 rounded-md"
+                disabled={!canProceedStep1}
+                onClick={nextStep}
+              >
+                Continue
+              </Button>
+            </div>
+          )}
+
+          {/* STEP 2 */}
+          {step === 2 && (
             <div className="space-y-2">
               <label className="text-sm font-medium">Preferred Date</label>
               <Input
+                className="rounded-md"
                 type="date"
-                value={appointmentDate}
-                onChange={(event) => setAppointmentDate(event.target.value)}
+                value={appointmentPreferredDate}
+                onChange={(e) => setAppointmentPreferredDate(e.target.value)}
               />
+
+              <div className="flex gap-2 pt-4 rounded-md">
+                <Button variant="outline" onClick={prevStep} className="rounded-md">
+                  Back
+                </Button>
+
+                <Button
+                  className="flex-1"
+                  disabled={!canProceedStep2}
+                  onClick={nextStep}
+                >
+                  Continue
+                </Button>
+              </div>
             </div>
-          </div>
+          )}
 
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Description</label>
-            <Input
-              value={description}
-              onChange={(event) => setDescription(event.target.value)}
-              placeholder="Briefly describe your condition"
-            />
-          </div>
+          {/* STEP 3 */}
+          {step === 3 && (
+            <div className="space-y-2">
+              <label className="text-sm font-medium">
+                Describe Your Condition
+              </label>
 
-          <div className="flex justify-end">
-            <Button onClick={() => void handleCreateAppointment()} disabled={!canSubmit || submitting}>
-              {submitting ? "Creating..." : "Create Appointment"}
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+              <Textarea
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder="Explain your symptoms in detail..."
+                className="min-h-32.5 rounded-md"
+              />
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Appointment History</CardTitle>
-          <CardDescription>
-            {loading ? "Loading your history..." : "Your previous and upcoming appointments."}
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          {error && history.length === 0 ? (
-            <p className="text-sm text-red-600">{error}</p>
-          ) : history.length === 0 ? (
-            <p className="text-sm text-muted-foreground">No appointments found yet.</p>
-          ) : (
-            <div className="space-y-3">
-              {history.map((appointment) => (
-                <div key={appointment.id} className="rounded-2xl border p-4">
-                  <p className="font-medium">{appointment.illnessCategory}</p>
-                  <p className="text-sm text-muted-foreground">
-                    Date: {appointment.date} | Status: {appointment.status}
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    Doctor: {appointment.doctor || "Not assigned yet"}
-                  </p>
-                  <p className="text-sm text-muted-foreground">Description: {appointment.note}</p>
-                </div>
-              ))}
+              <div className="flex gap-2 pt-4">
+                <Button variant="outline" onClick={prevStep} className="rounded-md" >
+                  Back
+                </Button>
+
+                <Button
+                  className="flex-1 rounded-md"
+                  disabled={!canSubmit || submitting}
+                  onClick={handleSubmit}
+                >
+                  {submitting ? "Submitting..." : "Submit Appointment"}
+                </Button>
+              </div>
             </div>
           )}
         </CardContent>

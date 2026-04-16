@@ -10,12 +10,13 @@ import type {
 type AssignAppointmentPayload = {
      doctorId: string
      startTime: string
+     appointmentDate: string
      endTime: string
 }
 
 type CreateAppointmentPayload = {
      illnessCategoryId: string
-     appointmentDate: string
+     appointmentPreferredDate: string
      description: string
 }
 
@@ -49,7 +50,7 @@ export const appointmentService = {
      ): Promise<ApiResponse<AppointmentApi>> {
           const response = await api.post<AppointmentApi>(API_ENDPOINTS.APPOINTMENTS, {
                illness_category_uuid: payload.illnessCategoryId,
-               appointment_date: payload.appointmentDate,
+               preferred_date: payload.appointmentPreferredDate,
                description: payload.description,
           })
 
@@ -67,6 +68,7 @@ export const appointmentService = {
                `${API_ENDPOINTS.APPOINTMENTS}${appointmentId}/`,
                {
                     doctor_uuid: payload.doctorId,
+                    appointment_date: payload.appointmentDate,
                     start_time: payload.startTime,
                     end_time: payload.endTime,
                     status: "accepted",
@@ -92,4 +94,18 @@ export const appointmentService = {
                data: response.data,
           }
      },
+
+     async payingForAppointment(appointmentId: string, phone: string): Promise<ApiResponse<PaymentResponse>> {
+          const response = await api.post<PaymentResponse>(
+               `${API_ENDPOINTS.APPOINTMENTS}${appointmentId}/pay/`,
+               {
+                    phone: phone,
+               }
+          )
+
+          return {
+               status: response.status,
+               data: response.data,
+          }
+     }
 }

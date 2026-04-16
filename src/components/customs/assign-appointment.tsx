@@ -29,6 +29,7 @@ type Props = {
      onAssign?: (data: {
           appointmentId: string
           doctorId: string
+          appointmentDate: string
           startTime: string
           endTime: string
      }) => void | Promise<void>
@@ -44,27 +45,30 @@ export default function AssignAppointment({
      const [doctorId, setDoctorId] = useState(appointment.doctorId ?? "")
      const [startTime, setStartTime] = useState(appointment.startTime ?? "")
      const [endTime, setEndTime] = useState(appointment.endTime ?? "")
+     const [appointmentDate, setAppointmentDate] = useState(appointment.date ?? "")
      const [loading, setLoading] = useState(false)
 
      const isPending = appointment.status === "pending"
-     const isApproved = appointment.status === "approved"
+     const isAccepted = appointment.status === "accepted"
      const isPaymentComplete = appointment.paymentStatus === "completed"
      const statusTone = {
           pending: "secondary",
-          approved: "default",
+          accepted: "default",
           cancelled: "destructive",
+          completed: "secondary",
      } as const
      const statusBorder = {
           pending: "border-amber-300/80",
-          approved: "border-emerald-300/80",
+          accepted: "border-emerald-300/80",
           cancelled: "border-red-300/80",
+          completed: "border-slate-300/80",
      } as const
      const canAssign = Boolean(
-          doctorId && startTime && endTime && isPaymentComplete && !loading
+          doctorId && appointmentDate && startTime && endTime && isPaymentComplete && !loading
      )
 
      const handleAssign = async () => {
-          if (!doctorId || !startTime || !endTime) return
+          if (!doctorId || !appointmentDate || !startTime || !endTime) return
 
           setLoading(true)
 
@@ -72,6 +76,7 @@ export default function AssignAppointment({
                await onAssign?.({
                     appointmentId: appointment.id,
                     doctorId,
+                    appointmentDate,
                     startTime,
                     endTime,
                })
@@ -101,7 +106,7 @@ export default function AssignAppointment({
                     <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                          <div className="space-y-1">
                               <CardTitle className="text-lg font-semibold">
-                                   {appointment.patient}
+                                   {appointment.patient} <span className="text-sm text-muted-foreground">{appointment.email}</span>
                               </CardTitle>
                               <CardDescription className="max-w-2xl leading-6">
                                    {appointment.note}
@@ -115,10 +120,13 @@ export default function AssignAppointment({
                               {appointment.status}
                          </Badge>
                     </div>
+                    <div>
+                         <p>Patient Preffered Date: {appointment.preferredDate}</p>
+                    </div>
                </CardHeader>
 
-               <CardContent className="space-y-6 pt-6">
-                    <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+               <CardContent className="space-y-6 ">
+                    <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
                          <div className={cn("rounded-2xl border bg-muted/30 p-4", statusBorder[appointment.status])}>
                               <p className="text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
                                    Category
@@ -139,6 +147,15 @@ export default function AssignAppointment({
 
                          <div className={cn("rounded-2xl border bg-muted/30 p-4", statusBorder[appointment.status])}>
                               <p className="text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
+                                   Date
+                              </p>
+                              <p className="mt-2 text-sm font-medium text-foreground">
+                                   {appointment.date}
+                              </p>
+                         </div>
+
+                         <div className={cn("rounded-2xl border bg-muted/30 p-4", statusBorder[appointment.status])}>
+                              <p className="text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
                                    Start
                               </p>
                               <p className="mt-2 text-sm font-medium text-foreground">
@@ -154,6 +171,7 @@ export default function AssignAppointment({
                                    {appointment.endTime || "--:--"}
                               </p>
                          </div>
+
                     </div>
 
                     {isPending && (
@@ -169,11 +187,11 @@ export default function AssignAppointment({
 
                               {!isPaymentComplete && (
                                    <div className="mb-4 flex items-start gap-3 rounded-2xl border border-amber-200 bg-amber-50/80 p-3 text-amber-800">
-                                       <HugeiconsIcon
-                                            icon={AlertCircleIcon}
-                                            strokeWidth={1.8}
-                                            className="mt-0.5 size-4 shrink-0"
-                                       />
+                                        <HugeiconsIcon
+                                             icon={AlertCircleIcon}
+                                             strokeWidth={1.8}
+                                             className="mt-0.5 size-4 shrink-0"
+                                        />
                                         <p className="text-sm">
                                              This appointment is still awaiting payment. It can be
                                              assigned or cancelled from this admin flow only after
@@ -182,7 +200,7 @@ export default function AssignAppointment({
                                    </div>
                               )}
 
-                              <div className="grid gap-4 lg:grid-cols-[1.4fr_1fr_1fr]">
+                              <div className="grid gap-4 lg:grid-cols-[1.4fr_1fr_1fr_1fr]">
                                    <div className="w-full space-y-2">
                                         <label className="text-sm font-medium text-foreground">
                                              Assign Doctor
@@ -204,6 +222,19 @@ export default function AssignAppointment({
                                                   ))}
                                              </SelectContent>
                                         </Select>
+                                   </div>
+
+                                   <div className="space-y-2">
+                                        <label className="text-sm font-medium text-foreground">
+                                             Appointment Date
+                                        </label>
+                                        <Input
+                                             type="date"
+                                             value={appointmentDate}
+                                             onChange={(event) => setAppointmentDate(event.target.value)}
+                                             className="h-11 rounded-2xl border-border/70 bg-background"
+                                             disabled={!isPaymentComplete || loading}
+                                        />
                                    </div>
 
                                    <div className="space-y-2">
@@ -243,8 +274,8 @@ export default function AssignAppointment({
                                         {canAssign
                                              ? "Ready to confirm this appointment."
                                              : isPaymentComplete
-                                               ? "Choose a doctor, start time, and end time to continue."
-                                               : "Waiting for payment before scheduling can continue."}
+                                                  ? "Choose a doctor, start time, and end time to continue."
+                                                  : "Waiting for payment before scheduling can continue."}
                                    </p>
 
                                    <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
@@ -270,7 +301,7 @@ export default function AssignAppointment({
                          </div>
                     )}
 
-                    {isApproved && (
+                    {isAccepted && (
                          <div className="flex justify-end">
                               <Button
                                    variant="destructive"

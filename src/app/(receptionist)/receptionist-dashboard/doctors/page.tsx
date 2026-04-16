@@ -12,7 +12,7 @@ export default function ReceptionistDoctorsPage() {
   }, [fetchDoctors])
 
   return (
-    <div className="w-full max-w-6xl">
+    <div className="w-full max-w-8xl">
       <Card>
         <CardHeader>
           <CardTitle>Available Doctors</CardTitle>

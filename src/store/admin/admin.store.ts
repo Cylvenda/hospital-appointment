@@ -5,6 +5,7 @@ import type {
      AdminDoctorWritePayload,
      AdminOverview,
      AdminSettings,
+     AdminSettingsUpdatePayload,
      AdminUser,
      AdminUserWritePayload,
 } from "./admin.types"
@@ -20,6 +21,7 @@ type AdminStore = {
      fetchUsers: (params?: { role?: string; search?: string }) => Promise<void>
      fetchDoctors: (params?: { search?: string }) => Promise<void>
      fetchSettings: () => Promise<void>
+     updateSettings: (payload: AdminSettingsUpdatePayload) => Promise<AdminSettings>
      createUser: (payload: AdminUserWritePayload) => Promise<AdminUser>
      updateUser: (uuid: string, payload: Partial<AdminUserWritePayload>) => Promise<AdminUser>
      deleteUser: (uuid: string) => Promise<void>
@@ -84,6 +86,12 @@ export const useAdminStore = create<AdminStore>((set) => ({
                    error: error instanceof Error ? error.message : "Failed to load settings",
                })
           }
+     },
+
+     updateSettings: async (payload) => {
+          const response = await AdminService.updateSettings(payload)
+          set({ settings: response.data })
+          return response.data
      },
 
      createUser: async (payload) => {

@@ -1,7 +1,11 @@
 "use client"
 
+import * as React from "react"
+import Link from "next/link"
 import {
   Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
 } from "@/components/ui/collapsible"
 import {
   SidebarGroup,
@@ -9,8 +13,12 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarMenuSub,
+  SidebarMenuSubButton,
+  SidebarMenuSubItem,
 } from "@/components/ui/sidebar"
-import Link from "next/link"
+import { ChevronRight } from "@hugeicons/core-free-icons"
+import { HugeiconsIcon } from "@hugeicons/react"
 
 export function NavMain({
   items,
@@ -19,26 +27,87 @@ export function NavMain({
     title: string
     url: string
     icon?: React.ReactNode
+    isActive?: boolean
+    items?: {
+      title?: string
+      icon?: React.ReactNode
+      url?: string
+    }[]
   }[]
 }) {
   return (
     <SidebarGroup>
-      <SidebarGroupLabel>Menu</SidebarGroupLabel>
+      <SidebarGroupLabel>Platform</SidebarGroupLabel>
+
       <SidebarMenu>
         {items.map((item) => (
-          <div
+          <Collapsible
             key={item.title}
+            asChild
+            defaultOpen={item.isActive}
             className="group/collapsible"
           >
-            <SidebarMenuItem className="p-1">
-              <SidebarMenuButton tooltip={item.title}>
-                {item.icon}
-                <Link href={item.url}>
-                  <span>{item.title}</span>
-                </Link>
-              </SidebarMenuButton>
+            <SidebarMenuItem>
+
+              {/* Main Item */}
+              <CollapsibleTrigger asChild>
+
+                {
+                  !item.items ? (
+
+                    <SidebarMenuButton tooltip={item.title}>
+                      <Link className="flex flex-row gap-2 items-center" href={`${item.url}`}>
+                        {item.icon}
+                        <span>{item.title}</span>
+                      </Link>
+
+                      {/* Show arrow only if submenu exists */}
+                      {item.items && (
+                        <HugeiconsIcon
+                          icon={ChevronRight}
+                          className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90"
+                        />
+                      )}
+                    </SidebarMenuButton>
+                  ) :
+
+                    <SidebarMenuButton tooltip={item.title}>
+                      {item.icon}
+                      <span>{item.title}</span>
+
+                      {/* Show arrow only if submenu exists */}
+                      {item.items && (
+                        <HugeiconsIcon
+                          icon={ChevronRight}
+                          className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90"
+                        />
+                      )}
+                    </SidebarMenuButton>
+                }
+
+              </CollapsibleTrigger>
+
+              {/* Sub Menu */}
+              {item.items && (
+                <CollapsibleContent>
+                  <SidebarMenuSub>
+                    {item.items.map((subItem) => (
+                      <SidebarMenuSubItem key={subItem.title}>
+                        <SidebarMenuSubButton asChild>
+                          <div>
+                            <Link className="flex flex-row gap-2 items-center" href={`${subItem.url}`}>
+                              {subItem.icon}
+                              <span>{subItem.title}</span>
+                            </Link>
+                          </div>
+                        </SidebarMenuSubButton>
+                      </SidebarMenuSubItem>
+                    ))}
+                  </SidebarMenuSub>
+                </CollapsibleContent>
+              )}
             </SidebarMenuItem>
-          </div>
+          </Collapsible>
         ))}
       </SidebarMenu>
     </SidebarGroup>

@@ -91,6 +91,8 @@ export const useAuthUserStore = create<AuthState>((set, get) => ({
                     loading: false,
                     error: message,
                })
+
+               
           }
      },
 

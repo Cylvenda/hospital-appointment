@@ -41,8 +41,13 @@ export type AdminSettings = {
      support_email: string
      clinic_hours: string
      default_time_slot: string
+     appointment_fee: string
      secure_sessions: boolean
      patient_confirmation_emails: boolean
+}
+
+export type AdminSettingsUpdatePayload = {
+     appointment_fee: string
 }
 
 export type AdminUserWritePayload = {
