@@ -14,26 +14,27 @@ import { ProfileCompletionDialog } from "@/components/profile-completion-dialog"
 export default function Layout({ children }: { children: React.ReactNode }) {
     return (
         <SidebarProvider>
-            <RoleAccessGuard allowedRoles={["patient"]} />
-            <ProfileCompletionDialog />
-            <AppPatientSidebar />
-            <SidebarInset>
-                <header className="flex h-18 shrink-0 sticky top-0 z-50 bg-sidebar items-center justify-between gap-2 border-b border-b-sidebar-border  px-4 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
-                    <div className="flex min-w-0 items-center gap-2">
-                        <SidebarTrigger className="-ml-1" />
-                        <Separator
-                            orientation="vertical"
-                            className="mr-2 data-[orientation=vertical]:h-6"
-                        />
-                        <CurrentPageBreadcrumb />
-                    </div>
-                    <div className="flex items-center gap-2">
-                        <ThemeToggle />
-                        <NotificationDropdown />
-                    </div>
-                </header>
-                <div className="bg-sidebar min-h-screen flex justify-center p-4 md:p-6">{children}</div>
-            </SidebarInset>
+            <RoleAccessGuard allowedRoles={["patient"]}>
+                <ProfileCompletionDialog />
+                <AppPatientSidebar />
+                <SidebarInset>
+                    <header className="flex h-18 shrink-0 sticky top-0 z-50 bg-sidebar items-center justify-between gap-2 border-b border-b-sidebar-border  px-4 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
+                        <div className="flex min-w-0 items-center gap-2">
+                            <SidebarTrigger className="-ml-1" />
+                            <Separator
+                                orientation="vertical"
+                                className="mr-2 data-[orientation=vertical]:h-6"
+                            />
+                            <CurrentPageBreadcrumb />
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <ThemeToggle />
+                            <NotificationDropdown />
+                        </div>
+                    </header>
+                    <div className="bg-sidebar min-h-screen flex justify-center p-4 md:p-6">{children}</div>
+                </SidebarInset>
+            </RoleAccessGuard>
         </SidebarProvider>
     )
 }
