@@ -97,7 +97,7 @@ export default function PasswordResetConfirmForm({ uid, token }: Props) {
                          <Button
                               type="submit"
                               disabled={loading}
-                              className="w-full bg-chart-3 p-5 hover:bg-chart-2"
+                              className="w-full bg-chart-3 p-5 hover:bg-chart-2 rounded-md"
                          >
                               {loading ? <Spinner /> : "Update Password"}
                          </Button>

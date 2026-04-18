@@ -5,14 +5,14 @@ import { NavMain } from "@/components/nav-main"
 import { NavUser } from "@/components/nav-user"
 import { TeamSwitcher } from "@/components/team-switcher"
 import {
-  Sidebar,
-  SidebarContent,
-  SidebarFooter,
-  SidebarHeader,
-  SidebarRail,
+    Sidebar,
+    SidebarContent,
+    SidebarFooter,
+    SidebarHeader,
+    SidebarRail,
 } from "@/components/ui/sidebar"
 import { HugeiconsIcon } from "@hugeicons/react"
-import { LayoutBottomIcon, RoboticIcon, Settings05Icon, DashboardCircleIcon, Doctor01Icon, People, Person, UserGroupIcon, UserAccountIcon, AllahFreeIcons, CallDoneIcon, CheckCheck, Loading } from "@hugeicons/core-free-icons"
+import { LayoutBottomIcon, RoboticIcon, Settings05Icon, DashboardCircleIcon, Doctor01Icon, People, Person, UserGroupIcon, UserAccountIcon, AllahFreeIcons, CallDoneIcon, CheckCheck, Loading, Bell } from "@hugeicons/core-free-icons"
 import { Separator } from "./ui/separator"
 import { useAuthUserStore } from "@/store/auth/userAuth.store"
 
@@ -26,7 +26,7 @@ const navMain = [
   },
   {
     title: "Appointments",
-    url: "/appointments",
+    url: "/appointments/all",
     icon: (
       <HugeiconsIcon color="oklch(0.546 0.245 262.881)" icon={RoboticIcon} strokeWidth={2} />
     ),
@@ -34,39 +34,40 @@ const navMain = [
 
       {
         title: "Pending",
-        url: "/dashboard/appointments/pending",
+        url: "/appointments/pending",
         icon: (
           <HugeiconsIcon color="oklch(0.546 0.245 262.881)" icon={Loading} size={"17"} />
         ),
       },
       {
         title: "Accepted",
-        url: "/dashboard/appointments/accepted",
+        url: "/appointments/accepted",
         icon: (
           <HugeiconsIcon color="oklch(0.546 0.245 262.881)" icon={CheckCheck} size={"17"} />
         ),
       },
       {
         title: "Completed",
-        url: "/dashboard/appointments/completed",
+        url: "/appointments/completed",
         icon: (
           <HugeiconsIcon color="oklch(0.546 0.245 262.881)" icon={CallDoneIcon} size={"17"} />
         ),
       },
       {
         title: "Cancelled",
-        url: "/dashboard/appointments/cancelled",
+        url: "/appointments/cancelled",
         icon: (
           <HugeiconsIcon color="oklch(0.546 0.245 262.881)" icon={CallDoneIcon} size={"17"} />
         ),
       },
       {
         title: "All",
-        url: "/dashboard/appointments/all",
+        url: "/appointments/all",
         icon: (
           <HugeiconsIcon color="oklch(0.546 0.245 262.881)" icon={AllahFreeIcons} size={"17"} />
         ),
       },
+      
     ],
   },
   {
@@ -102,6 +103,13 @@ const navMain = [
     url: "/profile",
     icon: (
       <HugeiconsIcon color="oklch(0.546 0.245 262.881)" icon={UserAccountIcon} strokeWidth={2} />
+    )
+  },
+  {
+    title: "Notifications",
+    url: "/notifications",
+    icon: (
+      <HugeiconsIcon color="oklch(0.546 0.245 262.881)" icon={Bell} strokeWidth={2} />
     )
   },
   {

@@ -27,9 +27,12 @@ export const API_ENDPOINTS = {
      APPOINTMENT_PAYING: "appointments/{uuid}/pay/",
      ILLNESS_CATEGORIES: "illness_category/",
 
-     // Admin
-     ADMIN_OVERVIEW: "admin/overview/",
-     ADMIN_USERS: "admin/users/",
-     ADMIN_DOCTORS: "admin/doctors/",
-     ADMIN_SETTINGS: "admin/settings/",
+      // Admin
+      ADMIN_OVERVIEW: "admin/overview/",
+      ADMIN_USERS: "admin/users/",
+      ADMIN_DOCTORS: "admin/doctors/",
+      ADMIN_SETTINGS: "admin/settings/",
+
+      // Notifications
+      NOTIFICATIONS: "notifications/",
 }

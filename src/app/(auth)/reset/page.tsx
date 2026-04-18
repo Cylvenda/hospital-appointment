@@ -105,7 +105,7 @@ const ForgetPassword = () => {
                                    <Button
                                         type="submit"
                                         disabled={loading}
-                                        className="w-full bg-chart-3 p-5 transition hover:opacity-90"
+                                             className="w-full bg-chart-3 p-5  transition hover:opacity-90 rounded-md"
                                    >
                                         {loading ? <Spinner /> : "Send Reset Link"}
                                    </Button>

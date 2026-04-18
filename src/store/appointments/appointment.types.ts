@@ -1,4 +1,10 @@
-export type AppointmentStatus = "pending" | "accepted" | "cancelled" | "completed"
+export type AppointmentStatus =
+     | "pending"
+     | "accepted"
+     | "declined"
+     | "cancelled"
+     | "completed"
+     | "expired"
 
 export type Appointment = {
      id: string

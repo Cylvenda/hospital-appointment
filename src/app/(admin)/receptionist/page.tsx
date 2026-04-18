@@ -61,7 +61,7 @@ export default function ReceptionistPage() {
         phone: user.phone,
         desk: `Front Desk ${String.fromCharCode(65 + index)}`,
         shift: "Active shift",
-        handled: appointments.filter((appointment) => appointment.status === "approved").length,
+        handled: appointments.filter((appointment) => appointment.status === "accepted").length,
       })),
     [appointments, users]
   )

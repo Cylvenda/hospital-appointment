@@ -6,6 +6,7 @@ import { ToastContainer } from "react-toastify";
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { ThemeProvider } from "@/components/theme-provider";
 import { AuthBootstrap } from "@/components/auth-bootstrap";
+import { NotificationBootstrap } from "@/components/notification-bootstrap";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -53,10 +54,11 @@ export default function RootLayout({
         <div className="flex min-h-screen flex-col">
           <main className="flex-1">
             <ThemeProvider>
-              <TooltipProvider>
-                <AuthBootstrap />
-                {children}
-              </TooltipProvider>
+               <TooltipProvider>
+                 <AuthBootstrap />
+                 <NotificationBootstrap />
+                 {children}
+               </TooltipProvider>
             </ThemeProvider>
           </main>
         </div>

@@ -7,38 +7,48 @@ import { getDashboardPath } from "@/lib/role-dashboard"
 
 type Props = {
      allowedRoles: string[]
+     children: React.ReactNode
 }
 
-export function RoleAccessGuard({ allowedRoles }: Props) {
+export const RoleAccessGuard: React.FC<Props> = ({ allowedRoles, children }) => {
      const router = useRouter()
-     const { user, checkAuth } = useAuthUserStore()
-     const [checking, setChecking] = useState(true)
+     const checkAuth = useAuthUserStore((state) => state.checkAuth)
+     const [isAuthorized, setIsAuthorized] = useState(false)
 
      useEffect(() => {
           let mounted = true
 
           void (async () => {
-               await checkAuth()
-               if (mounted) setChecking(false)
+               const authenticated = await checkAuth()
+               const currentUser = useAuthUserStore.getState().user
+
+               if (!mounted) {
+                    return
+               }
+
+               if (!authenticated || !currentUser) {
+                    setIsAuthorized(false)
+                    router.replace("/login")
+                    return
+               }
+
+               if (!allowedRoles.includes(currentUser.role)) {
+                    setIsAuthorized(false)
+                    router.replace(getDashboardPath(currentUser.role))
+                    return
+               }
+
+               setIsAuthorized(true)
           })()
 
           return () => {
                mounted = false
           }
-     }, [checkAuth])
+     }, [allowedRoles, router, checkAuth])
 
-     useEffect(() => {
-          if (checking) return
+     if (!isAuthorized) {
+          return null
+     }
 
-          if (!user) {
-               router.replace("/login")
-               return
-          }
-
-          if (!allowedRoles.includes(user.role)) {
-               router.replace(getDashboardPath(user.role))
-          }
-     }, [allowedRoles, checking, router, user])
-
-     return null
+     return <>{children}</>
 }

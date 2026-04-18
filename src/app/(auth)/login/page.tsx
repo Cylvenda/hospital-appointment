@@ -10,7 +10,7 @@ import Link from "next/link"
 import { useAuthUserStore } from "@/store/auth/userAuth.store"
 import { useState } from "react"
 import { authUserService } from "@/api/services/auth.service"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { toast } from "react-toastify"
 import { Spinner } from "@/components/ui/spinner"
 import { LoginFormSchema } from "@/schema/user-form-schema"
@@ -22,8 +22,10 @@ type LoginFormValues = z.infer<typeof LoginFormSchema>
 export default function LoginPage() {
 
      const router = useRouter()
+     const searchParams = useSearchParams()
      const [loading, setLoading] = useState(false)
      const { fetchUser } = useAuthUserStore()
+     const activationSent = searchParams.get("activation") === "sent"
 
      const form = useForm<LoginFormValues>({
           resolver: zodResolver(LoginFormSchema),
@@ -75,6 +77,12 @@ export default function LoginPage() {
                          onSubmit={form.handleSubmit(onSubmit)}
                          className="space-y-5"
                     >
+                         {activationSent && (
+                              <div className="rounded-md border border-primary/20 bg-primary/10 px-4 py-3 text-sm text-foreground">
+                                   Registration successful. Check your email to activate your account before signing in.
+                              </div>
+                         )}
+
                          {/* EMAIL */}
                          <FieldInput
                               control={form.control}
@@ -97,7 +105,7 @@ export default function LoginPage() {
                          />
 
                          {/* SUBMIT */}
-                         <Button type="submit" disabled={loading} className="w-full p-5 bg-chart-3 hover:bg-chart-2">
+                         <Button type="submit" disabled={loading} className="w-full p-5 bg-chart-3 hover:bg-chart-2 rounded-md">
                               {loading ? <Spinner /> : "Sign In"}
                          </Button>
 
@@ -106,7 +114,7 @@ export default function LoginPage() {
                               Don’t have an account?{" "}
                               <Link
                                    href="/register"
-                                   className="text-blue-500 hover:underline"
+                                   className="text-primary hover:underline"
                               >
                                    Sign up
                               </Link>

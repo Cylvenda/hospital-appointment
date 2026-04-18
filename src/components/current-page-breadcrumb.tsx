@@ -28,6 +28,8 @@ export function CurrentPageBreadcrumb() {
           ? "/patient-dashboard"
           : pathname.startsWith("/receptionist-dashboard")
                ? "/receptionist-dashboard"
+               : pathname.startsWith("/doctor-dashboard")
+                    ? "/doctor-dashboard"
                : "/dashboard"
 
      return (

@@ -35,7 +35,7 @@ const Register = () => {
 
                if (res.status === 201) {
                     toast.success("Account created. Check your email to activate your account.")
-                    router.push("/login")
+                    router.push("/login?activation=sent")
                }
 
           } catch (error: unknown) {
@@ -62,7 +62,7 @@ const Register = () => {
                <div className="w-full ">
                     <FormInput
                          title="Create Account"
-                         description="Join Meeting Hub and start collaborating"
+                         description="Patient appointments, scheduling, and healthcare services."
                          className="border-0! shadow-none! ring-0! bg-transparent"
                     >
                          <form
@@ -99,7 +99,7 @@ const Register = () => {
                               <div className="flex justify-end">
                                    <Link
                                         href="/login"
-                                        className="text-sm text-blue-500 hover:underline"
+                                        className="text-sm text-primary hover:underline"
                                    >
                                         Already have an account?
                                    </Link>
@@ -109,7 +109,7 @@ const Register = () => {
                               <Button
                                    type="submit"
                                    disabled={loading}
-                                   className="w-full bg-chart-3 hover:opacity-90 transition p-5"
+                                   className="w-full bg-chart-3 hover:opacity-90 transition rounded-md p-5"
                               >
                                    {loading ? <Spinner /> : "Create Account"}
                               </Button>

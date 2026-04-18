@@ -5,6 +5,7 @@ import type {
      AppointmentApi,
      DoctorApi,
      IllnessCategoryApi,
+     PaymentResponse,
 } from "@/store/appointments/appointment.types"
 
 type AssignAppointmentPayload = {
@@ -95,17 +96,32 @@ export const appointmentService = {
           }
      },
 
-     async payingForAppointment(appointmentId: string, phone: string): Promise<ApiResponse<PaymentResponse>> {
-          const response = await api.post<PaymentResponse>(
-               `${API_ENDPOINTS.APPOINTMENTS}${appointmentId}/pay/`,
-               {
-                    phone: phone,
-               }
-          )
+      async updateAppointment(
+           appointmentId: string,
+           payload: { status?: string; [key: string]: unknown }
+      ): Promise<ApiResponse<AppointmentApi>> {
+           const response = await api.patch<AppointmentApi>(
+                `${API_ENDPOINTS.APPOINTMENTS}${appointmentId}/`,
+                payload
+           )
 
-          return {
-               status: response.status,
-               data: response.data,
-          }
-     }
+           return {
+                status: response.status,
+                data: response.data,
+           }
+      },
+
+      async payingForAppointment(appointmentId: string, phone: string): Promise<ApiResponse<PaymentResponse>> {
+           const response = await api.post<PaymentResponse>(
+                `${API_ENDPOINTS.APPOINTMENTS}${appointmentId}/pay/`,
+                {
+                     phone: phone,
+                }
+           )
+
+           return {
+                status: response.status,
+                data: response.data,
+           }
+      }
 }
