@@ -12,7 +12,7 @@ import {
     SidebarRail,
 } from "@/components/ui/sidebar"
 import { HugeiconsIcon } from "@hugeicons/react"
-import { LayoutBottomIcon, RoboticIcon, Settings05Icon, DashboardCircleIcon, Doctor01Icon, People, Person, UserGroupIcon, UserAccountIcon, AllahFreeIcons, CallDoneIcon, CheckCheck, Loading, Bell } from "@hugeicons/core-free-icons"
+import { LayoutBottomIcon, RoboticIcon, Settings05Icon, DashboardCircleIcon, Doctor01Icon, People, Person, UserGroupIcon, UserAccountIcon, AllahFreeIcons, CallDoneIcon, CheckCheck, Loading, Bell, StethoscopeIcon } from "@hugeicons/core-free-icons"
 import { Separator } from "./ui/separator"
 import { useAuthUserStore } from "@/store/auth/userAuth.store"
 
@@ -75,6 +75,13 @@ const navMain = [
     url: "/doctors",
     icon: (
       <HugeiconsIcon color="oklch(0.546 0.245 262.881)" icon={Doctor01Icon} strokeWidth={2} />
+    )
+  },
+  {
+    title: "Illness Categories",
+    url: "/illness-categories",
+    icon: (
+      <HugeiconsIcon color="oklch(0.546 0.245 262.881)" icon={StethoscopeIcon} strokeWidth={2} />
     )
   },
   {

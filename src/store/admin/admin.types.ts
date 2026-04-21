@@ -36,6 +36,12 @@ export type AdminDoctor = {
      categories: string[]
 }
 
+export type AdminIllnessCategory = {
+     uuid: string
+     name: string
+     description: string | null
+}
+
 export type AdminSettings = {
      clinic_name: string
      support_email: string
@@ -69,4 +75,9 @@ export type AdminDoctorWritePayload = {
      license_number: string
      is_available: boolean
      category_uuids?: string[]
+}
+
+export type AdminIllnessCategoryWritePayload = {
+     name: string
+     description?: string
 }

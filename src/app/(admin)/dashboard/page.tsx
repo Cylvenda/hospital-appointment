@@ -82,6 +82,7 @@ export default function DashboardPage() {
   const upcomingAppointments = useMemo(
     () =>
       appointments.slice(0, 4).map((appointment) => ({
+        id: appointment.id,
         time: appointment.startTime || "--:--",
         patient: appointment.patient,
         doctor: appointment.doctor || "Unassigned",
@@ -119,6 +120,7 @@ export default function DashboardPage() {
         .filter((appointment) => appointment.status === "pending")
         .slice(0, 4)
         .map((appointment, index) => ({
+          id: appointment.id,
           name: appointment.patient,
           reason: appointment.illnessCategory,
           wait: `${(index + 1) * 7} min`,
@@ -130,13 +132,19 @@ export default function DashboardPage() {
   const recentActivity = useMemo(
     () =>
       appointments.slice(0, 4).map((appointment) => {
+        let message = `${appointment.patient} is waiting for confirmation.`
+
         if (appointment.status === "accepted") {
-          return `${appointment.patient} was accepted for ${appointment.illnessCategory}.`
+          message = `${appointment.patient} was accepted for ${appointment.illnessCategory}.`
         }
         if (appointment.status === "cancelled") {
-          return `${appointment.patient} appointment was cancelled.`
+          message = `${appointment.patient} appointment was cancelled.`
         }
-        return `${appointment.patient} is waiting for confirmation.`
+
+        return {
+          id: appointment.id,
+          message,
+        }
       }),
     [appointments]
   )
@@ -257,7 +265,7 @@ export default function DashboardPage() {
             <div className="space-y-3">
               {upcomingAppointments.map((appointment) => (
                 <div
-                  key={`${appointment.time}-${appointment.patient}`}
+                  key={appointment.id}
                   className="flex flex-col gap-4 rounded-3xl border p-4 md:flex-row md:items-center md:justify-between"
                 >
                   <div className="flex items-start gap-4">
@@ -344,7 +352,7 @@ export default function DashboardPage() {
                 <tbody>
                   {waitingPatients.map((patient) => (
                     <tr
-                      key={patient.name}
+                      key={patient.id}
                       className="border-b last:border-b-0"
                     >
                       <td className="px-2 py-4 font-medium">{patient.name}</td>
@@ -382,7 +390,7 @@ export default function DashboardPage() {
           </CardHeader>
           <CardContent className="space-y-4 py-4">
             {recentActivity.map((item, index) => (
-              <div key={item} className="flex gap-3">
+              <div key={item.id} className="flex gap-3">
                 <div className="flex flex-col items-center">
                   <span className="mt-1 size-2.5 rounded-full bg-primary" />
                   {index !== recentActivity.length - 1 && (
@@ -390,7 +398,7 @@ export default function DashboardPage() {
                   )}
                 </div>
                 <div className="space-y-1 pb-4">
-                  <p className="text-sm font-medium">{item}</p>
+                  <p className="text-sm font-medium">{item.message}</p>
                   <p className="text-xs text-muted-foreground">
                     {index + 1}0 minutes ago
                   </p>

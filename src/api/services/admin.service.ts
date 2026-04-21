@@ -3,6 +3,8 @@ import { API_ENDPOINTS } from "../endpoints"
 import type { ApiResponse } from "../types"
 import type {
      AdminDoctor,
+     AdminIllnessCategory,
+     AdminIllnessCategoryWritePayload,
      AdminDoctorWritePayload,
      AdminOverview,
      AdminSettings,
@@ -85,6 +87,46 @@ export const AdminService = {
           return {
                status: response.status,
                data: response.data,
+          }
+     },
+
+     async getIllnessCategories(): Promise<ApiResponse<AdminIllnessCategory[]>> {
+          const response = await api.get<AdminIllnessCategory[]>(API_ENDPOINTS.ILLNESS_CATEGORIES)
+          return {
+               status: response.status,
+               data: response.data,
+          }
+     },
+
+     async createIllnessCategory(
+          payload: AdminIllnessCategoryWritePayload
+     ): Promise<ApiResponse<AdminIllnessCategory>> {
+          const response = await api.post<AdminIllnessCategory>(API_ENDPOINTS.ILLNESS_CATEGORIES, payload)
+          return {
+               status: response.status,
+               data: response.data,
+          }
+     },
+
+     async updateIllnessCategory(
+          uuid: string,
+          payload: AdminIllnessCategoryWritePayload
+     ): Promise<ApiResponse<AdminIllnessCategory>> {
+          const response = await api.patch<AdminIllnessCategory>(
+               `${API_ENDPOINTS.ILLNESS_CATEGORIES}${uuid}/`,
+               payload
+          )
+          return {
+               status: response.status,
+               data: response.data,
+          }
+     },
+
+     async deleteIllnessCategory(uuid: string): Promise<ApiResponse<null>> {
+          await api.delete(`${API_ENDPOINTS.ILLNESS_CATEGORIES}${uuid}/`)
+          return {
+               status: 204,
+               data: null,
           }
      },
 }
