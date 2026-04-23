@@ -92,7 +92,7 @@ export const FieldInput = <T extends FieldValues>({
                               required={required}
                               autoComplete={name}
                               aria-invalid={fieldState.invalid}
-                              className="focus-visible:ring-2 focus-visible:ring-blue-500 p-5 rounded-md"
+                              className="focus-visible:ring-2 focus-visible:ring-blue-500 p-5 rounded-md dark:border-white border-2! "
                          />
 
                          {fieldState.invalid && (
@@ -143,10 +143,10 @@ export const PasswordInput = <T extends FieldValues>({ label, name, placeholder,
                                    type={type}
                                    placeholder={placeholder}
                                    aria-invalid={fieldState.invalid}
-                                   className="focus-visible:ring-2 focus-visible:ring-blue-500 rounded-md focus-visible:border-blue-500 p-5"
+                                   className="focus-visible:ring-2 focus-visible:ring-blue-500 rounded-md focus-visible:border-blue-500 p-5 dark:border-white border-2"
                               />
 
-                              <span className='border border-gray-300 dark:border-gray-700 cursor-pointer p-2 rounded-2xl '>
+                              <span className=' border-gray-300 cursor-pointer p-2 rounded-md dark:border-white border-2'>
                                    {
                                         show ?
                                              <HugeiconsIcon icon={EyeOff} strokeWidth={2} onClick={() => setShow(false)} />

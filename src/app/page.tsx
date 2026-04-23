@@ -93,7 +93,7 @@ export default function Page() {
   return (
     <div className="min-h-screen bg-[radial-gradient(circle_at_top,color-mix(in_oklab,var(--primary)_18%,transparent),transparent_28%),linear-gradient(180deg,var(--background)_0%,var(--muted)_45%,var(--background)_100%)] text-foreground">
       <header className="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur-xl">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
+        <div className="mx-auto flex max-w-8xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
           <Link href="/" className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-primary text-sm font-semibold text-primary-foreground shadow-lg shadow-primary/20">
               PA
@@ -159,7 +159,7 @@ export default function Page() {
                 {patientBenefits.map((item) => (
                   <div
                     key={item.title}
-                    className="rounded-3xl border border-border bg-card/85 p-5 shadow-[0_18px_45px_-24px_rgba(15,23,42,0.16)] backdrop-blur"
+                    className="rounded-tl-3xl border border-border bg-card/85 p-5 shadow-[0_18px_45px_-24px_rgba(15,23,42,0.16)] backdrop-blur"
                   >
                     <p className="text-base font-semibold text-card-foreground">{item.title}</p>
                     <p className="mt-2 text-sm leading-6 text-muted-foreground">{item.description}</p>

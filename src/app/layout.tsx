@@ -20,6 +20,9 @@ export const metadata: Metadata = {
     default: "Patient Appointment Management System",
     template: "%s | PAMS",
   },
+  icons: {
+    icon: "/meet.webp",
+  },
   description:
     "A secure and efficient system for managing patient appointments, doctors, and hospital workflows.",
 };
