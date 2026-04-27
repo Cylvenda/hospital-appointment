@@ -141,7 +141,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarHeader>
         <TeamSwitcher
           teams={{
-            name: "Meeting Hub",
+            name: "Patient Appointment System",
             logo: <HugeiconsIcon icon={LayoutBottomIcon} strokeWidth={2} />,
             role: roleLabel,
           }}
