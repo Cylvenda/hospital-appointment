@@ -46,6 +46,38 @@ export const appointmentService = {
           }
      },
 
+     async createIllnessCategory(
+          payload: { name: string; description: string }
+     ): Promise<ApiResponse<IllnessCategoryApi>> {
+          const response = await api.post<IllnessCategoryApi>(API_ENDPOINTS.ILLNESS_CATEGORIES, payload)
+          return {
+               status: response.status,
+               data: response.data,
+          }
+     },
+
+     async updateIllnessCategory(
+          uuid: string,
+          payload: { name: string; description: string }
+     ): Promise<ApiResponse<IllnessCategoryApi>> {
+          const response = await api.patch<IllnessCategoryApi>(
+               `${API_ENDPOINTS.ILLNESS_CATEGORIES}${uuid}/`,
+               payload
+          )
+          return {
+               status: response.status,
+               data: response.data,
+          }
+     },
+
+     async deleteIllnessCategory(uuid: string): Promise<ApiResponse<null>> {
+          await api.delete(`${API_ENDPOINTS.ILLNESS_CATEGORIES}${uuid}/`)
+          return {
+               status: 204,
+               data: null,
+          }
+     },
+
      async createAppointment(
           payload: CreateAppointmentPayload
      ): Promise<ApiResponse<AppointmentApi>> {
@@ -96,32 +128,32 @@ export const appointmentService = {
           }
      },
 
-      async updateAppointment(
-           appointmentId: string,
-           payload: { status?: string; [key: string]: unknown }
-      ): Promise<ApiResponse<AppointmentApi>> {
-           const response = await api.patch<AppointmentApi>(
-                `${API_ENDPOINTS.APPOINTMENTS}${appointmentId}/`,
-                payload
-           )
+     async updateAppointment(
+          appointmentId: string,
+          payload: { status?: string;[key: string]: unknown }
+     ): Promise<ApiResponse<AppointmentApi>> {
+          const response = await api.patch<AppointmentApi>(
+               `${API_ENDPOINTS.APPOINTMENTS}${appointmentId}/`,
+               payload
+          )
 
-           return {
-                status: response.status,
-                data: response.data,
-           }
-      },
+          return {
+               status: response.status,
+               data: response.data,
+          }
+     },
 
-      async payingForAppointment(appointmentId: string, phone: string): Promise<ApiResponse<PaymentResponse>> {
-           const response = await api.post<PaymentResponse>(
-                `${API_ENDPOINTS.APPOINTMENTS}${appointmentId}/pay/`,
-                {
-                     phone: phone,
-                }
-           )
+     async payingForAppointment(appointmentId: string, phone: string): Promise<ApiResponse<PaymentResponse>> {
+          const response = await api.post<PaymentResponse>(
+               `${API_ENDPOINTS.APPOINTMENTS}${appointmentId}/pay/`,
+               {
+                    phone: phone,
+               }
+          )
 
-           return {
-                status: response.status,
-                data: response.data,
-           }
-      }
+          return {
+               status: response.status,
+               data: response.data,
+          }
+     }
 }

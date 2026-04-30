@@ -21,7 +21,7 @@ export const metadata: Metadata = {
     template: "%s | PAMS",
   },
   icons: {
-    icon: "/meet.webp",
+    icon: "/meeet.webp",
   },
   description:
     "A secure and efficient system for managing patient appointments, doctors, and hospital workflows.",

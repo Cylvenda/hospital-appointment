@@ -21,56 +21,56 @@ const navMain = [
           title: "Dashboard",
           url: "/patient-dashboard",
           icon: (
-               <HugeiconsIcon color="oklch(0.546 0.245 262.881)" icon={DashboardCircleIcon} strokeWidth={2} />
+               <HugeiconsIcon color="var(--primary)" icon={DashboardCircleIcon} strokeWidth={2} />
           )
      },
      {
           title: "Appointments",
           url: "#",
           icon: (
-               <HugeiconsIcon color="oklch(0.546 0.245 262.881)" icon={RoboticIcon} strokeWidth={2} />
+               <HugeiconsIcon color="var(--primary)" icon={RoboticIcon} strokeWidth={2} />
           ),
           items: [
                {
                     title: "Create New",
                     url: "/patient-dashboard/appointments",
                     icon: (
-                         <HugeiconsIcon color="oklch(0.546 0.245 262.881)" icon={Loading} size={"17"} />
+                         <HugeiconsIcon color="var(--primary)" icon={Loading} size={"17"} />
                     ),
                },
                {
                     title: "Pending",
                     url: "/patient-dashboard/appointments/pending",
                     icon: (
-                         <HugeiconsIcon color="oklch(0.546 0.245 262.881)" icon={Loading} size={"17"} />
+                         <HugeiconsIcon color="var(--primary)" icon={Loading} size={"17"} />
                     ),
                },
                {
                     title: "Accepted",
                     url: "/patient-dashboard/appointments/accepted",
                     icon: (
-                         <HugeiconsIcon color="oklch(0.546 0.245 262.881)" icon={CheckCheck} size={"17"} />
+                         <HugeiconsIcon color="var(--primary)" icon={CheckCheck} size={"17"} />
                     ),
                },
                {
                     title: "Completed",
                     url: "/patient-dashboard/appointments/completed",
                     icon: (
-                         <HugeiconsIcon color="oklch(0.546 0.245 262.881)" icon={CallDoneIcon} size={"17"} />
+                         <HugeiconsIcon color="var(--primary)" icon={CallDoneIcon} size={"17"} />
                     ),
                },
                {
                     title: "Cancelled",
                     url: "/patient-dashboard/appointments/cancelled",
                     icon: (
-                         <HugeiconsIcon color="oklch(0.546 0.245 262.881)" icon={CallDoneIcon} size={"17"} />
+                         <HugeiconsIcon color="var(--primary)" icon={CallDoneIcon} size={"17"} />
                     ),
                },
                {
                     title: "All",
                     url: "/patient-dashboard/appointments/all",
                     icon: (
-                         <HugeiconsIcon color="oklch(0.546 0.245 262.881)" icon={AllahFreeIcons} size={"17"} />
+                         <HugeiconsIcon color="var(--primary)" icon={AllahFreeIcons} size={"17"} />
                     ),
                },
           ],
@@ -79,21 +79,21 @@ const navMain = [
           title: "Profile",
           url: "/patient-dashboard/profile",
           icon: (
-               <HugeiconsIcon color="oklch(0.546 0.245 262.881)" icon={UserAccountIcon} strokeWidth={2} />
+               <HugeiconsIcon color="var(--primary)" icon={UserAccountIcon} strokeWidth={2} />
           )
      },
-          {
+     {
           title: "Notifications",
-               url: "/patient-dashboard/notifications",
+          url: "/patient-dashboard/notifications",
           icon: (
-               <HugeiconsIcon color="oklch(0.546 0.245 262.881)" icon={Bell} strokeWidth={2} />
+               <HugeiconsIcon color="var(--primary)" icon={Bell} strokeWidth={2} />
           )
      },
      {
           title: "Settings",
           url: "/patient-dashboard/settings",
           icon: (
-               <HugeiconsIcon color="oklch(0.546 0.245 262.881)" icon={Settings05Icon} strokeWidth={2} />
+               <HugeiconsIcon color="var(--primary)" icon={Settings05Icon} strokeWidth={2} />
           )
      }
 ]

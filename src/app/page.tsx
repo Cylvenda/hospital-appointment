@@ -128,11 +128,7 @@ export default function Page() {
         <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
           <div className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
             <div>
-              <div className="inline-flex rounded-full border border-border bg-card/80 px-4 py-2 text-sm text-primary shadow-sm">
-                A simple guide for patients
-              </div>
-
-              <h1 className="mt-6 max-w-3xl text-5xl font-semibold tracking-tight text-balance sm:text-6xl">
+              <h1 className="mt-6 max-w-4xl text-4xl font-semibold tracking-tight text-balance sm:text-6xl">
                 Book, follow, and manage your hospital appointments with ease.
               </h1>
 

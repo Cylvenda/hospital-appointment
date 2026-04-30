@@ -5,11 +5,11 @@ import { NavMain } from "@/components/nav-main"
 import { NavUser } from "@/components/nav-user"
 import { TeamSwitcher } from "@/components/team-switcher"
 import {
-    Sidebar,
-    SidebarContent,
-    SidebarFooter,
-    SidebarHeader,
-    SidebarRail,
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarHeader,
+  SidebarRail,
 } from "@/components/ui/sidebar"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { LayoutBottomIcon, RoboticIcon, Settings05Icon, DashboardCircleIcon, Doctor01Icon, People, Person, UserGroupIcon, UserAccountIcon, AllahFreeIcons, CallDoneIcon, CheckCheck, Loading, Bell, StethoscopeIcon } from "@hugeicons/core-free-icons"
@@ -21,14 +21,14 @@ const navMain = [
     title: "Dashboard",
     url: "/dashboard",
     icon: (
-      <HugeiconsIcon color="oklch(0.546 0.245 262.881)" icon={DashboardCircleIcon} strokeWidth={2} />
+      <HugeiconsIcon color="var(--primary)" icon={DashboardCircleIcon} strokeWidth={2} />
     )
   },
   {
     title: "Appointments",
     url: "/appointments/all",
     icon: (
-      <HugeiconsIcon color="oklch(0.546 0.245 262.881)" icon={RoboticIcon} strokeWidth={2} />
+      <HugeiconsIcon color="var(--primary)" icon={RoboticIcon} strokeWidth={2} />
     ),
     items: [
 
@@ -36,94 +36,94 @@ const navMain = [
         title: "Pending",
         url: "/appointments/pending",
         icon: (
-          <HugeiconsIcon color="oklch(0.546 0.245 262.881)" icon={Loading} size={"17"} />
+          <HugeiconsIcon color="var(--primary)" icon={Loading} size={"17"} />
         ),
       },
       {
         title: "Accepted",
         url: "/appointments/accepted",
         icon: (
-          <HugeiconsIcon color="oklch(0.546 0.245 262.881)" icon={CheckCheck} size={"17"} />
+          <HugeiconsIcon color="var(--primary)" icon={CheckCheck} size={"17"} />
         ),
       },
       {
         title: "Completed",
         url: "/appointments/completed",
         icon: (
-          <HugeiconsIcon color="oklch(0.546 0.245 262.881)" icon={CallDoneIcon} size={"17"} />
+          <HugeiconsIcon color="var(--primary)" icon={CallDoneIcon} size={"17"} />
         ),
       },
       {
         title: "Cancelled",
         url: "/appointments/cancelled",
         icon: (
-          <HugeiconsIcon color="oklch(0.546 0.245 262.881)" icon={CallDoneIcon} size={"17"} />
+          <HugeiconsIcon color="var(--primary)" icon={CallDoneIcon} size={"17"} />
         ),
       },
       {
         title: "All",
         url: "/appointments/all",
         icon: (
-          <HugeiconsIcon color="oklch(0.546 0.245 262.881)" icon={AllahFreeIcons} size={"17"} />
+          <HugeiconsIcon color="var(--primary)" icon={AllahFreeIcons} size={"17"} />
         ),
       },
-      
+
     ],
   },
   {
     title: "Doctors",
     url: "/doctors",
     icon: (
-      <HugeiconsIcon color="oklch(0.546 0.245 262.881)" icon={Doctor01Icon} strokeWidth={2} />
+      <HugeiconsIcon color="var(--primary)" icon={Doctor01Icon} strokeWidth={2} />
     )
   },
   {
     title: "Illness Categories",
     url: "/illness-categories",
     icon: (
-      <HugeiconsIcon color="oklch(0.546 0.245 262.881)" icon={StethoscopeIcon} strokeWidth={2} />
+      <HugeiconsIcon color="var(--primary)" icon={StethoscopeIcon} strokeWidth={2} />
     )
   },
   {
     title: "Receptionist",
     url: "/receptionist",
     icon: (
-      <HugeiconsIcon color="oklch(0.546 0.245 262.881)" icon={Person} strokeWidth={2} />
+      <HugeiconsIcon color="var(--primary)" icon={Person} strokeWidth={2} />
     )
   },
   {
     title: "Patients",
     url: "/patients",
     icon: (
-      <HugeiconsIcon color="oklch(0.546 0.245 262.881)" icon={People} strokeWidth={2} />
+      <HugeiconsIcon color="var(--primary)" icon={People} strokeWidth={2} />
     )
   },
   {
     title: "Users",
     url: "/users",
     icon: (
-      <HugeiconsIcon color="oklch(0.546 0.245 262.881)" icon={UserGroupIcon} strokeWidth={2} />
+      <HugeiconsIcon color="var(--primary)" icon={UserGroupIcon} strokeWidth={2} />
     )
   },
   {
     title: "Profile",
     url: "/profile",
     icon: (
-      <HugeiconsIcon color="oklch(0.546 0.245 262.881)" icon={UserAccountIcon} strokeWidth={2} />
+      <HugeiconsIcon color="var(--primary)" icon={UserAccountIcon} strokeWidth={2} />
     )
   },
   {
     title: "Notifications",
     url: "/notifications",
     icon: (
-      <HugeiconsIcon color="oklch(0.546 0.245 262.881)" icon={Bell} strokeWidth={2} />
+      <HugeiconsIcon color="var(--primary)" icon={Bell} strokeWidth={2} />
     )
   },
   {
     title: "Settings",
     url: "/settings",
     icon: (
-      <HugeiconsIcon color="oklch(0.546 0.245 262.881)" icon={Settings05Icon} strokeWidth={2} />
+      <HugeiconsIcon color="var(--primary)" icon={Settings05Icon} strokeWidth={2} />
     )
   },
 ]

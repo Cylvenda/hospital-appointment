@@ -16,7 +16,7 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
                               src="/meeet.webp"
                               alt="Meeting Background"
                               fill
-                              className=" rounded-2xl "
+                              className="rounded-2xl"
                               priority
                          />
                     </div>
@@ -24,7 +24,7 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
                     {/* LEFT SIDE (FORM) */}
                     <div className="flex items-center justify-center p-10">
                          <div className="w-full max-w-md space-y-6">
-                              <Link
+                              <Link 
                                    href="/"
                                    className="inline-flex items-center gap-3 transition hover:opacity-90"
                               >

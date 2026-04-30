@@ -31,6 +31,9 @@ type AppointmentStore = {
      fetchAppointments: () => Promise<void>
      fetchDoctors: () => Promise<void>
      fetchIllnessCategories: () => Promise<void>
+     createIllnessCategory: (payload: { name: string; description: string }) => Promise<void>
+     updateIllnessCategory: (uuid: string, payload: { name: string; description: string }) => Promise<void>
+     deleteIllnessCategory: (uuid: string) => Promise<void>
      initialize: () => Promise<void>
      createAppointment: (payload: {
           illnessCategoryId: string
@@ -38,9 +41,9 @@ type AppointmentStore = {
           description: string
      }) => Promise<void>
      assignAppointment: (payload: AssignPayload) => Promise<void>
-      cancelAppointment: (appointmentId: string) => Promise<void>
-      updateAppointment: (appointmentId: string, payload: { status?: string; [key: string]: unknown }) => Promise<void>
-      PayingAppointment: (appointmentId: string, phone: string) => Promise<void>
+     cancelAppointment: (appointmentId: string) => Promise<void>
+     updateAppointment: (appointmentId: string, payload: { status?: string;[key: string]: unknown }) => Promise<void>
+     PayingAppointment: (appointmentId: string, phone: string) => Promise<void>
 }
 
 
@@ -143,51 +146,101 @@ export const useAppointmentStore = create<AppointmentStore>((set) => ({
           }
      },
 
-      initialize: async () => {
-           set({ loading: true, error: null })
+     createIllnessCategory: async (payload) => {
+          try {
+               const response = await appointmentService.createIllnessCategory(payload)
+               set((state) => ({
+                    illnessCategories: [...state.illnessCategories, mapIllnessCategory(response.data)],
+               }))
+          } catch (error: unknown) {
+               const message = getApiErrorMessage(
+                    error,
+                    "Failed to create illness category"
+               )
+               set({ error: message })
+               throw error
+          }
+     },
 
-           try {
-                // Retrieve user role from auth store for conditional data fetching
-                const { user } = useAuthUserStore.getState()
-                const role = user?.role
+     updateIllnessCategory: async (uuid, payload) => {
+          try {
+               const response = await appointmentService.updateIllnessCategory(uuid, payload)
+               set((state) => ({
+                    illnessCategories: state.illnessCategories.map((category) =>
+                         category.id === uuid ? mapIllnessCategory(response.data) : category
+                    ),
+               }))
+          } catch (error: unknown) {
+               const message = getApiErrorMessage(
+                    error,
+                    "Failed to update illness category"
+               )
+               set({ error: message })
+               throw error
+          }
+     },
 
-                // Define roles that require additional doctor data
-                const ADMIN_ROLES = ['admin', 'receptionist'] as const
-                const isAdminOrReceptionist = role ? ADMIN_ROLES.includes(role as typeof ADMIN_ROLES[number]) : false
+     deleteIllnessCategory: async (uuid) => {
+          try {
+               await appointmentService.deleteIllnessCategory(uuid)
+               set((state) => ({
+                    illnessCategories: state.illnessCategories.filter((category) => category.id !== uuid),
+               }))
+          } catch (error: unknown) {
+               const message = getApiErrorMessage(
+                    error,
+                    "Failed to delete illness category"
+               )
+               set({ error: message })
+               throw error
+          }
+     },
 
-                // Fetch appointments always; fetch doctors only for admin/receptionist roles
-                const appointmentsPromise = appointmentService.listAppointments()
-                const doctorsPromise = isAdminOrReceptionist
-                     ? appointmentService.listDoctors()
-                     : Promise.resolve({ data: [] })
+     initialize: async () => {
+          set({ loading: true, error: null })
 
-                // Execute fetches in parallel for better performance
-                const [appointmentsResponse, doctorsResponse] = await Promise.all([
-                     appointmentsPromise,
-                     doctorsPromise
-                ])
+          try {
+               // Retrieve user role from auth store for conditional data fetching
+               const { user } = useAuthUserStore.getState()
+               const role = user?.role
 
-                // Map and set the data
-                set({
-                     appointments: appointmentsResponse.data.map(mapAppointment),
-                     doctors: isAdminOrReceptionist
-                          ? doctorsResponse.data.map(mapDoctor)
-                          : [],
-                     loading: false,
-                     initialized: true,
-                })
-           } catch (error: unknown) {
-                const message = getApiErrorMessage(
-                     error,
-                     "Failed to initialize appointments data"
-                )
+               // Define roles that require additional doctor data
+               const ADMIN_ROLES = ['admin', 'receptionist'] as const
+               const isAdminOrReceptionist = role ? ADMIN_ROLES.includes(role as typeof ADMIN_ROLES[number]) : false
 
-                set({
-                     error: message,
-                     loading: false,
-                     initialized: true,
-                })
-           }
+               // Fetch appointments always; fetch doctors only for admin/receptionist roles
+               const appointmentsPromise = appointmentService.listAppointments()
+               const doctorsPromise = isAdminOrReceptionist
+                    ? appointmentService.listDoctors()
+                    : Promise.resolve({ data: [] })
+
+               // Execute fetches in parallel for better performance
+               const [appointmentsResponse, doctorsResponse] = await Promise.all([
+                    appointmentsPromise,
+                    doctorsPromise
+               ])
+
+               // Map and set the data
+               set({
+                    appointments: appointmentsResponse.data.map(mapAppointment),
+                    doctors: isAdminOrReceptionist
+                         ? doctorsResponse.data.map(mapDoctor)
+                         : [],
+                    loading: false,
+                    initialized: true,
+               })
+          } catch (error: unknown) {
+               const message = getApiErrorMessage(
+                    error,
+                    "Failed to initialize appointments data"
+               )
+
+               set({
+                    error: message,
+                    loading: false,
+                    initialized: true,
+               })
+          }
      },
 
      createAppointment: async ({ illnessCategoryId, appointmentPreferredDate, description }) => {
@@ -202,7 +255,7 @@ export const useAppointmentStore = create<AppointmentStore>((set) => ({
                set((state) => ({
                     appointments: [appointment, ...state.appointments],
                }))
-               
+
                await useAppointmentStore.getState().initialize()
 
           } catch (error: unknown) {
@@ -238,47 +291,47 @@ export const useAppointmentStore = create<AppointmentStore>((set) => ({
           }
      },
 
-      updateAppointment: async (appointmentId: string, payload: { status?: string; [key: string]: unknown }) => {
-           try {
-                const response = await appointmentService.updateAppointment(appointmentId, payload)
+     updateAppointment: async (appointmentId: string, payload: { status?: string;[key: string]: unknown }) => {
+          try {
+               const response = await appointmentService.updateAppointment(appointmentId, payload)
 
-                set((state) => ({
-                     appointments: state.appointments.map((appointment) =>
-                          appointment.id === appointmentId
-                               ? mapAppointment(response.data)
-                               : appointment
-                     ),
-                }))
+               set((state) => ({
+                    appointments: state.appointments.map((appointment) =>
+                         appointment.id === appointmentId
+                              ? mapAppointment(response.data)
+                              : appointment
+                    ),
+               }))
 
-                await useAppointmentStore.getState().initialize()
+               await useAppointmentStore.getState().initialize()
 
-           } catch (error: unknown) {
-                const message = getApiErrorMessage(error, "Failed to update appointment")
-                set({ error: message })
-                throw error
-           }
-      },
+          } catch (error: unknown) {
+               const message = getApiErrorMessage(error, "Failed to update appointment")
+               set({ error: message })
+               throw error
+          }
+     },
 
-      cancelAppointment: async (appointmentId: string) => {
-           try {
-                const response = await appointmentService.cancelAppointment(appointmentId)
+     cancelAppointment: async (appointmentId: string) => {
+          try {
+               const response = await appointmentService.cancelAppointment(appointmentId)
 
-                set((state) => ({
-                     appointments: state.appointments.map((appointment) =>
-                          appointment.id === appointmentId
-                               ? mapAppointment(response.data)
-                               : appointment
-                     ),
-                }))
+               set((state) => ({
+                    appointments: state.appointments.map((appointment) =>
+                         appointment.id === appointmentId
+                              ? mapAppointment(response.data)
+                              : appointment
+                    ),
+               }))
 
-                await useAppointmentStore.getState().initialize()
+               await useAppointmentStore.getState().initialize()
 
-           } catch (error: unknown) {
-                const message = getApiErrorMessage(error, "Failed to cancel appointment")
-                set({ error: message })
-                throw error
-           }
-      },
+          } catch (error: unknown) {
+               const message = getApiErrorMessage(error, "Failed to cancel appointment")
+               set({ error: message })
+               throw error
+          }
+     },
 
      PayingAppointment: async (appointmentId, phone) => {
           try {
