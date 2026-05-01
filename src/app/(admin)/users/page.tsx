@@ -6,11 +6,13 @@ import { Input } from "@/components/ui/input"
 import {
   FilterIcon,
   Mail01Icon,
+  PlusSignIcon,
   Search01Icon,
   Shield01Icon,
   UserAccountIcon,
 } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
+import Link from "next/link"
 import { useAdminStore } from "@/store/admin/admin.store"
 
 function roleClasses(role: string) {
@@ -83,6 +85,12 @@ export default function UsersPage() {
           <Button variant="outline" size="lg" className="rounded-2xl">
             <HugeiconsIcon icon={FilterIcon} strokeWidth={1.8} />
             Filter
+          </Button>
+          <Button size="lg" className="rounded-2xl" asChild>
+            <Link href="/admin/users/create">
+              <HugeiconsIcon icon={PlusSignIcon} strokeWidth={1.8} />
+              Add User
+            </Link>
           </Button>
         </div>
       </div>
