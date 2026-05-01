@@ -130,10 +130,7 @@ export default function Page() {
           <div className="relative mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
             <div className="grid gap-12 lg:grid-cols-2 lg:items-center">
               <div className="text-center lg:text-left">
-                <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-4 py-1.5 text-sm font-medium text-primary">
-                  <HugeiconsIcon icon={Shield01Icon} size={16} />
-                  <span>Trusted by thousands of patients</span>
-                </div>
+              
 
                 <h1 className="mt-6 text-4xl font-bold tracking-tight text-balance sm:text-5xl lg:text-6xl">
                   Healthcare appointments,{" "}
