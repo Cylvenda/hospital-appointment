@@ -40,32 +40,6 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
 
                               {children}
 
-                              {/* <div className="flex items-center gap-3 text-sm text-muted-foreground">
-                                   <Separator className="flex-1 bg-accent" />
-                                   <span>or continue with</span>
-                                   <Separator className="flex-1 bg-accent" />
-                              </div> */}
-
-                              {/*  Google / GitHub / Apple buttons */}
-                              {/* <div className="grid grid-cols-3 gap-3">
-
-                                   <button className="flex items-center justify-center gap-2 border rounded-md py-2 text-sm hover:bg-muted transition">
-                                        <Image src="/google.png" alt="Google" width={18} height={18} />
-                                        Google
-                                   </button>
-
-                                   <button className="flex items-center justify-center gap-2 border rounded-md py-2 text-sm hover:bg-muted transition">
-                                        <Image src="/apple.svg" alt="Apple" width={18} height={18} />
-                                        Apple
-                                   </button>
-
-                                   <button className="flex items-center justify-center gap-2 border rounded-md py-2 text-sm hover:bg-muted transition">
-                                        <Image src="/github.png" alt="GitHub" width={18} height={18} />
-                                        GitHub
-                                   </button>
-
-                              </div> */}
-
                          </div>
                     </div>
 
