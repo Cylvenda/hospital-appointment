@@ -148,7 +148,7 @@ export default function PatientAppointmentsPage() {
                 </Button>
 
                 <Button
-                  className="flex-1"
+                  className="flex-1 rounded-md"
                   disabled={!canProceedStep2}
                   onClick={nextStep}
                 >
