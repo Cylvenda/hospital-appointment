@@ -45,6 +45,8 @@ import {
 } from "@tanstack/react-table"
 import { useAdminStore } from "@/store/admin/admin.store"
 import { getColumns } from "./column"
+import { PasswordInput } from "@/components/password-input"
+import { Label } from "@/components/ui/label"
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
@@ -476,13 +478,18 @@ export default function PatientsPage() {
 
             {sheetMode === "create" && (
               <div className="space-y-2">
-                <label className="text-sm font-medium">Password</label>
-                <Input
-                  type="password"
+                <Label htmlFor="password">Initial Password</Label>
+                <PasswordInput
+                  id="password"
+                  placeholder="Minimum 8 characters"
+                  className="rounded-xl h-11"
+                  required
                   value={createPassword}
                   onChange={(event) => setCreatePassword(event.target.value)}
-                  placeholder="Create password"
                 />
+                <p className="text-[10px] text-muted-foreground mt-1">
+                  The patient will be prompted to change this password on their first login.
+                </p>
               </div>
             )}
 

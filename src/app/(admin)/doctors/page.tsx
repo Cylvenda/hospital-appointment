@@ -24,6 +24,8 @@ import {
 import { HugeiconsIcon } from "@hugeicons/react"
 import { toast } from "react-toastify"
 import { useAdminStore } from "@/store/admin/admin.store"
+import { PasswordInput } from "@/components/password-input"
+import { Label } from "@/components/ui/label"
 
 const emptyDoctorForm = {
   first_name: "",
@@ -268,16 +270,21 @@ export default function DoctorsPage() {
                 />
               </div>
             </div>
-
             <div className="space-y-2">
-              <label className="text-sm font-medium">Password</label>
-              <Input
-                type="password"
+              <Label htmlFor="password">Initial Password</Label>
+              <PasswordInput
+                id="password"
+                placeholder="Minimum 8 characters"
+                className="rounded-xl h-11"
+                required
                 value={form.password}
                 onChange={(event) =>
                   setForm((current) => ({ ...current, password: event.target.value }))
                 }
               />
+              <p className="text-[10px] text-muted-foreground mt-1">
+                The doctor will be prompted to change this password on their first login.
+              </p>
             </div>
 
             <div className="space-y-2">

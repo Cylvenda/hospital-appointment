@@ -14,6 +14,8 @@ import { useAuthUserStore } from "@/store/auth/userAuth.store"
 import { useAppointmentStore } from "@/store/appointments/appointment.store"
 import { getDashboardPath } from "@/lib/role-dashboard"
 import { cn } from "@/lib/utils"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { Calendar01Icon, Clock01Icon, UserIcon, CheckCircle, Cancel01Icon, HourglassIcon, PlusSignIcon, RefreshIcon } from "@hugeicons/core-free-icons"
 
 export default function PatientDashboardPage() {
      const router = useRouter()
@@ -36,138 +38,252 @@ export default function PatientDashboardPage() {
 
                await fetchAppointments()
           })()
-     }, [checkAuth, fetchAppointments, router, user?.role])
+     }, [checkAuth, fetchAppointments, router])
 
      const stats = useMemo(() => {
           const pending = appointments.filter((i) => i.status === "pending").length
           const approved = appointments.filter((i) => i.status === "accepted").length
           const cancelled = appointments.filter((i) => i.status === "cancelled").length
+          const completed = appointments.filter((i) => i.status === "completed").length
 
-          return { pending, approved, cancelled }
+          return { pending, approved, cancelled, completed }
      }, [appointments])
 
+     const nextAppointment = useMemo(() => {
+          const now = new Date()
+          return appointments
+               .filter(a => a.status === "accepted" && new Date(a.date) >= now)
+               .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())[0]
+     }, [appointments])
+
+     const recentHistory = useMemo(() => {
+          return appointments
+               .filter(a => a.status !== "pending" && a !== nextAppointment)
+               .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+               .slice(0, 4)
+     }, [appointments, nextAppointment])
+
      return (
-          <div className="mx-auto w-full max-w-8xl space-y-6 p-4 md:p-6">
+          <div className="mx-auto w-full max-w-8xl space-y-8 p-4 md:p-8 animate-in fade-in duration-500">
                {/* HEADER */}
-               <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+               <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between bg-gradient-to-r from-primary/10 via-transparent to-transparent p-6 rounded-3xl border border-primary/10">
                     <div>
-                         <h1 className="text-2xl font-semibold">
-                              Welcome back{user?.first_name ? `, ${user.first_name}` : ""}
+                         <h1 className="text-3xl font-bold tracking-tight">
+                              Good day{user?.first_name ? `, ${user.first_name}` : ""}!
                          </h1>
-                         <p className="text-sm text-muted-foreground">
-                              Manage your appointments and track updates in real-time.
+                         <p className="text-muted-foreground mt-1">
+                              Here&apos;s an overview of your healthcare journey.
                          </p>
                     </div>
 
-                    {/* QUICK ACTIONS */}
-                    <div className="flex gap-2">
-                         <Button className="rounded-md" onClick={() => router.push("/patient-dashboard/appointments")}>
-                              + Book Appointment
+                    <div className="flex gap-3">
+                         <Button 
+                              className="rounded-2xl px-6 shadow-lg shadow-primary/20 transition-all hover:scale-105 active:scale-95" 
+                              onClick={() => router.push("/patient-dashboard/appointments")}
+                         >
+                              <HugeiconsIcon icon={PlusSignIcon} className="mr-2 h-4 w-4" />
+                              Book Appointment
                          </Button>
 
                          <Button
-                              className="rounded-md"
+                              className="rounded-2xl"
                               variant="outline"
                               onClick={() => fetchAppointments()}
+                              disabled={loading}
                          >
+                              <HugeiconsIcon icon={RefreshIcon} className={cn("mr-2 h-4 w-4", loading && "animate-spin")} />
                               Refresh
                          </Button>
                     </div>
                </div>
 
-               {/* STATS */}
-               <div className="grid gap-4 sm:grid-cols-3">
-                    {[
-                         {
-                              label: "Pending",
-                              value: stats.pending,
-                              hint: "Awaiting approval",
-                              style: "border-yellow-300",
-                         },
-                         {
-                              label: "Approved",
-                              value: stats.approved,
-                              hint: "Ready for visit",
-                              style: "border-green-300",
-                         },
-                         {
-                              label: "Cancelled",
-                              value: stats.cancelled,
-                              hint: "Past cancellations",
-                              style: "border-red-300",
-                         },
-                    ].map((stat, i) => (
-                         <Card key={i} className={cn("border-l-4 shadow-sm", stat.style)}>
-                              <CardContent className="p-5">
-                                   <p className="text-sm text-muted-foreground">{stat.label}</p>
-                                   <p className="mt-1 text-3xl font-semibold">{stat.value}</p>
-                                   <p className="text-xs text-muted-foreground mt-1">
-                                        {stat.hint}
-                                   </p>
+               {/* MAIN GRID */}
+               <div className="grid gap-8 lg:grid-cols-3">
+                    {/* LEFT COLUMN: STATS & NEXT APPOINTMENT */}
+                    <div className="lg:col-span-2 space-y-8">
+                         {/* STATS */}
+                         <div className="grid gap-4 sm:grid-cols-4">
+                              {[
+                                   {
+                                        label: "Pending",
+                                        value: stats.pending,
+                                        icon: HourglassIcon,
+                                        color: "text-amber-500",
+                                        bg: "bg-amber-50",
+                                        border: "border-amber-100",
+                                   },
+                                   {
+                                        label: "Upcoming",
+                                        value: stats.approved,
+                                        icon: Calendar01Icon,
+                                        color: "text-emerald-500",
+                                        bg: "bg-emerald-50",
+                                        border: "border-emerald-100",
+                                   },
+                                   {
+                                        label: "Completed",
+                                        value: stats.completed,
+                                        icon: CheckCircle,
+                                        color: "text-blue-500",
+                                        bg: "bg-blue-50",
+                                        border: "border-blue-100",
+                                   },
+                                   {
+                                        label: "Cancelled",
+                                        value: stats.cancelled,
+                                        icon: Cancel01Icon,
+                                        color: "text-rose-500",
+                                        bg: "bg-rose-50",
+                                        border: "border-rose-100",
+                                   },
+                              ].map((stat, i) => (
+                                   <Card key={i} className={cn("border shadow-sm rounded-2xl overflow-hidden", stat.border)}>
+                                        <CardContent className="p-5">
+                                             <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center mb-3", stat.bg)}>
+                                                  <HugeiconsIcon icon={stat.icon} className={cn("w-5 h-5", stat.color)} />
+                                             </div>
+                                             <p className="text-sm font-medium text-muted-foreground">{stat.label}</p>
+                                             <p className="text-2xl font-bold mt-1 tracking-tight">{stat.value}</p>
+                                        </CardContent>
+                                   </Card>
+                              ))}
+                         </div>
+
+                         {/* NEXT APPOINTMENT HERO */}
+                         <Card className="rounded-3xl border-2 border-primary/20 overflow-hidden shadow-xl shadow-primary/5">
+                              <CardHeader className="bg-primary/5 rounded-none py-4 border-b border-primary/10">
+                                   <div className="flex items-center justify-between">
+                                        <div>
+                                             <CardTitle className="text-xl">Your Next Visit</CardTitle>
+                                             <CardDescription>Stay prepared for your upcoming consultation.</CardDescription>
+                                        </div>
+                                        <div className="bg-primary/10 p-2 rounded-full">
+                                             <HugeiconsIcon icon={Calendar01Icon} className="w-6 h-6 text-primary" />
+                                        </div>
+                                   </div>
+                              </CardHeader>
+                              <CardContent className="p-6">
+                                   {nextAppointment ? (
+                                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                                             <div className="space-y-4">
+                                                  <div className="flex items-center gap-3">
+                                                       <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center">
+                                                            <HugeiconsIcon icon={UserIcon} className="w-6 h-6 text-primary" />
+                                                       </div>
+                                                       <div>
+                                                            <p className="text-sm text-muted-foreground font-medium">Practitioner</p>
+                                                            <p className="text-lg font-semibold">{nextAppointment.doctor || "TBD"}</p>
+                                                       </div>
+                                                  </div>
+                                                  <div className="grid grid-cols-2 gap-6">
+                                                       <div className="flex items-center gap-2">
+                                                            <HugeiconsIcon icon={Calendar01Icon} className="w-4 h-4 text-muted-foreground" />
+                                                            <span className="text-sm font-medium">{nextAppointment.date}</span>
+                                                       </div>
+                                                       <div className="flex items-center gap-2">
+                                                            <HugeiconsIcon icon={Clock01Icon} className="w-4 h-4 text-muted-foreground" />
+                                                            <span className="text-sm font-medium">{nextAppointment.startTime || "--:--"}</span>
+                                                       </div>
+                                                  </div>
+                                             </div>
+                                             <div className="flex flex-col items-start md:items-end gap-2">
+                                                  <div className="px-4 py-1.5 rounded-full bg-emerald-100 text-emerald-700 text-xs font-bold uppercase tracking-wider">
+                                                       {nextAppointment.status}
+                                                  </div>
+                                                  <p className="text-sm font-medium text-primary">{nextAppointment.illnessCategory}</p>
+                                                  <Button variant="outline" className="mt-2 rounded-xl" onClick={() => router.push(`/patient-dashboard/appointments/${nextAppointment.id}`)}>
+                                                       View Details
+                                                  </Button>
+                                             </div>
+                                        </div>
+                                   ) : (
+                                        <div className="py-8 text-center space-y-4">
+                                             <div className="mx-auto w-16 h-16 rounded-full bg-muted flex items-center justify-center">
+                                                  <HugeiconsIcon icon={Calendar01Icon} className="w-8 h-8 text-muted-foreground" />
+                                             </div>
+                                             <div>
+                                                  <p className="font-medium text-muted-foreground">No upcoming appointments scheduled.</p>
+                                                  <p className="text-sm text-muted-foreground/60">Regular check-ups are key to staying healthy!</p>
+                                             </div>
+                                             <Button onClick={() => router.push("/patient-dashboard/appointments")}>
+                                                  Schedule Now
+                                             </Button>
+                                        </div>
+                                   )}
                               </CardContent>
                          </Card>
-                    ))}
-               </div>
+                    </div>
 
-               {/* RECENT APPOINTMENTS */}
-               <Card>
-                    <CardHeader>
-                         <CardTitle>Recent Appointments</CardTitle>
-                         <CardDescription>
-                              {loading
-                                   ? "Loading..."
-                                   : "Your latest appointment activity."}
-                         </CardDescription>
-                    </CardHeader>
-
-                    <CardContent>
-                         {error ? (
-                              <p className="text-sm text-red-600">{error}</p>
-                         ) : appointments.length === 0 ? (
-                              <div className="text-center py-10 space-y-2">
-                                   <p className="text-sm text-muted-foreground">
-                                        No appointments yet.
-                                   </p>
-                                   <Button
-                                        size="sm"
-                                        onClick={() => router.push("/patient-dashboard/appointments")}
-                                   >
-                                        Book your first appointment
-                                   </Button>
-                              </div>
-                         ) : (
-                              <div className="space-y-3">
-                                   {appointments.slice(0, 5).map((appt) => (
-                                        <div
-                                             key={appt.id}
-                                             className="flex items-center justify-between rounded-xl border p-4 hover:shadow-sm transition"
-                                        >
-                                             <div>
-                                                  <p className="font-medium">{appt.illnessCategory}</p>
-                                                  <p className="text-xs text-muted-foreground">
-                                                       {appt.date} • {appt.startTime || "--:--"}
-                                                  </p>
+                    {/* RIGHT COLUMN: HISTORY & QUICK TIPS */}
+                    <div className="space-y-8">
+                         <Card className="rounded-3xl shadow-sm border-muted/60 h-full">
+                              <CardHeader>
+                                   <CardTitle className="text-lg">Recent Activity</CardTitle>
+                                   <CardDescription>Your latest visit history.</CardDescription>
+                              </CardHeader>
+                              <CardContent className="px-2">
+                                   <div className="space-y-1">
+                                        {recentHistory.length > 0 ? (
+                                             recentHistory.map((appt) => (
+                                                  <div
+                                                       key={appt.id}
+                                                       className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted/50 transition-colors cursor-pointer group"
+                                                       onClick={() => router.push(`/patient-dashboard/appointments/${appt.id}`)}
+                                                  >
+                                                       <div className={cn(
+                                                            "w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-transform group-hover:scale-110",
+                                                            appt.status === "completed" ? "bg-blue-100" : "bg-rose-100"
+                                                       )}>
+                                                            <HugeiconsIcon 
+                                                                 icon={appt.status === "completed" ? CheckCircle : Cancel01Icon} 
+                                                                 className={cn("w-5 h-5", appt.status === "completed" ? "text-blue-600" : "text-rose-600")} 
+                                                            />
+                                                       </div>
+                                                       <div className="min-w-0 flex-1">
+                                                            <p className="text-sm font-semibold truncate">{appt.illnessCategory}</p>
+                                                            <p className="text-xs text-muted-foreground">{appt.date}</p>
+                                                       </div>
+                                                       <span className={cn(
+                                                            "text-[10px] font-bold uppercase px-2 py-0.5 rounded-md",
+                                                            appt.status === "completed" ? "bg-blue-50 text-blue-700" : "bg-rose-50 text-rose-700"
+                                                       )}>
+                                                            {appt.status}
+                                                       </span>
+                                                  </div>
+                                             ))
+                                        ) : (
+                                             <div className="py-10 text-center text-sm text-muted-foreground px-4">
+                                                  No recent history to display.
                                              </div>
-
-                                             <span
-                                                  className={cn(
-                                                       "text-xs px-2 py-1 rounded-full capitalize",
-                                                       appt.status === "pending" &&
-                                                       "bg-yellow-100 text-yellow-700",
-                                                       appt.status === "accepted" &&
-                                                       "bg-green-100 text-green-700",
-                                                       appt.status === "cancelled" &&
-                                                       "bg-red-100 text-red-700"
-                                                  )}
-                                             >
-                                                  {appt.status}
-                                             </span>
+                                        )}
+                                   </div>
+                                   {appointments.length > 0 && (
+                                        <div className="mt-4 p-4">
+                                             <Button variant="ghost" className="w-full rounded-xl text-sm" onClick={() => router.push("/patient-dashboard/appointments/all")}>
+                                                  View All History
+                                             </Button>
                                         </div>
-                                   ))}
-                              </div>
-                         )}
-                    </CardContent>
-               </Card>
+                                   )}
+                              </CardContent>
+                         </Card>
+
+                         {/* PROMO / TIP CARD */}
+                         <Card className="rounded-3xl bg-primary text-primary-foreground overflow-hidden relative border-none">
+                              <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16 blur-2xl" />
+                              <CardContent className="p-6 relative z-10">
+                                   <h4 className="font-bold text-lg mb-2">Health Tip of the Day</h4>
+                                   <p className="text-sm text-primary-foreground/90 leading-relaxed">
+                                        Drinking enough water throughout the day can improve your energy levels and focus. Aim for at least 8 glasses!
+                                   </p>
+                                   <div className="mt-4 flex justify-end">
+                                        <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
+                                             <HugeiconsIcon icon={CheckCircle} className="w-4 h-4" />
+                                        </div>
+                                   </div>
+                              </CardContent>
+                         </Card>
+                    </div>
+               </div>
           </div>
      )
 }

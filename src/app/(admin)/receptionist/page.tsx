@@ -24,6 +24,8 @@ import { HugeiconsIcon } from "@hugeicons/react"
 import { toast } from "react-toastify"
 import { useAdminStore } from "@/store/admin/admin.store"
 import { useAppointmentStore } from "@/store/appointments/appointment.store"
+import { PasswordInput } from "@/components/password-input"
+import { Label } from "@/components/ui/label"
 
 const deskTasks = [
   "Confirm walk-in patients and issue queue numbers",
@@ -266,14 +268,20 @@ export default function ReceptionistPage() {
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-medium">Password</label>
-              <Input
-                type="password"
+              <Label htmlFor="password">Initial Password</Label>
+              <PasswordInput
+                id="password"
+                placeholder="Minimum 8 characters"
+                className="rounded-xl h-11"
+                required
                 value={form.password}
                 onChange={(event) =>
                   setForm((current) => ({ ...current, password: event.target.value }))
                 }
               />
+              <p className="text-[10px] text-muted-foreground mt-1">
+                The receptionist will be prompted to change this password on their first login.
+              </p>
             </div>
           </div>
 

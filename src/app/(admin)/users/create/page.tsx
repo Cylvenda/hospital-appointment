@@ -18,11 +18,12 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { EyeIcon, EyeOffIcon, UserPlusIcon, ArrowLeftIcon } from "@hugeicons/core-free-icons"
+import { UserPlus, ArrowLeftIcon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { toast } from "react-toastify"
 import Link from "next/link"
 import { useAdminStore } from "@/store/admin/admin.store"
+import { PasswordInput } from "@/components/password-input"
 
 type UserRole = "user" | "receptionist" | "doctor"
 
@@ -52,8 +53,6 @@ export default function CreateUserPage() {
   const [form, setForm] = useState(emptyForm)
   const [errors, setErrors] = useState<FormErrors>({})
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [showPassword, setShowPassword] = useState(false)
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
 
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {}
@@ -220,7 +219,7 @@ export default function CreateUserPage() {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <HugeiconsIcon icon={UserPlusIcon} strokeWidth={1.8} />
+            <HugeiconsIcon icon={UserPlus} strokeWidth={1.8} />
             User Information
           </CardTitle>
           <CardDescription>
@@ -304,29 +303,14 @@ export default function CreateUserPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="password">Password *</Label>
-                <div className="relative">
-                  <Input
-                    id="password"
-                    type={showPassword ? "text" : "password"}
-                    value={form.password}
-                    onChange={(e) => handleInputChange("password", e.target.value)}
-                    className={errors.password ? "border-red-500 pr-10" : "pr-10"}
-                    placeholder="Enter password"
-                  />
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                    onClick={() => setShowPassword(!showPassword)}
-                  >
-                    <HugeiconsIcon 
-                      icon={showPassword ? EyeOffIcon : EyeIcon} 
-                      strokeWidth={1.8} 
-                      className="h-4 w-4 text-muted-foreground" 
-                    />
-                  </Button>
-                </div>
+                <PasswordInput
+                  id="password"
+                  value={form.password}
+                  onChange={(e) => handleInputChange("password", e.target.value)}
+                  className={errors.password ? "border-red-500" : ""}
+                  placeholder="Enter password"
+                  required
+                />
                 {errors.password && <p className="text-sm text-red-500">{errors.password}</p>}
                 {form.password && (
                   <div className="space-y-1">
@@ -350,29 +334,14 @@ export default function CreateUserPage() {
 
               <div className="space-y-2">
                 <Label htmlFor="confirm_password">Confirm Password *</Label>
-                <div className="relative">
-                  <Input
-                    id="confirm_password"
-                    type={showConfirmPassword ? "text" : "password"}
-                    value={form.confirm_password}
-                    onChange={(e) => handleInputChange("confirm_password", e.target.value)}
-                    className={errors.confirm_password ? "border-red-500 pr-10" : "pr-10"}
-                    placeholder="Confirm password"
-                  />
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  >
-                    <HugeiconsIcon 
-                      icon={showConfirmPassword ? EyeOffIcon : EyeIcon} 
-                      strokeWidth={1.8} 
-                      className="h-4 w-4 text-muted-foreground" 
-                    />
-                  </Button>
-                </div>
+                <PasswordInput
+                  id="confirm_password"
+                  value={form.confirm_password}
+                  onChange={(e) => handleInputChange("confirm_password", e.target.value)}
+                  className={errors.confirm_password ? "border-red-500" : ""}
+                  placeholder="Confirm password"
+                  required
+                />
                 {errors.confirm_password && <p className="text-sm text-red-500">{errors.confirm_password}</p>}
               </div>
             </div>
