@@ -140,11 +140,11 @@ export default function DoctorsPage() {
               placeholder="Search doctor or specialty..."
             />
           </div>
-          <Button variant="outline" size="lg" className="rounded-2xl">
+          <Button variant="outline" size="lg" className="rounded-md">
             <HugeiconsIcon icon={FilterIcon} strokeWidth={1.8} />
             Filter
           </Button>
-          <Button size="lg" className="rounded-2xl" onClick={() => setSheetOpen(true)}>
+          <Button size="lg" className="rounded-md" onClick={() => setSheetOpen(true)}>
             <HugeiconsIcon icon={PlusSignIcon} strokeWidth={1.8} />
             Add Doctor
           </Button>
@@ -212,8 +212,8 @@ export default function DoctorsPage() {
             </div>
 
             <div className="mt-5 flex flex-wrap gap-2">
-              <Button className="rounded-2xl">View Profile</Button>
-              <Button variant="outline" className="rounded-2xl" disabled>
+              <Button className="rounded-md">View Profile</Button>
+              <Button variant="outline" className="rounded-md" disabled>
                 Update Schedule
               </Button>
             </div>

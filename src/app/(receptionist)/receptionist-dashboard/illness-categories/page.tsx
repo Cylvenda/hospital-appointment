@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react"
 import { toast } from "react-toastify"
+import { motion, AnimatePresence } from "framer-motion"
 import { HugeiconsIcon } from "@hugeicons/react"
 import {
   Delete02Icon,
@@ -10,6 +11,12 @@ import {
   PlusSignIcon,
   Search01Icon,
   TextAlignLeftIcon,
+  Medicine01Icon,
+  DatabaseIcon,
+  FilterIcon,
+  Tick02Icon,
+  Cancel01Icon,
+  AlertCircleIcon
 } from "@hugeicons/core-free-icons"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -32,6 +39,7 @@ import {
 } from "@/components/ui/table"
 import { Textarea } from "@/components/ui/textarea"
 import { useAppointmentStore } from "@/store/appointments/appointment.store"
+import { cn } from "@/lib/utils"
 
 const emptyForm = {
   name: "",
@@ -45,6 +53,7 @@ export default function ReceptionistIllnessCategoriesPage() {
     createIllnessCategory,
     updateIllnessCategory,
     deleteIllnessCategory,
+    loading
   } = useAppointmentStore()
 
   const [search, setSearch] = useState("")
@@ -73,10 +82,10 @@ export default function ReceptionistIllnessCategoriesPage() {
     (category) => Boolean(category.description?.trim())
   ).length
 
-  const formTitle = editingId ? "Update Illness Category" : "Add Illness Category"
+  const formTitle = editingId ? "Update Category" : "New Category"
   const formDescription = editingId
-    ? "Edit the illness category details and save your changes."
-    : "Create a new illness category for appointment booking and triage."
+    ? "Modify the medical service details."
+    : "Create a new medical service category."
 
   const isFormValid = form.name.trim().length > 0
 
@@ -100,15 +109,15 @@ export default function ReceptionistIllnessCategoriesPage() {
 
       if (editingId) {
         await updateIllnessCategory(editingId, payload)
-        toast.success("Illness category updated.")
+        toast.success("Category updated successfully.")
       } else {
         await createIllnessCategory(payload)
-        toast.success("Illness category added.")
+        toast.success("New category added.")
       }
 
       resetForm()
     } catch {
-      toast.error(editingId ? "Failed to update illness category." : "Failed to add illness category.")
+      toast.error(editingId ? "Failed to update category." : "Failed to add category.")
     } finally {
       setIsSaving(false)
     }
@@ -116,15 +125,15 @@ export default function ReceptionistIllnessCategoriesPage() {
 
   function handleEdit(uuid: string) {
     const category = illnessCategories.find((item) => item.id === uuid)
-    if (!category) {
-      return
+    if (category) {
+      setEditingId(category.id)
+      setForm({
+        name: category.name,
+        description: category.description ?? "",
+      })
+      // Scroll to top or form on mobile
+      window.scrollTo({ top: 0, behavior: 'smooth' })
     }
-
-    setEditingId(category.id)
-    setForm({
-      name: category.name,
-      description: category.description ?? "",
-    })
   }
 
   async function handleDelete() {
@@ -136,7 +145,7 @@ export default function ReceptionistIllnessCategoriesPage() {
 
     try {
       await deleteIllnessCategory(deleteTarget.uuid)
-      toast.success("Illness category deleted.")
+      toast.success("Category deleted.")
 
       if (editingId === deleteTarget.uuid) {
         resetForm()
@@ -144,196 +153,253 @@ export default function ReceptionistIllnessCategoriesPage() {
 
       setDeleteTarget(null)
     } catch {
-      toast.error("Failed to delete illness category.")
+      toast.error("Failed to delete category.")
     } finally {
       setIsDeleting(false)
     }
   }
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: { opacity: 1, transition: { staggerChildren: 0.1 } }
+  }
+
+  const itemVariants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: { y: 0, opacity: 1 }
+  }
+
   return (
-    <div className="w-full space-y-6 p-4 md:p-6">
-      <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-center">
-        <div className="space-y-1">
-          <h1 className="font-heading text-2xl font-semibold">Illness Categories</h1>
-          <p className="text-sm text-muted-foreground">
-            Add, review, update, and remove the medical categories used during appointment booking.
+    <div className="w-full space-y-10 p-4 md:p-8">
+      {/* HEADER */}
+      <motion.div 
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="flex flex-col justify-between gap-6 lg:flex-row lg:items-end"
+      >
+        <div className="space-y-2">
+          <h1 className="text-4xl font-black tracking-tight">Care Categories</h1>
+          <p className="text-muted-foreground text-lg max-w-2xl">
+            Define and manage medical specialties used for triage and doctor matching.
           </p>
         </div>
 
-        <div className="relative sm:w-80">
+        <div className="relative group sm:w-96">
           <HugeiconsIcon
             icon={Search01Icon}
-            strokeWidth={1.8}
-            className="pointer-events-none absolute top-1/2 left-4 size-4 -translate-y-1/2 text-muted-foreground"
+            strokeWidth={2.5}
+            className="absolute top-1/2 left-5 size-5 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors"
           />
           <Input
             value={search}
             onChange={(event) => setSearch(event.target.value)}
-            className="h-11 rounded-2xl border-2 border-sidebar-border pl-11"
-            placeholder="Search category or description..."
+            className="h-14 rounded-3xl border-2 border-muted bg-background pl-14 pr-6 focus:border-primary focus:ring-0 transition-all text-base font-medium shadow-sm"
+            placeholder="Filter categories..."
           />
         </div>
-      </div>
+      </motion.div>
 
-      <div className="grid gap-4 md:grid-cols-3">
-        <div className="rounded-4xl border border-sidebar-border bg-card p-5 shadow-sm">
-          <p className="text-sm text-muted-foreground">Total Categories</p>
-          <p className="mt-2 text-3xl font-semibold">{illnessCategories.length}</p>
-        </div>
-        <div className="rounded-4xl border border-sidebar-border bg-card p-5 shadow-sm">
-          <p className="text-sm text-muted-foreground">Shown Results</p>
-          <p className="mt-2 text-3xl font-semibold">{filteredCategories.length}</p>
-        </div>
-        <div className="rounded-4xl border border-sidebar-border bg-card p-5 shadow-sm">
-          <p className="text-sm text-muted-foreground">With Descriptions</p>
-          <p className="mt-2 text-3xl font-semibold">{categoriesWithDescriptions}</p>
-        </div>
-      </div>
+      {/* STATS */}
+      <motion.div 
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+        className="grid gap-6 md:grid-cols-3"
+      >
+        {[
+          { label: "Total Registered", value: illnessCategories.length, icon: DatabaseIcon, color: "text-blue-600", bg: "bg-blue-50" },
+          { label: "Active Results", value: filteredCategories.length, icon: FilterIcon, color: "text-indigo-600", bg: "bg-indigo-50" },
+          { label: "Detailed Entries", value: categoriesWithDescriptions, icon: MedicineBottle01Icon, color: "text-emerald-600", bg: "bg-emerald-50" },
+        ].map((stat, i) => (
+          <motion.div key={i} variants={itemVariants}>
+            <Card className="rounded-[2.5rem] border-none shadow-sm bg-card hover:shadow-md transition-shadow overflow-hidden group">
+              <CardContent className="p-8 flex items-center gap-6">
+                <div className={cn("w-16 h-16 rounded-[1.5rem] flex items-center justify-center transition-transform group-hover:scale-110", stat.bg, stat.color)}>
+                  <HugeiconsIcon icon={stat.icon} className="w-8 h-8" />
+                </div>
+                <div>
+                  <p className="text-sm font-black uppercase tracking-widest text-muted-foreground opacity-60">{stat.label}</p>
+                  <p className="text-3xl font-black mt-1">{stat.value}</p>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+        ))}
+      </motion.div>
 
-      <div className="grid gap-6 xl:grid-cols-[0.95fr_1.35fr]">
-        <Card className="border border-sidebar-border py-5 shadow-sm">
-          <CardHeader className="border-b border-sidebar-border">
-            <CardTitle>{formTitle}</CardTitle>
-            <CardDescription>{formDescription}</CardDescription>
-          </CardHeader>
+      <div className="grid gap-8 xl:grid-cols-[1fr_2fr]">
+        {/* FORM */}
+        <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}>
+          <Card className="rounded-[3rem] border-2 shadow-xl overflow-hidden sticky top-8">
+            <CardHeader className="bg-muted/30 p-8 border-b">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-2xl bg-primary text-white flex items-center justify-center shadow-lg shadow-primary/20">
+                  <HugeiconsIcon icon={editingId ? Edit02Icon : PlusSignIcon} className="w-6 h-6" />
+                </div>
+                <div>
+                  <CardTitle className="text-2xl font-black">{formTitle}</CardTitle>
+                  <CardDescription className="font-medium">{formDescription}</CardDescription>
+                </div>
+              </div>
+            </CardHeader>
 
-          <CardContent className="space-y-4 py-6">
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Category Name</label>
-              <Input
-                value={form.name}
-                onChange={(event) =>
-                  setForm((current) => ({ ...current, name: event.target.value }))
-                }
-                placeholder="Example: Dermatology"
-              />
-            </div>
+            <CardContent className="p-8 space-y-6">
+              <div className="space-y-3">
+                <label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-1">Category Name</label>
+                <Input
+                  value={form.name}
+                  onChange={(event) =>
+                    setForm((current) => ({ ...current, name: event.target.value }))
+                  }
+                  className="h-14 rounded-2xl border-2 bg-background focus:border-primary transition-all text-base font-bold px-6"
+                  placeholder="e.g. Cardiology"
+                />
+              </div>
 
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Description</label>
-              <Textarea
-                value={form.description}
-                onChange={(event) =>
-                  setForm((current) => ({ ...current, description: event.target.value }))
-                }
-                placeholder="Short explanation about what this illness category covers."
-              />
-            </div>
+              <div className="space-y-3">
+                <label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-1">Description</label>
+                <Textarea
+                  value={form.description}
+                  onChange={(event) =>
+                    setForm((current) => ({ ...current, description: event.target.value }))
+                  }
+                  className="min-h-[150px] rounded-2xl border-2 bg-background focus:border-primary transition-all text-base font-medium p-6 resize-none"
+                  placeholder="Provide a brief overview of this medical specialty..."
+                />
+              </div>
 
-            <div className="flex flex-wrap gap-2">
-              <Button onClick={handleSubmit} disabled={!isFormValid || isSaving} className="rounded-2xl">
-                <HugeiconsIcon icon={editingId ? Edit02Icon : PlusSignIcon} strokeWidth={1.8} />
-                {isSaving ? "Saving..." : editingId ? "Update Category" : "Add Category"}
-              </Button>
-              <Button
-                variant="outline"
-                onClick={resetForm}
-                disabled={isSaving || (!editingId && !form.name && !form.description)}
-                className="rounded-2xl"
-              >
-                Reset
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="border border-sidebar-border py-5 shadow-sm">
-          <CardHeader className="border-b border-sidebar-border">
-            <CardTitle>Category Directory</CardTitle>
-            <CardDescription>
-              Every illness category currently available in the appointment system.
-            </CardDescription>
-          </CardHeader>
-
-          <CardContent className="py-4">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Description</TableHead>
-                  <TableHead>Reference</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredCategories.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={4} className="py-10 text-center text-muted-foreground">
-                      No illness categories match your search yet.
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  filteredCategories.map((category) => (
-                    <TableRow key={category.id}>
-                      <TableCell className="font-medium">
-                        <div className="flex items-center gap-3">
-                          <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-primary/10 text-primary">
-                            <HugeiconsIcon icon={MedicineBottle01Icon} strokeWidth={1.8} className="size-4" />
-                          </div>
-                          <span>{category.name}</span>
-                        </div>
-                      </TableCell>
-                      <TableCell className="max-w-md whitespace-normal text-sm text-muted-foreground">
-                        <span className="inline-flex items-start gap-2">
-                          <HugeiconsIcon icon={TextAlignLeftIcon} strokeWidth={1.8} className="mt-0.5 size-4 shrink-0" />
-                          {category.description?.trim() || "No description provided."}
-                        </span>
-                      </TableCell>
-                      <TableCell className="font-mono text-xs text-muted-foreground">
-                        {category.id.slice(0, 8).toUpperCase()}
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex justify-end gap-2">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="rounded-2xl"
-                            onClick={() => handleEdit(category.id)}
-                          >
-                            <HugeiconsIcon icon={Edit02Icon} strokeWidth={1.8} />
-                            Edit
-                          </Button>
-                          <Button
-                            variant="destructive"
-                            size="sm"
-                            className="rounded-2xl"
-                            onClick={() =>
-                              setDeleteTarget({
-                                uuid: category.id,
-                                name: category.name,
-                              })
-                            }
-                          >
-                            <HugeiconsIcon icon={Delete02Icon} strokeWidth={1.8} />
-                            Delete
-                          </Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))
+              <div className="flex flex-col gap-4 pt-4">
+                <Button 
+                  onClick={handleSubmit} 
+                  disabled={!isFormValid || isSaving} 
+                  className="h-14 rounded-2xl text-base font-black shadow-lg shadow-primary/20 transition-all hover:scale-[1.02] active:scale-95"
+                >
+                  {isSaving ? "Processing..." : editingId ? "Update Specialty" : "Register Specialty"}
+                </Button>
+                {(editingId || form.name || form.description) && (
+                  <Button
+                    variant="ghost"
+                    onClick={resetForm}
+                    disabled={isSaving}
+                    className="h-12 rounded-2xl font-bold text-muted-foreground hover:text-foreground"
+                  >
+                    Discard Changes
+                  </Button>
                 )}
-              </TableBody>
-            </Table>
-          </CardContent>
-        </Card>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        {/* LIST */}
+        <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}>
+          <Card className="rounded-[3rem] border-2 shadow-xl overflow-hidden min-h-[600px]">
+            <CardHeader className="p-8 border-b">
+              <CardTitle className="text-2xl font-black flex items-center gap-3">
+                <HugeiconsIcon icon={Medicine01Icon} className="w-8 h-8 text-primary" />
+                Specialty Directory
+              </CardTitle>
+            </CardHeader>
+
+            <CardContent className="p-0">
+              <Table>
+                <TableHeader>
+                  <TableRow className="bg-muted/50 hover:bg-muted/50">
+                    <TableHead className="px-8 h-14 text-xs font-black uppercase tracking-widest text-muted-foreground">Specialty</TableHead>
+                    <TableHead className="h-14 text-xs font-black uppercase tracking-widest text-muted-foreground">Description</TableHead>
+                    <TableHead className="h-14 text-xs font-black uppercase tracking-widest text-muted-foreground text-right px-8">Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  <AnimatePresence mode="popLayout">
+                    {filteredCategories.length === 0 ? (
+                      <TableRow>
+                        <TableCell colSpan={3} className="py-32 text-center">
+                          <div className="flex flex-col items-center gap-4 text-muted-foreground">
+                            <div className="w-20 h-20 rounded-full bg-muted flex items-center justify-center">
+                              <HugeiconsIcon icon={Search01Icon} className="w-10 h-10 opacity-20" />
+                            </div>
+                            <p className="text-xl font-bold opacity-40">No specialties found</p>
+                            <p className="text-sm">Try adjusting your search criteria.</p>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ) : (
+                      filteredCategories.map((category) => (
+                        <TableRow key={category.id} className="group hover:bg-primary/[0.02] transition-colors border-b">
+                          <TableCell className="px-8 py-6">
+                            <div className="flex items-center gap-4">
+                              <div className="w-12 h-12 rounded-2xl bg-primary/5 text-primary flex items-center justify-center group-hover:scale-110 transition-transform shadow-inner">
+                                <HugeiconsIcon icon={MedicineBottle01Icon} className="w-6 h-6" />
+                              </div>
+                              <div>
+                                <p className="font-black text-lg group-hover:text-primary transition-colors">{category.name}</p>
+                                <p className="text-[10px] font-black uppercase tracking-tighter text-muted-foreground opacity-40 mt-0.5">#{category.id.slice(0, 8)}</p>
+                              </div>
+                            </div>
+                          </TableCell>
+                          <TableCell className="max-w-md py-6">
+                            <p className="text-sm font-medium text-muted-foreground line-clamp-2 leading-relaxed">
+                              {category.description?.trim() || "— No detailed description available —"}
+                            </p>
+                          </TableCell>
+                          <TableCell className="px-8 py-6 text-right">
+                            <div className="flex justify-end gap-3">
+                              <Button
+                                variant="outline"
+                                size="icon"
+                                className="w-11 h-11 rounded-md border-2 hover:bg-primary hover:text-white hover:border-primary transition-all"
+                                onClick={() => handleEdit(category.id)}
+                              >
+                                <HugeiconsIcon icon={Edit02Icon} className="w-5 h-5" />
+                              </Button>
+                              <Button
+                                variant="outline"
+                                size="icon"
+                                className="w-11 h-11 rounded-md border-2 text-rose-600 hover:bg-rose-600 hover:text-white hover:border-rose-600 transition-all"
+                                onClick={() =>
+                                  setDeleteTarget({
+                                    uuid: category.id,
+                                    name: category.name,
+                                  })
+                                }
+                              >
+                                <HugeiconsIcon icon={Delete02Icon} className="w-5 h-5" />
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    )}
+                  </AnimatePresence>
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+        </motion.div>
       </div>
 
       <Dialog open={Boolean(deleteTarget)} onOpenChange={(open) => !open && setDeleteTarget(null)}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Delete Illness Category</DialogTitle>
-            <DialogDescription>
+        <DialogContent className="rounded-[2.5rem] p-8 max-w-md border-2">
+          <DialogHeader className="space-y-4">
+            <div className="w-16 h-16 rounded-3xl bg-rose-100 text-rose-600 flex items-center justify-center mx-auto mb-2">
+              <HugeiconsIcon icon={AlertCircleIcon} className="w-8 h-8" />
+            </div>
+            <DialogTitle className="text-2xl font-black text-center">Confirm Deletion</DialogTitle>
+            <DialogDescription className="text-center text-base font-medium">
               {deleteTarget
-                ? `This will permanently remove "${deleteTarget.name}" from the system.`
-                : "This action will permanently remove the selected illness category."}
+                ? `You are about to permanently remove "${deleteTarget.name}". This action cannot be undone.`
+                : "This action will permanently remove the selected medical specialty."}
             </DialogDescription>
           </DialogHeader>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setDeleteTarget(null)} disabled={isDeleting}>
-              Cancel
+          <DialogFooter className="flex flex-col sm:flex-row gap-3 pt-4 sm:justify-center">
+            <Button variant="outline" onClick={() => setDeleteTarget(null)} disabled={isDeleting} className="h-14 rounded-md flex-1 font-bold">
+              <HugeiconsIcon icon={Cancel01Icon} className="mr-2 w-5 h-5" />
+              Keep Specialty
             </Button>
-            <Button variant="destructive" onClick={handleDelete} disabled={isDeleting}>
-              {isDeleting ? "Deleting..." : "Delete Category"}
+            <Button variant="destructive" onClick={handleDelete} disabled={isDeleting} className="h-14 rounded-md flex-1 font-black shadow-lg shadow-rose-200">
+              <HugeiconsIcon icon={Tick02Icon} className="mr-2 w-5 h-5" />
+              {isDeleting ? "Deleting..." : "Confirm Delete"}
             </Button>
           </DialogFooter>
         </DialogContent>

@@ -221,7 +221,7 @@ export default function IllnessCategoriesPage() {
             </div>
 
             <div className="flex flex-wrap gap-2">
-              <Button onClick={handleSubmit} disabled={!isFormValid || isSaving} className="rounded-2xl">
+              <Button onClick={handleSubmit} disabled={!isFormValid || isSaving} className="rounded-md">
                 <HugeiconsIcon icon={editingId ? Edit02Icon : PlusSignIcon} strokeWidth={1.8} />
                 {isSaving ? "Saving..." : editingId ? "Update Category" : "Add Category"}
               </Button>
@@ -229,7 +229,7 @@ export default function IllnessCategoriesPage() {
                 variant="outline"
                 onClick={resetForm}
                 disabled={isSaving || (!editingId && !form.name && !form.description)}
-                className="rounded-2xl"
+                className="rounded-md"
               >
                 Reset
               </Button>
@@ -287,7 +287,7 @@ export default function IllnessCategoriesPage() {
                           <Button
                             variant="outline"
                             size="sm"
-                            className="rounded-2xl"
+                            className="rounded-md"
                             onClick={() => handleEdit(category.uuid)}
                           >
                             <HugeiconsIcon icon={Edit02Icon} strokeWidth={1.8} />
@@ -296,7 +296,7 @@ export default function IllnessCategoriesPage() {
                           <Button
                             variant="destructive"
                             size="sm"
-                            className="rounded-2xl"
+                            className="rounded-md"
                             onClick={() =>
                               setDeleteTarget({
                                 uuid: category.uuid,

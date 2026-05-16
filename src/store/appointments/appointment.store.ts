@@ -38,6 +38,8 @@ type AppointmentStore = {
      createAppointment: (payload: {
           illnessCategoryId: string
           appointmentPreferredDate: string
+          appointmentPreferredDate2: string
+          appointmentPreferredDate3: string
           description: string
      }) => Promise<void>
      assignAppointment: (payload: AssignPayload) => Promise<void>
@@ -56,12 +58,16 @@ function mapAppointment(apiAppointment: AppointmentApi): Appointment {
           illnessCategory: apiAppointment.illness_category,
           date: apiAppointment.appointment_date,
           preferredDate: apiAppointment.preferred_date,
+          preferredDate2: apiAppointment.preferred_date_2,
+          preferredDate3: apiAppointment.preferred_date_3,
           startTime: apiAppointment.start_time,
           endTime: apiAppointment.end_time,
           doctor: apiAppointment.doctor_name,
           doctorId: apiAppointment.doctor_uuid,
           paymentStatus: apiAppointment.payment_status,
           note: apiAppointment.description ?? "No appointment note provided.",
+          diagnosis: apiAppointment.diagnosis,
+          notes: apiAppointment.notes,
           status: apiAppointment.status
      }
 }
@@ -243,11 +249,13 @@ export const useAppointmentStore = create<AppointmentStore>((set) => ({
           }
      },
 
-     createAppointment: async ({ illnessCategoryId, appointmentPreferredDate, description }) => {
+     createAppointment: async ({ illnessCategoryId, appointmentPreferredDate, appointmentPreferredDate2, appointmentPreferredDate3, description }) => {
           try {
                const response = await appointmentService.createAppointment({
                     illnessCategoryId,
                     appointmentPreferredDate,
+                    appointmentPreferredDate2,
+                    appointmentPreferredDate3,
                     description,
                })
                const appointment = mapAppointment(response.data)

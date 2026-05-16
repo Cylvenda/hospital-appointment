@@ -141,7 +141,7 @@ export default function AddPatientPage() {
             <div className="pt-4">
               <Button
                 type="submit"
-                className="w-full h-12 rounded-2xl bg-primary text-primary-foreground font-bold text-lg shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all"
+                className="w-full h-12 rounded-md bg-primary text-primary-foreground font-bold text-lg shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all"
                 disabled={isSubmitting}
               >
                 {isSubmitting ? (

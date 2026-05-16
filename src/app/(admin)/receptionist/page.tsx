@@ -139,7 +139,7 @@ export default function ReceptionistPage() {
                 Staff currently handling clinic intake.
               </p>
             </div>
-            <Button className="rounded-2xl" onClick={() => setSheetOpen(true)}>Add Receptionist</Button>
+            <Button className="rounded-md" onClick={() => setSheetOpen(true)}>Add Receptionist</Button>
           </div>
 
           <div className="mt-5 space-y-4">

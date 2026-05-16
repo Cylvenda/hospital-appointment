@@ -13,6 +13,8 @@ export type Appointment = {
      fee: string
      illnessCategory: string
      preferredDate: string | null
+     preferredDate2: string | null
+     preferredDate3: string | null
      date: string
      startTime: string | null
      endTime: string | null
@@ -20,6 +22,8 @@ export type Appointment = {
      doctorId: string | null
      paymentStatus: "pending" | "failed" | "completed" | null
      note: string
+     diagnosis: string | null
+     notes: string | null
      status: AppointmentStatus
 }
 
@@ -47,10 +51,14 @@ export type AppointmentApi = {
      illness_category_uuid: string
      description: string | null
      preferred_date: string | null
+     preferred_date_2: string | null
+     preferred_date_3: string | null
      appointment_date: string
      start_time: string | null
      end_time: string | null
      status: AppointmentStatus
+     diagnosis: string | null
+     notes: string | null
      created_at: string
 }
 

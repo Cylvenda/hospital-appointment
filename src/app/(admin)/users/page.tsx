@@ -82,11 +82,11 @@ export default function UsersPage() {
               placeholder="Search user or email..."
             />
           </div>
-          <Button variant="outline" size="lg" className="rounded-2xl">
+          <Button variant="outline" size="lg" className="rounded-md">
             <HugeiconsIcon icon={FilterIcon} strokeWidth={1.8} />
             Filter
           </Button>
-          <Button size="lg" className="rounded-2xl" asChild>
+          <Button size="lg" className="rounded-md" asChild>
             <Link href="/admin/users/create">
               <HugeiconsIcon icon={PlusSignIcon} strokeWidth={1.8} />
               Add User
@@ -151,7 +151,7 @@ export default function UsersPage() {
                   <HugeiconsIcon icon={Shield01Icon} strokeWidth={1.8} className="size-3.5" />
                   {user.status}
                 </span>
-                <Button variant="outline" className="rounded-2xl" disabled>
+                <Button variant="outline" className="rounded-md" disabled>
                   View
                 </Button>
               </div>

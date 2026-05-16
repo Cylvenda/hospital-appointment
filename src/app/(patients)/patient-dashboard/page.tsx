@@ -155,7 +155,7 @@ export default function PatientDashboardPage() {
                                    <div className="flex items-center justify-between">
                                         <div>
                                              <CardTitle className="text-xl">Your Next Visit</CardTitle>
-                                             <CardDescription>Stay prepared for your upcoming consultation.</CardDescription>
+                                             <CardDescription>Stay prepared for your upcoming appointment.</CardDescription>
                                         </div>
                                         <div className="bg-primary/10 p-2 rounded-full">
                                              <HugeiconsIcon icon={Calendar01Icon} className="w-6 h-6 text-primary" />
@@ -191,7 +191,7 @@ export default function PatientDashboardPage() {
                                                        {nextAppointment.status}
                                                   </div>
                                                   <p className="text-sm font-medium text-primary">{nextAppointment.illnessCategory}</p>
-                                                  <Button variant="outline" className="mt-2 rounded-xl" onClick={() => router.push(`/patient-dashboard/appointments/${nextAppointment.id}`)}>
+                                                  <Button variant="outline" className="mt-2 rounded-md" onClick={() => router.push(`/patient-dashboard/appointments/${nextAppointment.id}`)}>
                                                        View Details
                                                   </Button>
                                              </div>
@@ -259,7 +259,7 @@ export default function PatientDashboardPage() {
                                    </div>
                                    {appointments.length > 0 && (
                                         <div className="mt-4 p-4">
-                                             <Button variant="ghost" className="w-full rounded-xl text-sm" onClick={() => router.push("/patient-dashboard/appointments/all")}>
+                                             <Button variant="ghost" className="w-full rounded-md text-sm" onClick={() => router.push("/patient-dashboard/appointments/all")}>
                                                   View All History
                                              </Button>
                                         </div>

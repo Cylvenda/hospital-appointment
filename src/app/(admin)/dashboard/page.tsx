@@ -163,7 +163,7 @@ export default function DashboardPage() {
               </span>
               <div className="space-y-2">
                 <h1 className="max-w-xl text-3xl font-semibold tracking-tight md:text-4xl">
-                  Keep appointments moving smoothly from booking to consultation.
+                  Keep appointments moving smoothly from booking to appointment.
                 </h1>
                 <p className="max-w-2xl text-sm leading-6 text-white/80 md:text-base">
                   Monitor today’s Hospital flow, reduce waiting time, and help your
@@ -385,7 +385,7 @@ export default function DashboardPage() {
           <CardHeader className="border-b">
             <CardTitle>Recent Activity</CardTitle>
             <CardDescription>
-              Live updates from booking, reception, and consultation desks.
+              Live updates from booking, reception, and appointment desks.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4 py-4">

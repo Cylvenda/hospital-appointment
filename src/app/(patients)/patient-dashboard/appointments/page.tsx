@@ -29,6 +29,8 @@ export default function PatientAppointmentsPage() {
 
   const [illnessCategoryId, setIllnessCategoryId] = useState("")
   const [appointmentPreferredDate, setAppointmentPreferredDate] = useState("")
+  const [appointmentPreferredDate2, setAppointmentPreferredDate2] = useState("")
+  const [appointmentPreferredDate3, setAppointmentPreferredDate3] = useState("")
   const [description, setDescription] = useState("")
   const [submitting, setSubmitting] = useState(false)
 
@@ -41,7 +43,7 @@ export default function PatientAppointmentsPage() {
   const prevStep = () => setStep((s) => (s > 1 ? ((s - 1) as Step) : s))
 
   const canProceedStep1 = !!illnessCategoryId
-  const canProceedStep2 = !!appointmentPreferredDate
+  const canProceedStep2 = !!appointmentPreferredDate && !!appointmentPreferredDate2 && !!appointmentPreferredDate3
   const canSubmit = !!description.trim()
 
   const handleSubmit = async () => {
@@ -52,6 +54,8 @@ export default function PatientAppointmentsPage() {
       await createAppointment({
         illnessCategoryId,
         appointmentPreferredDate,
+        appointmentPreferredDate2,
+        appointmentPreferredDate3,
         description: description.trim(),
       })
 
@@ -61,6 +65,8 @@ export default function PatientAppointmentsPage() {
       setStep(1)
       setIllnessCategoryId("")
       setAppointmentPreferredDate("")
+      setAppointmentPreferredDate2("")
+      setAppointmentPreferredDate3("")
       setDescription("")
     } catch {
       toast.error("Failed to create appointment.")
@@ -75,7 +81,7 @@ export default function PatientAppointmentsPage() {
       <div>
         <h1 className="text-2xl font-semibold">Book Appointment</h1>
         <p className="text-sm text-muted-foreground">
-          Follow the steps to request a consultation with a doctor.
+          Follow the steps to request an appointment with a doctor.
         </p>
       </div>
 
@@ -134,13 +140,35 @@ export default function PatientAppointmentsPage() {
           {/* STEP 2 */}
           {step === 2 && (
             <div className="space-y-2">
-              <label className="text-sm font-medium">Preferred Date</label>
-              <Input
-                className="rounded-md"
-                type="date"
-                value={appointmentPreferredDate}
-                onChange={(e) => setAppointmentPreferredDate(e.target.value)}
-              />
+              <div className="grid gap-4 sm:grid-cols-3">
+                <div className="space-y-2">
+                  <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Choice 1</label>
+                  <Input
+                    className="rounded-xl h-11"
+                    type="date"
+                    value={appointmentPreferredDate}
+                    onChange={(e) => setAppointmentPreferredDate(e.target.value)}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Choice 2</label>
+                  <Input
+                    className="rounded-xl h-11"
+                    type="date"
+                    value={appointmentPreferredDate2}
+                    onChange={(e) => setAppointmentPreferredDate2(e.target.value)}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Choice 3</label>
+                  <Input
+                    className="rounded-xl h-11"
+                    type="date"
+                    value={appointmentPreferredDate3}
+                    onChange={(e) => setAppointmentPreferredDate3(e.target.value)}
+                  />
+                </div>
+              </div>
 
               <div className="flex gap-2 pt-4 rounded-md">
                 <Button variant="outline" onClick={prevStep} className="rounded-md">

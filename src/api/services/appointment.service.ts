@@ -18,6 +18,8 @@ type AssignAppointmentPayload = {
 type CreateAppointmentPayload = {
      illnessCategoryId: string
      appointmentPreferredDate: string
+     appointmentPreferredDate2: string
+     appointmentPreferredDate3: string
      description: string
 }
 
@@ -84,6 +86,8 @@ export const appointmentService = {
           const response = await api.post<AppointmentApi>(API_ENDPOINTS.APPOINTMENTS, {
                illness_category_uuid: payload.illnessCategoryId,
                preferred_date: payload.appointmentPreferredDate,
+               preferred_date_2: payload.appointmentPreferredDate2,
+               preferred_date_3: payload.appointmentPreferredDate3,
                description: payload.description,
           })
 

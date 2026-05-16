@@ -103,7 +103,7 @@ export default function ProfilePage() {
                 Keep your admin information current for notifications and audit logs.
               </p>
             </div>
-            <Button className="rounded-2xl" onClick={() => void handleSave()}>
+            <Button className="rounded-md" onClick={() => void handleSave()}>
               <HugeiconsIcon icon={Edit02Icon} strokeWidth={1.8} />
               Save Changes
             </Button>

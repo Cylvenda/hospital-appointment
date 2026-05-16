@@ -12,7 +12,7 @@ import {
      SidebarRail,
 } from "@/components/ui/sidebar"
 import { HugeiconsIcon } from "@hugeicons/react"
-import { LayoutBottomIcon, RoboticIcon, Settings05Icon, DashboardCircleIcon, Doctor01Icon, UserAccountIcon, Loading, CallDoneIcon, CheckCheck, AllahFreeIcons, Bell } from "@hugeicons/core-free-icons"
+import { LayoutBottomIcon, RoboticIcon, Settings05Icon, DashboardCircleIcon, Doctor01Icon, UserAccountIcon, Loading, CallDoneIcon, CheckCheck, AllahFreeIcons, Bell, Cancel01Icon } from "@hugeicons/core-free-icons"
 import { Separator } from "./ui/separator"
 import { useAuthUserStore } from "@/store/auth/userAuth.store"
 
@@ -39,13 +39,6 @@ const navMain = [
                     ),
                },
                {
-                    title: "Accepted",
-                    url: "/doctor-dashboard/appointments/accepted",
-                    icon: (
-                         <HugeiconsIcon color="var(--primary)" icon={CheckCheck} size={"17"} />
-                    ),
-               },
-               {
                     title: "Completed",
                     url: "/doctor-dashboard/appointments/completed",
                     icon: (
@@ -56,14 +49,7 @@ const navMain = [
                     title: "Cancelled",
                     url: "/doctor-dashboard/appointments/cancelled",
                     icon: (
-                         <HugeiconsIcon color="var(--primary)" icon={CallDoneIcon} size={"17"} />
-                    ),
-               },
-               {
-                    title: "All",
-                    url: "/doctor-dashboard/appointments/all",
-                    icon: (
-                         <HugeiconsIcon color="var(--primary)" icon={AllahFreeIcons} size={"17"} />
+                         <HugeiconsIcon color="var(--primary)" icon={Cancel01Icon} size={"17"} />
                     ),
                },
           ],

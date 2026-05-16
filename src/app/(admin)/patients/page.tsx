@@ -360,11 +360,11 @@ export default function PatientsPage() {
               className="h-11 rounded-2xl border-2 border-sidebar-border pr-4 pl-11"
             />
           </div>
-          <Button variant="outline" size="lg" className="rounded-2xl">
+          <Button variant="outline" size="lg" className="rounded-md">
             <HugeiconsIcon icon={FilterIcon} strokeWidth={1.8} />
             Filter
           </Button>
-          <Button size="lg" className="rounded-2xl" onClick={handleCreate}>
+          <Button size="lg" className="rounded-md" onClick={handleCreate}>
             <HugeiconsIcon icon={PlusSignIcon} strokeWidth={1.8} />
             Add Patient
           </Button>
@@ -405,7 +405,7 @@ export default function PatientsPage() {
             variant="outline"
             onClick={() => setCurrentPage((page) => Math.max(1, page - 1))}
             disabled={currentPage === 1}
-            className="rounded-2xl"
+            className="rounded-md"
           >
             <HugeiconsIcon icon={ArrowLeft01Icon} strokeWidth={1.8} />
             Previous
@@ -414,7 +414,7 @@ export default function PatientsPage() {
             variant="outline"
             onClick={() => setCurrentPage((page) => Math.min(totalPages, page + 1))}
             disabled={currentPage === totalPages}
-            className="rounded-2xl"
+            className="rounded-md"
           >
             Next
             <HugeiconsIcon icon={ArrowRight01Icon} strokeWidth={1.8} />

@@ -19,6 +19,7 @@ import Image from "next/image"
 
 type Props = {
      appointmentId: string
+     fee: string
      disabled?: boolean
 }
 
@@ -47,7 +48,7 @@ function normalizeTzPhone(phone: string): string {
      return cleaned
 }
 
-export const PayingForAppointment = ({ appointmentId, disabled }: Props) => {
+export const PayingForAppointment = ({ appointmentId, fee, disabled }: Props) => {
      const { user } = useAuthUserStore()
      const { PayingAppointment } = useAppointmentStore()
 
@@ -132,11 +133,10 @@ export const PayingForAppointment = ({ appointmentId, disabled }: Props) => {
                                         to complete the transaction.
                                    </p>
 
-                                   {/* FEE */}
                                    <div className="text-xs bg-muted/50 border rounded-md px-3 py-2 flex justify-between items-center">
                                         <span>Transaction Fee</span>
                                         <span className="font-medium text-foreground">
-                                             5,000 TZS
+                                             {Number(fee).toLocaleString()} TZS
                                         </span>
                                    </div>
                               </div>
@@ -156,7 +156,7 @@ export const PayingForAppointment = ({ appointmentId, disabled }: Props) => {
                                         ].map((item, index) => (
                                              <div
                                                   key={index}
-                                                  className="flex-1 flex items-center justify-center bg-white border rounded-lg h-14"
+                                                  className="flex-1 flex items-center justify-center bg-white dark:bg-slate-900 border rounded-lg h-14"
                                              >
                                                   <Image
                                                        src={item.src}
@@ -171,7 +171,7 @@ export const PayingForAppointment = ({ appointmentId, disabled }: Props) => {
                               </div>
 
                               {/* NOTE */}
-                              <div className="rounded-lg border bg-muted/40 p-3 text-xs leading-relaxed text-muted-foreground">
+                              <div className="rounded-lg border bg-muted/40 dark:bg-muted/10 p-3 text-xs leading-relaxed text-muted-foreground">
                                    <p>
                                         Only{" "}
                                         <span className="font-medium text-foreground">

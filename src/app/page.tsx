@@ -115,7 +115,7 @@ export default function Page() {
             <Button variant="ghost" asChild className="hidden sm:inline-flex">
               <Link href="/login">Sign in</Link>
             </Button>
-            <Button asChild className="rounded-full">
+            <Button asChild className="rounded-md">
               <Link href="/register">Get Started</Link>
             </Button>
             <ThemeToggle />
@@ -143,7 +143,7 @@ export default function Page() {
                 </p>
 
                 <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center lg:justify-start">
-                  <Button size="lg" asChild className="h-12 rounded-full px-8 text-base">
+                  <Button size="lg" asChild className="h-12 rounded-md px-8 text-base">
                     <Link href="/register">
                       <HugeiconsIcon icon={Calendar01Icon} className="mr-2" size={18} />
                       Book Your First Appointment
@@ -153,7 +153,7 @@ export default function Page() {
                     size="lg"
                     variant="outline"
                     asChild
-                    className="h-12 rounded-full px-8 text-base"
+                    className="h-12 rounded-md px-8 text-base"
                   >
                     <Link href="/login">
                       I have an account
@@ -190,7 +190,7 @@ export default function Page() {
                   </div>
 
                   <div className="mt-6 space-y-4">
-                    <div className="rounded-2xl bg-muted p-4">
+                    <div className="rounded-md bg-muted p-4">
                       <div className="flex items-center gap-3">
                         <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-green-500/10">
                           <HugeiconsIcon icon={CheckmarkCircle02Icon} className="text-green-600" size={20} />
@@ -202,7 +202,7 @@ export default function Page() {
                       </div>
                     </div>
 
-                    <div className="rounded-2xl bg-muted p-4">
+                    <div className="rounded-md bg-muted p-4">
                       <div className="flex items-center gap-3">
                         <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-500/10">
                           <HugeiconsIcon icon={Clock01Icon} className="text-amber-600" size={20} />
@@ -294,7 +294,7 @@ export default function Page() {
             </div>
 
             <div className="mt-12 text-center">
-              <Button size="lg" asChild className="h-12 rounded-full px-8">
+              <Button size="lg" asChild className="h-12 rounded-md px-8">
                 <Link href="/register">
                   Start Your Journey
                   <HugeiconsIcon icon={SmartPhone01Icon} className="ml-2" size={18} />
@@ -416,10 +416,10 @@ export default function Page() {
                       Join thousands of patients who have simplified their healthcare journey.
                     </p>
                     <div className="mt-6 flex flex-col gap-3">
-                      <Button size="lg" asChild className="h-12 rounded-full">
+                      <Button size="lg" asChild className="h-12 rounded-md">
                         <Link href="/register">Create Free Account</Link>
                       </Button>
-                      <Button size="lg" variant="outline" asChild className="h-12 rounded-full">
+                      <Button size="lg" variant="outline" asChild className="h-12 rounded-md">
                         <Link href="/login">Sign In</Link>
                       </Button>
                     </div>

@@ -39,6 +39,13 @@ export function NotificationDropdown() {
     }, [open, fetchNotifications])
 
     const getNotificationLink = (notification: Notification) => {
+        if (notification.appointment_uuid) {
+            if (role === "patient") return `/patient-dashboard/appointments/${notification.appointment_uuid}`
+            if (role === "admin") return `/appointments/${notification.appointment_uuid}`
+            if (role === "receptionist") return `/receptionist-dashboard/appointments/${notification.appointment_uuid}`
+            if (role === "doctor") return `/doctor-dashboard/appointments/${notification.appointment_uuid}`
+        }
+
         const notificationsPath = getNotificationsPath(role)
         const params = new URLSearchParams({ notificationId: notification.uuid })
         return `${notificationsPath}?${params.toString()}`
@@ -79,7 +86,7 @@ export function NotificationDropdown() {
                     )}
                 </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-80 md:w-96 ">
+            <DropdownMenuContent align="end" className="w-80 md:w-xl! rounded-2xl border-2!">
                 <DropdownMenuLabel className="flex items-center justify-between px-3 py-2">
                     <span className="font-semibold">Notifications</span>
                     {unreadCount > 0 && (
