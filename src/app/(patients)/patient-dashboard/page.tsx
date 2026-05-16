@@ -61,7 +61,7 @@ export default function PatientDashboardPage() {
 
                     {/* QUICK ACTIONS */}
                     <div className="flex gap-2">
-                         <Button className="rounded-md" onClick={() => router.push("/patient/appointments")}>
+                         <Button className="rounded-md" onClick={() => router.push("/patient-dashboard/appointments")}>
                               + Book Appointment
                          </Button>
 

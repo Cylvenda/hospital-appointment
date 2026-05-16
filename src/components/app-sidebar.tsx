@@ -25,6 +25,13 @@ const navMain = [
     )
   },
   {
+    title: "Illness Categories",
+    url: "/illness-categories",
+    icon: (
+      <HugeiconsIcon color="var(--primary)" icon={StethoscopeIcon} strokeWidth={2} />
+    )
+  },
+  {
     title: "Appointments",
     url: "/appointments/all",
     icon: (
@@ -75,13 +82,6 @@ const navMain = [
     url: "/doctors",
     icon: (
       <HugeiconsIcon color="var(--primary)" icon={Doctor01Icon} strokeWidth={2} />
-    )
-  },
-  {
-    title: "Illness Categories",
-    url: "/illness-categories",
-    icon: (
-      <HugeiconsIcon color="var(--primary)" icon={StethoscopeIcon} strokeWidth={2} />
     )
   },
   {

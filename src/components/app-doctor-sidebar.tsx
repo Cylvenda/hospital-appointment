@@ -69,13 +69,6 @@ const navMain = [
           ],
      },
      {
-          title: "Doctors",
-          url: "/doctor-dashboard/doctors",
-          icon: (
-               <HugeiconsIcon color="var(--primary)" icon={Doctor01Icon} strokeWidth={2} />
-          ),
-     },
-     {
           title: "Profile",
           url: "/doctor-dashboard/profile",
           icon: (
