@@ -1,5 +1,6 @@
 import axios from "axios"
 import { API_ENDPOINTS } from "./endpoints"
+import { toast } from "react-toastify"
 
 const api = axios.create({
      baseURL: API_ENDPOINTS.API_ROOT,
@@ -22,6 +23,14 @@ api.interceptors.response.use(
                     return api(originalRequest)
                } catch (refreshError) {
                     return Promise.reject(refreshError)
+               }
+          }
+
+          // Handle incomplete profile backend blocks
+          if (error.response?.status === 403 && error.response?.data?.profile_incomplete) {
+               if (typeof window !== "undefined" && window.location.pathname !== "/patient-dashboard/profile") {
+                    toast.warning("Access Restricted: Please complete your patient profile details to perform this action.")
+                    window.location.href = "/patient-dashboard/profile"
                }
           }
 

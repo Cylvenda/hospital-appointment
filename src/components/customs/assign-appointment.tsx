@@ -14,6 +14,8 @@ import {
      CardTitle,
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
+import { DatePicker } from "@/components/ui/date-picker"
+import { TimePicker } from "@/components/ui/time-picker"
 import {
      Select,
      SelectContent,
@@ -259,26 +261,22 @@ export default function AssignAppointment({
                                                   <label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-1">
                                                        Slot Date
                                                   </label>
-                                                  <div className="relative">
-                                                       <Input
-                                                            type="date"
-                                                            value={appointmentDate}
-                                                            onChange={(event) => setAppointmentDate(event.target.value)}
-                                                            className="h-14 rounded-2xl border-2 border-muted bg-background focus:border-primary transition-all text-sm font-bold px-6"
-                                                            disabled={!isPaymentComplete || loading}
-                                                       />
-                                                  </div>
+                                                  <DatePicker
+                                                       value={appointmentDate}
+                                                       onChange={setAppointmentDate}
+                                                       className="h-14 rounded-2xl border-2 border-muted bg-background focus:border-primary transition-all text-sm font-bold text-center"
+                                                       disabled={!isPaymentComplete || loading}
+                                                  />
                                              </div>
 
                                              <div className="space-y-2">
                                                   <label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-1">
                                                        Start Time
                                                   </label>
-                                                  <Input
-                                                       type="time"
+                                                  <TimePicker
                                                        value={startTime}
-                                                       onChange={(event) => setStartTime(event.target.value)}
-                                                       className="h-14 rounded-2xl border-2 border-muted bg-background focus:border-primary transition-all text-sm font-bold px-6"
+                                                       onChange={setStartTime}
+                                                       className="h-14 rounded-2xl border-2 border-muted bg-background focus:border-primary transition-all text-sm font-bold text-center"
                                                        disabled={!isPaymentComplete || loading}
                                                   />
                                              </div>
@@ -287,11 +285,10 @@ export default function AssignAppointment({
                                                   <label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-1">
                                                        End Time
                                                   </label>
-                                                  <Input
-                                                       type="time"
+                                                  <TimePicker
                                                        value={endTime}
-                                                       onChange={(event) => setEndTime(event.target.value)}
-                                                       className="h-14 rounded-2xl border-2 border-muted bg-background focus:border-primary transition-all text-sm font-bold px-6"
+                                                       onChange={setEndTime}
+                                                       className="h-14 rounded-2xl border-2 border-muted bg-background focus:border-primary transition-all text-sm font-bold text-center"
                                                        disabled={!isPaymentComplete || loading}
                                                   />
                                              </div>

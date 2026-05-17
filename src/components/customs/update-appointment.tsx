@@ -13,6 +13,7 @@ import {
 import { Button } from "@/components/ui/button"
 import { Input } from "../ui/input"
 import { Textarea } from "../ui/textarea"
+import { DatePicker } from "@/components/ui/date-picker"
 import { toast } from "react-toastify"
 import { useAppointmentStore } from "@/store/appointments/appointment.store"
 import type { Appointment } from "@/store/appointments/appointment.types"
@@ -93,15 +94,11 @@ export const UpdateAppointmentDialog = ({ appointment }: Props) => {
                                    ].map((item, idx) => (
                                         <div key={idx} className="space-y-2 group">
                                              <label className="text-[10px] font-black uppercase tracking-tighter text-muted-foreground ml-1">{item.label}</label>
-                                             <div className="relative">
-                                                  <HugeiconsIcon icon={Calendar03Icon} className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
-                                                  <Input
-                                                       type="date"
-                                                       value={item.value}
-                                                       onChange={(e) => item.setter(e.target.value)}
-                                                       className="rounded-2xl h-12 pl-11 border-2 focus:border-primary transition-all bg-muted/20 focus:bg-background font-bold"
-                                                  />
-                                             </div>
+                                             <DatePicker
+                                                  value={item.value}
+                                                  onChange={item.setter}
+                                                  className="rounded-2xl h-12 border-2 focus:border-primary transition-all bg-muted/20 focus:bg-background font-bold text-center"
+                                             />
                                         </div>
                                    ))}
                               </div>

@@ -22,19 +22,19 @@ import {
 
 const patientBenefits = [
   {
-    icon: Calendar01Icon,
-    title: "Book Anytime, Anywhere",
-    description: "No more waiting in long lines. Schedule your hospital visit from home, work, or on the go.",
+    icon: UserAccountIcon,
+    title: "Clinical Pre-Registration",
+    description: "Build your complete verified patient identity with structured location, demographic, and next-of-kin entries to skip hospital queues.",
   },
   {
-    icon: Clock01Icon,
-    title: "Know Your Status",
-    description: "See exactly where your appointment stands — pending, confirmed, or completed — in real time.",
+    icon: Calendar01Icon,
+    title: "Appointment Management",
+    description: "Choose specialized clinics, select three preferred dates, and detail symptoms within a single card booking console.",
   },
   {
     icon: HeartCheckIcon,
-    title: "Peace of Mind",
-    description: "Receive updates so you never wonder if your appointment is still on. We'll keep you informed.",
+    title: "Dynamic Slot Verification",
+    description: "Receive instant updates on receptionist scheduling slots, keeping your clinical visits organized and verified.",
   },
 ]
 
@@ -42,26 +42,26 @@ const howItWorks = [
   {
     step: 1,
     icon: UserAccountIcon,
-    title: "Sign Up",
-    description: "Create your account with your email and phone. It takes less than 2 minutes.",
+    title: "1. Digital Pre-Registration",
+    description: "Sign up and complete your comprehensive health profile, next of kin details, and Tanzanian region mapping.",
   },
   {
     step: 2,
     icon: MedicalFileIcon,
-    title: "Book Your Visit",
-    description: "Choose what you need help with and pick your preferred date. Submit your request.",
+    title: "2. Request Your Slot",
+    description: "Specify your clinic type, three preferred dates, and present your diagnostic symptoms in a bento scheduler.",
   },
   {
     step: 3,
     icon: CheckmarkCircle02Icon,
-    title: "Get Confirmed",
-    description: "Our team reviews and confirms your appointment. You'll see the update in your dashboard.",
+    title: "3. Receptionist Verification",
+    description: "Our front desk verifies your pre-registration status and allocates your verified clinical consulting slot.",
   },
   {
     step: 4,
     icon: Hospital01Icon,
-    title: "Visit the Hospital",
-    description: "Show up on your confirmed date. No paperwork, no confusion — just show your appointment.",
+    title: "4. Fast-Track Care",
+    description: "Proceed directly to diagnostics upon arrival. Zero manual paperwork, zero check-in delays.",
   },
 ]
 
@@ -95,8 +95,8 @@ export default function Page() {
               <HugeiconsIcon icon={StethoscopeIcon} size={20} />
             </div>
             <div>
-              <p className="text-sm font-semibold tracking-[0.15em] text-primary uppercase">PAMS</p>
-              <p className="text-xs text-muted-foreground">Your Health, Simplified</p>
+              <p className="text-sm font-semibold tracking-[0.15em] text-primary uppercase">DPAMS</p>
+              <p className="text-[10px] text-muted-foreground font-semibold">Pre-Registration & Appointments</p>
             </div>
           </Link>
 
@@ -130,23 +130,23 @@ export default function Page() {
           <div className="relative mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
             <div className="grid gap-12 lg:grid-cols-2 lg:items-center">
               <div className="text-center lg:text-left">
-              
+
 
                 <h1 className="mt-6 text-4xl font-bold tracking-tight text-balance sm:text-5xl lg:text-6xl">
-                  Healthcare appointments,{" "}
-                  <span className="text-primary">made simple</span>
+                  Digital pre-registration &{" "}
+                  <span className="text-primary">appointments</span>
                 </h1>
 
                 <p className="mt-6 text-lg leading-8 text-muted-foreground">
-                  Book your hospital visits without the stress. Track your appointments.
-                  Get updates. All from one place — designed for patients like you.
+                  Build your verified patient profile and manage your clinical appointments stress-free.
+                  A unified system designed to fast-track your hospital visits.
                 </p>
 
                 <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center lg:justify-start">
                   <Button size="lg" asChild className="h-12 rounded-md px-8 text-base">
                     <Link href="/register">
                       <HugeiconsIcon icon={Calendar01Icon} className="mr-2" size={18} />
-                      Book Your First Appointment
+                      Pre-Register & Book Now
                     </Link>
                   </Button>
                   <Button
@@ -228,14 +228,13 @@ export default function Page() {
         <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
           <div className="text-center">
             <p className="text-sm font-semibold tracking-[0.15em] text-primary uppercase">
-              Why Patients Love Us
+              Dual-Purpose Platform
             </p>
             <h2 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">
-              Healthcare that fits your life
+              Healthcare pre-registration and scheduling, unified
             </h2>
             <p className="mx-auto mt-4 max-w-2xl text-muted-foreground">
-              We believe getting medical care should be as easy as ordering food or booking a ride.
-              Simple, clear, and stress-free.
+              We leverage digital pre-registration and dynamic appointment tools to eliminate manual hospital intake bottlenecks entirely.
             </p>
           </div>
 
@@ -256,18 +255,130 @@ export default function Page() {
           </div>
         </section>
 
+        {/* Pre-Registration Feature Spotlight Section */}
+        <section id="pre-registration" className="relative overflow-hidden bg-gradient-to-br from-emerald-500/5 via-background to-teal-500/10 py-16 sm:py-24 border-t border-b border-border/50">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div className="grid gap-12 lg:grid-cols-12 lg:items-center">
+
+              {/* Left Side: Rich description of Pre-registration */}
+              <div className="lg:col-span-7 space-y-6">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-xs font-bold uppercase tracking-wider">
+                  Clinical Pre-Registration
+                </div>
+                <h2 className="text-3xl font-extrabold tracking-tight sm:text-4xl">
+                  Eliminate Hospital Waiting Times With <span className="text-emerald-500">Digital Pre-Registration</span>
+                </h2>
+                <p className="text-muted-foreground leading-relaxed text-lg">
+                  Hospital front desks spend up to 25 minutes collecting manual paperwork from new patients.
+                  Our pre-registration protocol lets you supply crucial details securely from home so doctors have your records before you step in.
+                </p>
+
+                <div className="grid gap-4 sm:grid-cols-2 mt-8">
+                  <div className="flex gap-3">
+                    <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-emerald-500/10 text-emerald-500">
+                      <HugeiconsIcon icon={CheckmarkCircle02Icon} size={14} />
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-sm">Geographic Verification</h4>
+                      <p className="text-xs text-muted-foreground mt-1">Live Tanzanian administrative region and constituent district mapping.</p>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-3">
+                    <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-emerald-500/10 text-emerald-500">
+                      <HugeiconsIcon icon={CheckmarkCircle02Icon} size={14} />
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-sm">Emergency Next-of-Kin</h4>
+                      <p className="text-xs text-muted-foreground mt-1">Normalized table relations ensuring clinical security in critical moments.</p>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-3">
+                    <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-emerald-500/10 text-emerald-500">
+                      <HugeiconsIcon icon={CheckmarkCircle02Icon} size={14} />
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-sm">Automated Completeness Check</h4>
+                      <p className="text-xs text-muted-foreground mt-1">Guarantees that essential healthcare entries are 100% complete before booking.</p>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-3">
+                    <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-emerald-500/10 text-emerald-500">
+                      <HugeiconsIcon icon={CheckmarkCircle02Icon} size={14} />
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-sm">Instant Access Activation</h4>
+                      <p className="text-xs text-muted-foreground mt-1">Unlocks full digital appointment and scheduling features immediately.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Right Side: A visual interactive component depicting a "Patient File Pre-Registered" */}
+              <div className="lg:col-span-5 relative">
+                <div className="absolute -inset-1 rounded-3xl bg-gradient-to-tr from-emerald-500 to-teal-500 opacity-20 blur-lg" />
+                <div className="relative rounded-3xl border border-border bg-card/90 p-6 shadow-2xl backdrop-blur sm:p-8">
+                  <div className="flex items-center justify-between border-b border-border pb-4">
+                    <div className="flex items-center gap-3">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500/10">
+                        <HugeiconsIcon icon={MedicalFileIcon} className="text-emerald-500" size={20} />
+                      </div>
+                      <div>
+                        <h4 className="font-bold text-sm">Patient Clinical Profile</h4>
+                        <p className="text-xs text-muted-foreground text-[10px]">ID: #P-29831-26</p>
+                      </div>
+                    </div>
+                    <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2.5 py-0.5 text-xs font-bold text-emerald-500 border border-emerald-500/20">
+                      Pre-Registered
+                    </span>
+                  </div>
+
+                  <div className="mt-6 space-y-4 text-sm">
+                    <div className="flex justify-between border-b border-border pb-2">
+                      <span className="text-muted-foreground text-xs">Full Name</span>
+                      <span className="font-medium text-xs">Stanslaus Ndossa</span>
+                    </div>
+                    <div className="flex justify-between border-b border-border pb-2">
+                      <span className="text-muted-foreground text-xs">Geographic Region</span>
+                      <span className="font-medium text-xs">Dar es Salaam (Kinondoni)</span>
+                    </div>
+                    <div className="flex justify-between border-b border-border pb-2">
+                      <span className="text-muted-foreground text-xs">Emergency Next of Kin</span>
+                      <span className="font-medium text-xs">Brayan Mlawa (Brother)</span>
+                    </div>
+                    <div className="flex justify-between border-b border-border pb-2">
+                      <span className="text-muted-foreground text-xs">Clinical Status</span>
+                      <span className="font-medium text-xs text-emerald-500">100% Verified & Valid</span>
+                    </div>
+
+                    <div className="pt-2">
+                      <div className="flex items-center justify-between text-xs font-semibold text-emerald-500 bg-emerald-500/10 rounded-xl p-3 border border-emerald-500/20">
+                        <span>Unlocked Booking Portal</span>
+                        <HugeiconsIcon icon={CheckmarkCircle02Icon} size={16} />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </section>
+
         {/* How It Works Section */}
         <section id="how-it-works" className="relative overflow-hidden bg-muted/30">
           <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
             <div className="text-center">
               <p className="text-sm font-semibold tracking-[0.15em] text-primary uppercase">
-                Simple Steps
+                Structured Steps
               </p>
               <h2 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">
-                Book your appointment in minutes
+                Pre-register and schedule in minutes
               </h2>
               <p className="mx-auto mt-4 max-w-2xl text-muted-foreground">
-                No complicated forms. No phone calls. Just four simple steps to get the care you need.
+                No complicated intake forms at the clinic. Complete your pre-registration and schedule appointments seamlessly.
               </p>
             </div>
 
@@ -323,7 +434,7 @@ export default function Page() {
                   </div>
                   <div className="flex items-center gap-2 rounded-full bg-primary-foreground/10 px-4 py-2 text-sm">
                     <HugeiconsIcon icon={CheckmarkCircle02Icon} size={16} />
-                    <span>HIPAA compliant</span>
+                    <span>Securing your data</span>
                   </div>
                 </div>
               </div>
@@ -365,7 +476,7 @@ export default function Page() {
             <div className="grid gap-12 lg:grid-cols-2">
               <div>
                 <p className="text-sm font-semibold tracking-[0.15em] text-primary uppercase">
-                 {" We're Here to Help"}
+                  {" We're Here to Help"}
                 </p>
                 <h2 className="mt-3 text-3xl font-bold tracking-tight">
                   Need assistance? Reach out anytime.
@@ -441,13 +552,13 @@ export default function Page() {
                   <HugeiconsIcon icon={StethoscopeIcon} size={20} />
                 </div>
                 <div>
-                  <p className="font-semibold tracking-[0.15em] text-primary uppercase">PAMS</p>
-                  <p className="text-xs text-muted-foreground">Patient Appointment Management</p>
+                  <p className="font-semibold tracking-[0.15em] text-primary uppercase">DPAMS</p>
+                  <p className="text-xs text-muted-foreground">Digital Patient Pre-Registration and Appointment Management</p>
                 </div>
               </div>
               <p className="mt-4 max-w-sm text-sm text-muted-foreground leading-relaxed">
                 Making healthcare accessible and stress-free for every patient.
-                Book appointments, track your visits, and stay informed — all in one place.
+                Complete pre-registration, book slots, and stay informed — all in one place.
               </p>
             </div>
 
@@ -465,14 +576,14 @@ export default function Page() {
               <p className="font-semibold">Contact</p>
               <div className="mt-4 flex flex-col gap-2 text-sm text-muted-foreground">
                 <p>+255 700 000 000</p>
-                <p>support@pamshealth.com</p>
+                <p>support@dpamshealth.com</p>
                 <p>Mon — Sat, 8AM — 6PM</p>
               </div>
             </div>
           </div>
 
           <div className="mt-12 border-t border-border pt-8 text-center text-sm text-muted-foreground">
-            <p>© {new Date().getFullYear()} PAMS. Made with care for patients everywhere.</p>
+            <p>© {new Date().getFullYear()} DPAMS. Made with care for patients everywhere.</p>
           </div>
         </div>
       </footer>

@@ -96,10 +96,8 @@ export default function ReceptionistDashboardPage() {
                {/* HERO SECTION */}
                <motion.div 
                     variants={itemVariants}
-                    className="relative overflow-hidden rounded-[2.5rem] bg-linear-to-br from-primary/90 via-primary to-indigo-600 p-8 text-white shadow-2xl"
+                    className="relative overflow-hidden rounded-md bg-primary p-8 text-white shadow-2xl"
                >
-                    <div className="absolute right-0 top-0 -mr-20 -mt-20 h-80 w-80 rounded-full bg-white/10 blur-3xl" />
-                    <div className="absolute bottom-0 left-0 -ml-20 -mb-20 h-60 w-60 rounded-full bg-indigo-400/20 blur-3xl" />
                     
                     <div className="relative z-10 flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
                          <div className="space-y-2">
@@ -139,9 +137,9 @@ export default function ReceptionistDashboardPage() {
                     
                     {/* STATS SECTION (Row 1) */}
                     <motion.div variants={itemVariants} className="lg:col-span-1">
-                         <Card className="h-full rounded-[2rem] border-none bg-blue-50/50 dark:bg-blue-900/10 shadow-sm transition-all hover:shadow-md">
+                         <Card className="h-full rounded-md border-none bg-blue-50/50 dark:bg-blue-900/10 shadow-sm transition-all hover:shadow-md">
                               <CardContent className="p-6 flex flex-col justify-between h-full">
-                                   <div className="w-12 h-12 rounded-2xl bg-blue-500/10 flex items-center justify-center mb-4">
+                                   <div className="w-12 h-12 rounded-md bg-blue-500/10 flex items-center justify-center mb-4">
                                         <HugeiconsIcon icon={Person} className="w-6 h-6 text-blue-600" />
                                    </div>
                                    <div>
@@ -156,9 +154,9 @@ export default function ReceptionistDashboardPage() {
                     </motion.div>
 
                     <motion.div variants={itemVariants} className="lg:col-span-1">
-                         <Card className="h-full rounded-[2rem] border-none bg-amber-50/50 dark:bg-amber-900/10 shadow-sm transition-all hover:shadow-md">
+                         <Card className="h-full rounded-md border-none bg-amber-50/50 dark:bg-amber-900/10 shadow-sm transition-all hover:shadow-md">
                               <CardContent className="p-6 flex flex-col justify-between h-full">
-                                   <div className="w-12 h-12 rounded-2xl bg-amber-500/10 flex items-center justify-center mb-4">
+                                   <div className="w-12 h-12 rounded-md bg-amber-500/10 flex items-center justify-center mb-4">
                                         <HugeiconsIcon icon={HourglassIcon} className="w-6 h-6 text-amber-600" />
                                    </div>
                                    <div>
@@ -174,7 +172,7 @@ export default function ReceptionistDashboardPage() {
 
                     {/* WAITING ROOM (Large Bento Box) */}
                     <motion.div variants={itemVariants} className="lg:col-span-2 lg:row-span-2">
-                         <Card className="h-full rounded-[2.5rem] border-muted/40 shadow-xl overflow-hidden flex flex-col">
+                         <Card className="h-full rounded-md border-muted/40 shadow-xl overflow-hidden flex flex-col">
                               <CardHeader className="bg-muted/30 pb-4">
                                    <div className="flex items-center justify-between">
                                         <div>
@@ -216,7 +214,7 @@ export default function ReceptionistDashboardPage() {
                                                        >
                                                             <div className="flex items-center gap-4">
                                                                  <div className="relative">
-                                                                      <div className="w-12 h-12 rounded-2xl bg-primary/5 flex items-center justify-center group-hover:bg-primary/10 transition-colors">
+                                                                      <div className="w-12 h-12 rounded-md bg-primary/5 flex items-center justify-center group-hover:bg-primary/10 transition-colors">
                                                                            <HugeiconsIcon icon={UserCircleIcon} className="w-6 h-6 text-primary/60" />
                                                                       </div>
                                                                       <div className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-amber-500 border-2 border-white flex items-center justify-center text-[10px] font-bold text-white shadow-sm">
@@ -257,7 +255,7 @@ export default function ReceptionistDashboardPage() {
 
                     {/* STATS SECTION (Row 2) */}
                     <motion.div variants={itemVariants} className="lg:col-span-1">
-                         <Card className="h-full rounded-[2rem] border-none bg-emerald-50/50 dark:bg-emerald-900/10 shadow-sm transition-all hover:shadow-md">
+                         <Card className="h-full rounded-md border-none bg-emerald-50/50 dark:bg-emerald-900/10 shadow-sm transition-all hover:shadow-md">
                               <CardContent className="p-6 flex flex-col justify-between h-full">
                                    <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 flex items-center justify-center mb-4">
                                         <HugeiconsIcon icon={CheckCircle} className="w-6 h-6 text-emerald-600" />
@@ -274,7 +272,7 @@ export default function ReceptionistDashboardPage() {
                     </motion.div>
 
                     <motion.div variants={itemVariants} className="lg:col-span-1">
-                         <Card className="h-full rounded-[2rem] border-none bg-indigo-50/50 dark:bg-indigo-900/10 shadow-sm transition-all hover:shadow-md">
+                         <Card className="h-full rounded-md border-none bg-indigo-50/50 dark:bg-indigo-900/10 shadow-sm transition-all hover:shadow-md">
                               <CardContent className="p-6 flex flex-col justify-between h-full">
                                    <div className="w-12 h-12 rounded-2xl bg-indigo-500/10 flex items-center justify-center mb-4">
                                         <HugeiconsIcon icon={Doctor01Icon} className="w-6 h-6 text-indigo-600" />
@@ -294,7 +292,7 @@ export default function ReceptionistDashboardPage() {
                     <div className="lg:col-span-4 grid gap-6 md:grid-cols-2">
                          {/* STAFF PANEL */}
                          <motion.div variants={itemVariants}>
-                              <Card className="rounded-[2.5rem] border-muted/40 shadow-lg overflow-hidden h-full">
+                              <Card className="rounded-md border-muted/40 shadow-lg overflow-hidden h-full">
                                    <CardHeader className="flex flex-row items-center justify-between">
                                         <div>
                                              <CardTitle className="text-lg font-bold">Medical Staff</CardTitle>
@@ -307,7 +305,7 @@ export default function ReceptionistDashboardPage() {
                                    <CardContent className="px-6 pb-6">
                                         <div className="grid grid-cols-2 gap-3">
                                              {doctors.slice(0, 4).map((doctor) => (
-                                                  <div key={doctor.uuid} className="p-3 rounded-2xl bg-muted/30 border border-muted/50 flex items-center gap-3 group hover:bg-muted/50 transition-all cursor-pointer">
+                                                  <div key={doctor.uuid} className="p-3 rounded-md bg-muted/30 border border-muted/50 flex items-center gap-3 group hover:bg-muted/50 transition-all cursor-pointer">
                                                        <div className="relative">
                                                             <div className="w-10 h-10 rounded-xl bg-background flex items-center justify-center text-primary font-bold shadow-sm">
                                                                  {doctor.name.split(' ').map(n => n[0]).join('')}
@@ -337,7 +335,7 @@ export default function ReceptionistDashboardPage() {
 
                          {/* QUICK NAVIGATION */}
                          <motion.div variants={itemVariants} className="grid grid-cols-2 gap-4">
-                              <Card className="rounded-[2rem] border-none bg-rose-50/50 dark:bg-rose-900/10 shadow-sm transition-all hover:scale-[1.02] cursor-pointer group" onClick={() => router.push("/receptionist-dashboard/illness-categories")}>
+                              <Card className="rounded-md border-none bg-rose-50/50 dark:bg-rose-900/10 shadow-sm transition-all hover:scale-[1.02] cursor-pointer group" onClick={() => router.push("/receptionist-dashboard/illness-categories")}>
                                    <CardContent className="p-6 flex flex-col items-center justify-center text-center h-full gap-3">
                                         <div className="w-14 h-14 rounded-2xl bg-rose-500/10 flex items-center justify-center group-hover:bg-rose-500 group-hover:text-white transition-all shadow-sm">
                                              <HugeiconsIcon icon={Medicine01Icon} className="w-7 h-7" />
@@ -349,7 +347,7 @@ export default function ReceptionistDashboardPage() {
                                    </CardContent>
                               </Card>
                               
-                              <Card className="rounded-[2rem] border-none bg-purple-50/50 dark:bg-purple-900/10 shadow-sm transition-all hover:scale-[1.02] cursor-pointer group" onClick={() => router.push("/receptionist-dashboard/profile")}>
+                              <Card className="rounded-md border-none bg-purple-50/50 dark:bg-purple-900/10 shadow-sm transition-all hover:scale-[1.02] cursor-pointer group" onClick={() => router.push("/receptionist-dashboard/profile")}>
                                    <CardContent className="p-6 flex flex-col items-center justify-center text-center h-full gap-3">
                                         <div className="w-14 h-14 rounded-2xl bg-purple-500/10 flex items-center justify-center group-hover:bg-purple-500 group-hover:text-white transition-all shadow-sm">
                                              <HugeiconsIcon icon={Settings01Icon} className="w-7 h-7" />
@@ -362,7 +360,7 @@ export default function ReceptionistDashboardPage() {
                               </Card>
 
                               <div className="col-span-2">
-                                   <Card className="rounded-[2rem] border-none bg-slate-900 dark:bg-slate-800 text-white shadow-xl overflow-hidden relative group">
+                                   <Card className="rounded-md border-none bg-slate-900 dark:bg-slate-800 text-white shadow-xl overflow-hidden relative group">
                                         <div className="absolute right-0 top-0 w-32 h-32 bg-white/5 rounded-full -mr-16 -mt-16 blur-2xl group-hover:bg-white/10 transition-all" />
                                         <CardContent className="p-6 flex items-center justify-between">
                                              <div className="flex items-center gap-4">

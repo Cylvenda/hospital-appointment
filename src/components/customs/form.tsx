@@ -92,7 +92,7 @@ export const FieldInput = <T extends FieldValues>({
                               required={required}
                               autoComplete={name}
                               aria-invalid={fieldState.invalid}
-                              className="focus-visible:ring-2 focus-visible:ring-blue-500 p-5 rounded-md dark:border-white border-2! "
+                              className="focus-visible:ring-2 focus-visible:ring-emerald-500 p-5 rounded-md dark:border-white border-2! "
                          />
 
                          {fieldState.invalid && (
@@ -131,7 +131,7 @@ export const PasswordInput = <T extends FieldValues>({ label, name, placeholder,
                          <FieldLabel className='flex flex-row justify-between' htmlFor={name}>
                               {label}
                               {forgetPassword?.text && forgetPassword?.location && (
-                                   <Link href={forgetPassword.location} className='text-blue-600 font-light hover:underline '>
+                                   <Link href={forgetPassword.location} className='text-emerald-600 dark:text-emerald-400 font-medium hover:underline '>
                                         {forgetPassword.text}
                                    </Link>
                               )}
@@ -143,7 +143,7 @@ export const PasswordInput = <T extends FieldValues>({ label, name, placeholder,
                                    type={type}
                                    placeholder={placeholder}
                                    aria-invalid={fieldState.invalid}
-                                   className="focus-visible:ring-2 focus-visible:ring-blue-500 rounded-md focus-visible:border-blue-500 p-5 dark:border-white border-2"
+                                   className="focus-visible:ring-2 focus-visible:ring-emerald-500 rounded-md focus-visible:border-emerald-500 p-5 dark:border-white border-2"
                               />
 
                               <span className=' border-gray-300 cursor-pointer p-2 rounded-md dark:border-white border-2'>
@@ -196,7 +196,7 @@ export const FieldSelect = <T extends FieldValues>({ label, name, options, contr
                                    onValueChange?.(value)     // call parent callback if provided
                               }}
                          >
-                              <SelectTrigger className="focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:border-blue-500">
+                              <SelectTrigger className="focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:border-emerald-500">
                                    <SelectValue placeholder={placeHolder} />
                               </SelectTrigger>
                               <SelectContent>

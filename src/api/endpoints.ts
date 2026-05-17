@@ -11,6 +11,8 @@ export const API_ENDPOINTS = {
      USER_TOKEN_REFRESH: "me/auth/csrf/",
      USER_TOKEN_VERIFY: "me/auth/refresh/",
      USER_LOGOUT: "me/auth/logout/",
+     REGIONS: "regions/",
+     DISTRICTS: "districts/",
 
      // User activation and password management
      USER_ACCOUNT_ACTIVATION: "auth/users/activation/",

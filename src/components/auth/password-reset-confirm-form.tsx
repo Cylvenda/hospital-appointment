@@ -104,7 +104,7 @@ export default function PasswordResetConfirmForm({ uid, token }: Props) {
 
                          <p className="text-center text-sm text-muted-foreground">
                               Back to{" "}
-                              <Link href="/login" className="text-blue-500 hover:underline">
+                              <Link href="/login" className="text-emerald-600 dark:text-emerald-400 hover:underline">
                                    Login
                               </Link>
                          </p>

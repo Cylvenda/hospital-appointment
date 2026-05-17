@@ -89,14 +89,14 @@ const ForgetPassword = () => {
                                    <div className="flex justify-between text-sm">
                                         <Link
                                              href="/login"
-                                             className="text-blue-500 hover:underline"
+                                             className="text-emerald-600 dark:text-emerald-400 hover:underline"
                                         >
                                              Back to Login
                                         </Link>
 
                                         <Link
                                              href="/register"
-                                             className="text-blue-500 hover:underline"
+                                             className="text-emerald-600 dark:text-emerald-400 hover:underline"
                                         >
                                              Create account
                                         </Link>

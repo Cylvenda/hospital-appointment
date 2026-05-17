@@ -4,7 +4,11 @@ import { useEffect, useState } from "react"
 import { toast } from "react-toastify"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
+import { AlertCircleIcon, Calendar03Icon, MedicineBottle01Icon, CheckmarkCircle02Icon, Cancel01Icon, UnfoldMoreIcon } from "@hugeicons/core-free-icons"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { useAppointmentStore } from "@/store/appointments/appointment.store"
+import { DatePicker } from "@/components/ui/date-picker"
 import {
   Select,
   SelectContent,
@@ -12,20 +16,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { Textarea } from "@/components/ui/textarea"
-import { useAppointmentStore } from "@/store/appointments/appointment.store"
-
-type Step = 1 | 2 | 3
+import { Label } from "@/components/ui/label"
+import { useRouter } from "next/navigation"
 
 export default function PatientAppointmentsPage() {
+  const router = useRouter()
   const {
     illnessCategories,
     fetchAppointments,
     fetchIllnessCategories,
     createAppointment,
   } = useAppointmentStore()
-
-  const [step, setStep] = useState<Step>(1)
 
   const [illnessCategoryId, setIllnessCategoryId] = useState("")
   const [appointmentPreferredDate, setAppointmentPreferredDate] = useState("")
@@ -39,15 +40,16 @@ export default function PatientAppointmentsPage() {
     void fetchIllnessCategories()
   }, [fetchAppointments, fetchIllnessCategories])
 
-  const nextStep = () => setStep((s) => (s < 3 ? ((s + 1) as Step) : s))
-  const prevStep = () => setStep((s) => (s > 1 ? ((s - 1) as Step) : s))
+  const isValid = 
+    !!illnessCategoryId && 
+    !!appointmentPreferredDate && 
+    !!appointmentPreferredDate2 && 
+    !!appointmentPreferredDate3 && 
+    !!description.trim()
 
-  const canProceedStep1 = !!illnessCategoryId
-  const canProceedStep2 = !!appointmentPreferredDate && !!appointmentPreferredDate2 && !!appointmentPreferredDate3
-  const canSubmit = !!description.trim()
-
-  const handleSubmit = async () => {
-    if (!canSubmit || submitting) return
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!isValid || submitting) return
 
     setSubmitting(true)
     try {
@@ -59,15 +61,17 @@ export default function PatientAppointmentsPage() {
         description: description.trim(),
       })
 
-      toast.success("Appointment created successfully.")
+      toast.success("Appointment slot requested successfully!")
 
-      // reset
-      setStep(1)
+      // Reset form fields
       setIllnessCategoryId("")
       setAppointmentPreferredDate("")
       setAppointmentPreferredDate2("")
       setAppointmentPreferredDate3("")
       setDescription("")
+      
+      // Redirect to appointments list or main dashboard
+      router.push("/patient-dashboard")
     } catch {
       toast.error("Failed to create appointment.")
     } finally {
@@ -75,146 +79,190 @@ export default function PatientAppointmentsPage() {
     }
   }
 
+  const handleReset = () => {
+    setIllnessCategoryId("")
+    setAppointmentPreferredDate("")
+    setAppointmentPreferredDate2("")
+    setAppointmentPreferredDate3("")
+    setDescription("")
+    toast.info("Form fields cleared.")
+  }
+
   return (
-    <div className="w-full max-w-8xl mx-auto space-y-6">
-      {/* HEADER */}
-      <div>
-        <h1 className="text-2xl font-semibold">Book Appointment</h1>
-        <p className="text-sm text-muted-foreground">
-          Follow the steps to request an appointment with a doctor.
+    <div className="w-full max-w-8xl mx-auto space-y-5 pb-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+      
+      {/* HEADER SECTION */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-black tracking-tight text-foreground">Request Appointment</h1>
+          <p className="text-muted-foreground text-sm mt-1">
+            Fill in your preferred dates and clinical symptoms to schedule a professional consultation.
+          </p>
+        </div>
+        <Button 
+          variant="outline"
+          type="button"
+          onClick={() => router.push("/patient-dashboard")}
+          className="rounded-xl h-11 px-5 font-bold transition-all border-border hover:bg-muted/40"
+        >
+          Back to Dashboard
+        </Button>
+      </div>
+
+      {/* ANNOUNCEMENT BANNER */}
+      <div className="flex items-center gap-4 p-3 bg-sky-500/10 dark:bg-sky-950/20 border border-sky-500/20 rounded-2xl text-sky-800 dark:text-sky-300 shadow-sm">
+        <div className="w-10 h-10 rounded-xl bg-sky-500/20 text-sky-600 dark:text-sky-400 flex items-center justify-center shrink-0">
+          <HugeiconsIcon icon={AlertCircleIcon} className="w-6 h-6" />
+        </div>
+        <p className="text-sm leading-relaxed">
+          <span className="font-bold">Note:</span> Basic screening and routine measurements are available as walk-in services and cannot be booked online.
         </p>
       </div>
 
-      {/* PROGRESS */}
-      <div className="flex items-center gap-2 text-sm">
-        {[1, 2, 3].map((s) => (
-          <div
-            key={s}
-            className={`h-2 flex-1 rounded-full ${step >= s ? "bg-primary" : "bg-muted"
-              }`}
-          />
-        ))}
-      </div>
-
-      {/* CARD */}
-      <Card className="rounded-md">
-        <CardHeader>
-          <CardTitle>
-            Step {step} of 3
+      {/* SINGLE FORM CONTAINER */}
+      <Card className="rounded-md border border-border bg-card shadow-xl shadow-foreground/[0.02] overflow-hidden">
+        <CardHeader className="p-8 pb-6 border-b border-border/80 bg-muted/20">
+          <CardTitle className="text-xl font-bold flex items-center gap-3">
+            <span className="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-600 flex items-center justify-center">
+              <HugeiconsIcon icon={Calendar03Icon} className="w-5 h-5" />
+            </span>
+            Appointment Request Details
           </CardTitle>
           <CardDescription>
-            {step === 1 && "Select your illness category"}
-            {step === 2 && "Choose your preferred appointment date"}
-            {step === 3 && "Describe your condition"}
+            All fields are mandatory. Please provide genuine clinical details.
           </CardDescription>
         </CardHeader>
 
-        <CardContent className="space-y-6">
-          {/* STEP 1 */}
-          {step === 1 && (
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Illness Category</label>
-              <Select value={illnessCategoryId} onValueChange={setIllnessCategoryId}>
-                <SelectTrigger className="rounded-md w-full" >
-                  <SelectValue  placeholder="Select category" />
-                </SelectTrigger>
-                <SelectContent className="rounded-md">
-                  {illnessCategories.map((c) => (
-                    <SelectItem key={c.id} value={c.id}>
-                      {c.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+        <CardContent className="p-5">
+          <form onSubmit={handleSubmit} className="space-y-8">
+            
+            {/* SECTION 1: CLINICAL CATEGORY */}
+            <div className="space-y-4">
+              <div className="flex items-center gap-2">
+                <div className="w-1.5 h-4 bg-emerald-500 rounded-full" />
+                <h3 className="text-sm font-extrabold uppercase tracking-widest text-muted-foreground opacity-90">
+                  1. Clinical Classification
+                </h3>
+              </div>
+              <div className="space-y-2 max-w-xl">
+                <Label htmlFor="category">Illness Category <span className="text-rose-500">*</span></Label>
+                <Select value={illnessCategoryId} onValueChange={setIllnessCategoryId}>
+                  <SelectTrigger id="category" className="rounded-xl h-12 w-full text-left">
+                    <SelectValue placeholder="Select primary symptoms category" />
+                  </SelectTrigger>
+                  <SelectContent className="rounded-xl">
+                    {illnessCategories.map((c) => (
+                      <SelectItem key={c.id} value={c.id} className="rounded-lg my-0.5">
+                        {c.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
 
+            <hr className="border-border/80" />
+
+            {/* SECTION 2: PREFERRED DATES */}
+            <div className="space-y-4">
+              <div className="flex items-center gap-2">
+                <div className="w-1.5 h-4 bg-emerald-500 rounded-full" />
+                <h3 className="text-sm font-extrabold uppercase tracking-widest text-muted-foreground opacity-90">
+                  2. Availability Preferences
+                </h3>
+              </div>
+              <p className="text-xs text-muted-foreground leading-relaxed max-w-2xl">
+                Provide three different potential dates you are available to attend your consultation. Our scheduling team will assign you to the best matching slot.
+              </p>
+              
+              <div className="grid gap-6 sm:grid-cols-3">
+                <div className="space-y-2">
+                  <Label>Choice 1 <span className="text-rose-500">*</span></Label>
+                  <DatePicker
+                    className="rounded-xl h-12"
+                    placeholder="Select Date Choice 1"
+                    value={appointmentPreferredDate}
+                    onChange={setAppointmentPreferredDate}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Choice 2 <span className="text-rose-500">*</span></Label>
+                  <DatePicker
+                    className="rounded-xl h-12"
+                    placeholder="Select Date Choice 2"
+                    value={appointmentPreferredDate2}
+                    onChange={setAppointmentPreferredDate2}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Choice 3 <span className="text-rose-500">*</span></Label>
+                  <DatePicker
+                    className="rounded-xl h-12"
+                    placeholder="Select Date Choice 3"
+                    value={appointmentPreferredDate3}
+                    onChange={setAppointmentPreferredDate3}
+                  />
+                </div>
+              </div>
+            </div>
+
+            <hr className="border-border/80" />
+
+            {/* SECTION 3: DESCRIPTION */}
+            <div className="space-y-4">
+              <div className="flex items-center gap-2">
+                <div className="w-1.5 h-4 bg-emerald-500 rounded-full" />
+                <h3 className="text-sm font-extrabold uppercase tracking-widest text-muted-foreground opacity-90">
+                  3. Clinical Presentation
+                </h3>
+              </div>
+              <div className="space-y-2 relative group">
+                <Label htmlFor="description">Describe Your Symptoms <span className="text-rose-500">*</span></Label>
+                <div className="relative">
+                  <HugeiconsIcon 
+                    icon={MedicineBottle01Icon} 
+                    className="absolute left-4 top-4 w-5 h-5 text-muted-foreground group-focus-within:text-emerald-500 transition-colors" 
+                  />
+                  <Textarea
+                    id="description"
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    placeholder="Describe your current symptoms, pain levels, duration, or any other relevant details that will help our clinical team prepare for your visit..."
+                    className="min-h-40 rounded-2xl pl-12 pt-4 border border-border bg-background focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/20 transition-all text-sm leading-relaxed resize-none"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* ACTION BUTTONS */}
+            <div className="flex flex-col sm:flex-row sm:justify-end gap-4 pt-6 border-t border-border/80">
               <Button
-                className="w-full mt-4 rounded-md"
-                disabled={!canProceedStep1}
-                onClick={nextStep}
+                type="button"
+                variant="outline"
+                onClick={handleReset}
+                className="rounded-md h-10 px-5 font-bold border-border text-muted-foreground hover:text-foreground flex items-center justify-center gap-2"
               >
-                Continue
+                <HugeiconsIcon icon={Cancel01Icon} className="h-5 w-5" />
+                Clear Form
+              </Button>
+              
+              <Button
+                type="submit"
+                disabled={!isValid || submitting}
+                className="rounded-md h-10 px-5 font-bold shadow-lg shadow-emerald-500/10 bg-emerald-600 hover:bg-emerald-500 text-white flex items-center justify-center gap-2"
+              >
+                {submitting ? (
+                  "Submitting slot request..."
+                ) : (
+                  <>
+                    <HugeiconsIcon icon={CheckmarkCircle02Icon} className="h-5 w-5" />
+                    Submit Appointment Request
+                  </>
+                )}
               </Button>
             </div>
-          )}
 
-          {/* STEP 2 */}
-          {step === 2 && (
-            <div className="space-y-2">
-              <div className="grid gap-4 sm:grid-cols-3">
-                <div className="space-y-2">
-                  <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Choice 1</label>
-                  <Input
-                    className="rounded-xl h-11"
-                    type="date"
-                    value={appointmentPreferredDate}
-                    onChange={(e) => setAppointmentPreferredDate(e.target.value)}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Choice 2</label>
-                  <Input
-                    className="rounded-xl h-11"
-                    type="date"
-                    value={appointmentPreferredDate2}
-                    onChange={(e) => setAppointmentPreferredDate2(e.target.value)}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Choice 3</label>
-                  <Input
-                    className="rounded-xl h-11"
-                    type="date"
-                    value={appointmentPreferredDate3}
-                    onChange={(e) => setAppointmentPreferredDate3(e.target.value)}
-                  />
-                </div>
-              </div>
-
-              <div className="flex gap-2 pt-4 rounded-md">
-                <Button variant="outline" onClick={prevStep} className="rounded-md">
-                  Back
-                </Button>
-
-                <Button
-                  className="flex-1 rounded-md"
-                  disabled={!canProceedStep2}
-                  onClick={nextStep}
-                >
-                  Continue
-                </Button>
-              </div>
-            </div>
-          )}
-
-          {/* STEP 3 */}
-          {step === 3 && (
-            <div className="space-y-2">
-              <label className="text-sm font-medium">
-                Describe Your Condition
-              </label>
-
-              <Textarea
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                placeholder="Explain your symptoms in detail..."
-                className="min-h-32.5 rounded-md"
-              />
-
-              <div className="flex gap-2 pt-4">
-                <Button variant="outline" onClick={prevStep} className="rounded-md" >
-                  Back
-                </Button>
-
-                <Button
-                  className="flex-1 rounded-md"
-                  disabled={!canSubmit || submitting}
-                  onClick={handleSubmit}
-                >
-                  {submitting ? "Submitting..." : "Submit Appointment"}
-                </Button>
-              </div>
-            </div>
-          )}
+          </form>
         </CardContent>
       </Card>
     </div>

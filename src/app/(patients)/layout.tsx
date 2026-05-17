@@ -10,6 +10,7 @@ import { ThemeToggle } from "@/components/theme-toggle"
 import { RoleAccessGuard } from "@/components/role-access-guard"
 import { NotificationDropdown } from "@/components/notification-dropdown"
 import { ProfileCompletionDialog } from "@/components/profile-completion-dialog"
+import { ProfileWarningBanner } from "@/components/profile-warning-banner"
 
 export default function Layout({ children }: { children: React.ReactNode }) {
     return (
@@ -32,6 +33,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                             <NotificationDropdown />
                         </div>
                     </header>
+                    <ProfileWarningBanner />
                     <div className="bg-sidebar min-h-screen flex justify-center p-4 md:p-6">{children}</div>
                 </SidebarInset>
             </RoleAccessGuard>
