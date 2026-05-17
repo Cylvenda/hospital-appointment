@@ -101,7 +101,7 @@ export const DoctorAppointmentCard = ({ appointment, hideViewDetails = false }: 
                animate={{ opacity: 1, y: 0 }}
                exit={{ opacity: 0, scale: 0.95 }}
           >
-               <Card className="rounded-[2.5rem] border-2 border-muted/40 shadow-sm overflow-hidden group hover:shadow-xl hover:border-primary/20 transition-all duration-300">
+               <Card className="rounded-md border-2 border-muted/40 shadow-sm overflow-hidden group hover:shadow-xl hover:border-primary/20 transition-all duration-300">
                     <CardContent className="p-0">
                          <div className="flex flex-col md:flex-row">
                               {/* Left Side: Patient Info & Time */}
@@ -245,7 +245,7 @@ export const DoctorAppointmentCard = ({ appointment, hideViewDetails = false }: 
 
                {/* Completion Dialog */}
                <Dialog open={isCompleteOpen} onOpenChange={setIsCompleteOpen}>
-                    <DialogContent className="sm:max-w-2xl rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl">
+                    <DialogContent className="sm:max-w-2xl rounded-md p-0 overflow-hidden border-none shadow-2xl">
                          <div className="bg-primary p-8 text-white">
                               <DialogHeader>
                                    <div className="w-12 h-12 rounded-2xl bg-white/20 flex items-center justify-center mb-4 backdrop-blur-md">
@@ -271,7 +271,7 @@ export const DoctorAppointmentCard = ({ appointment, hideViewDetails = false }: 
                                              value={diagnosis}
                                              onChange={(e) => setDiagnosis(e.target.value)}
                                              placeholder="e.g. Acute Pharyngitis"
-                                             className="w-full h-14 rounded-2xl pl-14 pr-6 border-2 focus:border-primary transition-all bg-muted/20 focus:bg-background text-base font-bold outline-none"
+                                             className="w-full h-14 rounded-md pl-14 pr-6 border-2 focus:border-primary transition-all bg-muted/20 focus:bg-background text-base font-bold outline-none"
                                         />
                                    </div>
                               </div>
@@ -287,17 +287,17 @@ export const DoctorAppointmentCard = ({ appointment, hideViewDetails = false }: 
                                              value={clinicalNotes}
                                              onChange={(e) => setClinicalNotes(e.target.value)}
                                              placeholder="Prescribed treatment, follow-up advice, etc..."
-                                             className="min-h-40 rounded-2xl pl-14 pt-5 border-2 border-secondary focus:border-primary transition-all bg-muted/20 focus:bg-background text-base font-medium resize-none outline-none"
+                                             className="min-h-40 rounded-md pl-14 pt-5 border-2 border-secondary focus:border-primary transition-all bg-muted/20 focus:bg-background text-base font-medium resize-none outline-none"
                                         />
                                    </div>
                               </div>
                          </div>
 
                          <DialogFooter className="p-8 bg-muted/30 border-t flex items-center justify-between gap-4">
-                              <Button variant="ghost" onClick={() => setIsCompleteOpen(false)} disabled={loading} className="rounded-md h-14 px-8 font-bold text-muted-foreground hover:text-foreground">
+                              <Button variant="ghost" onClick={() => setIsCompleteOpen(false)} disabled={loading} className="rounded-md h-10 px-8 font-bold text-muted-foreground hover:text-foreground">
                                    Cancel
                               </Button>
-                              <Button onClick={handleComplete} disabled={loading} className="rounded-md h-14 px-12 font-black shadow-xl shadow-primary/20 transition-all hover:scale-[1.02] active:scale-95">
+                              <Button onClick={handleComplete} disabled={loading} className="rounded-md h-10 px-8 font-black shadow-xl shadow-primary/20 transition-all hover:scale-[1.02] active:scale-95">
                                    <HugeiconsIcon icon={Tick02Icon} className="w-5 h-5 mr-2" />
                                    {loading ? "Recording..." : "Finalize & Complete"}
                               </Button>
@@ -307,7 +307,7 @@ export const DoctorAppointmentCard = ({ appointment, hideViewDetails = false }: 
 
                {/* Cancellation Dialog */}
                <Dialog open={isCancelOpen} onOpenChange={setIsCancelOpen}>
-                    <DialogContent className="sm:max-w-md rounded-[2.5rem] p-8 text-center">
+                    <DialogContent className="sm:max-w-md rounded-md p-8 text-center">
                          <div className="w-20 h-20 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center mx-auto mb-6">
                               <HugeiconsIcon icon={Cancel01Icon} className="w-10 h-10" />
                          </div>
@@ -317,11 +317,11 @@ export const DoctorAppointmentCard = ({ appointment, hideViewDetails = false }: 
                                    Are you sure you want to cancel the visit with <span className="text-foreground font-bold">{appointment.patient}</span>?
                               </DialogDescription>
                          </DialogHeader>
-                         <DialogFooter className="flex flex-col sm:flex-row gap-3 pt-8">
-                              <Button variant="ghost" onClick={() => setIsCancelOpen(false)} disabled={loading} className="w-full rounded-md h-12 font-bold">
+                         <DialogFooter className="flex flex-col sm:flex-row gap-3 pt-8 items-center justify-between ">
+                              <Button variant="ghost" onClick={() => setIsCancelOpen(false)} disabled={loading} className="border-secondary rounded-md h-12 font-bold">
                                    Go Back
                               </Button>
-                              <Button variant="destructive" onClick={handleCancel} disabled={loading} className="w-full rounded-md h-12 font-bold bg-rose-600 shadow-lg shadow-rose-200">
+                              <Button variant="destructive" onClick={handleCancel} disabled={loading} className="border-secondary rounded-md h-12 font-bold ">
                                    {loading ? "Cancelling..." : "Confirm Cancellation"}
                               </Button>
                          </DialogFooter>

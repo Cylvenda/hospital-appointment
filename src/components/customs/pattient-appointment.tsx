@@ -79,7 +79,7 @@ export default function AppointmentDisplay({
 
      return (
           <Card className={cn(
-               "relative overflow-hidden border-2 transition-all hover:shadow-xl rounded-3xl",
+               "relative overflow-hidden border-2 transition-all hover:shadow-xl rounded-md",
                appointment.status === "pending" ? "border-amber-200/60 shadow-amber-500/5" : "border-muted/60"
           )}>
                {/* STATUS BAR */}
@@ -93,7 +93,7 @@ export default function AppointmentDisplay({
                     <div className="flex items-start justify-between gap-4">
                          <div className="space-y-1">
                               <div className="flex items-center gap-2">
-                                   <Badge variant="outline" className={cn("rounded-lg px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider", statusColors[appointment.status])}>
+                                   <Badge variant="outline" className={cn("rounded-md px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider", statusColors[appointment.status])}>
                                         <HugeiconsIcon icon={statusIcons[appointment.status]} className="w-3 h-3 mr-1" />
                                         {appointment.status}
                                    </Badge>
@@ -118,7 +118,7 @@ export default function AppointmentDisplay({
 
                <CardContent className="space-y-6">
                     {/* CHOICES GRID */}
-                    <div className="bg-muted/30 rounded-2xl p-4 border border-muted/60">
+                    <div className="bg-muted/30 rounded-md p-4 border border-muted/60">
                          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground mb-3 flex items-center gap-2">
                               <HugeiconsIcon icon={Calendar01Icon} className="w-3 h-3" />
                               Your Preferred Dates
@@ -139,7 +139,7 @@ export default function AppointmentDisplay({
 
                     {/* ASSIGNED DETAILS */}
                     {(appointment.status === "accepted" || appointment.status === "completed") && (
-                         <div className="bg-emerald-500/5 dark:bg-emerald-500/10 border border-emerald-500/20 rounded-2xl p-4 flex flex-col sm:flex-row gap-4 sm:items-center justify-between">
+                         <div className="bg-emerald-500/5 dark:bg-emerald-500/10 border border-emerald-500/20 rounded-md p-4 flex flex-col sm:flex-row gap-4 sm:items-center justify-between">
                               <div className="flex items-center gap-3">
                                    <div className="w-10 h-10 rounded-full bg-emerald-500/10 flex items-center justify-center">
                                         <HugeiconsIcon icon={UserIcon} className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />

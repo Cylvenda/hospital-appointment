@@ -67,7 +67,7 @@ export const UpdateAppointmentDialog = ({ appointment }: Props) => {
                     </Button>
                </DialogTrigger>
 
-               <DialogContent className="sm:max-w-2xl rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl">
+               <DialogContent className="sm:max-w-2xl rounded-md p-0 overflow-hidden border-none shadow-2xl">
                     <div className="bg-primary p-8 text-white">
                          <DialogHeader>
                               <div className="w-12 h-12 rounded-2xl bg-white/20 flex items-center justify-center mb-4 backdrop-blur-md">

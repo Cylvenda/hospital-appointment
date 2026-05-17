@@ -154,14 +154,6 @@ export default function AdminDashboardPage() {
           <div className="flex flex-wrap gap-3">
             <Button
               size="lg"
-              className="rounded-md bg-white text-primary hover:bg-white/90 shadow-xl transition-all hover:scale-105 active:scale-95"
-              onClick={() => router.push("/admin/appointments/new")}
-            >
-              <HugeiconsIcon icon={FileAddIcon} className="mr-2 h-5 w-5" />
-              New Appointment
-            </Button>
-            <Button
-              size="lg"
               variant="outline"
               className="rounded-md border-white/30 bg-white/10 text-white backdrop-blur-md hover:bg-white/20 transition-all"
               onClick={() => { fetchOverview(); initializeAppointments(); }}
@@ -281,7 +273,7 @@ export default function AdminDashboardPage() {
                     <p className="text-[10px] text-muted-foreground font-bold uppercase">Staff Members</p>
                   </div>
                 </div>
-                <Button variant="outline" size="sm" className="w-full rounded-md mt-2" onClick={() => router.push("/admin/users")}>
+                <Button variant="outline" size="sm" className="w-full rounded-md mt-2" onClick={() => router.push("/users")}>
                   Manage Directory
                 </Button>
               </CardContent>
@@ -296,7 +288,7 @@ export default function AdminDashboardPage() {
               <CardHeader className="pb-4">
                 <div className="flex items-center justify-between">
                   <CardTitle className="text-lg font-bold">Specialists On Duty</CardTitle>
-                  <Button variant="ghost" size="icon" className="rounded-md" onClick={() => router.push("/admin/doctors")}>
+                  <Button variant="ghost" size="icon" className="rounded-md" onClick={() => router.push("/doctors")}>
                     <HugeiconsIcon icon={MoreHorizontalIcon} className="w-5 h-5" />
                   </Button>
                 </div>

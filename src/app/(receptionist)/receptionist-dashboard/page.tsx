@@ -110,14 +110,6 @@ export default function ReceptionistDashboardPage() {
                          </div>
 
                          <div className="flex flex-wrap gap-3">
-                              <Button 
-                                   size="lg"
-                                   className="rounded-md bg-white text-primary hover:bg-white/90 shadow-lg shadow-black/10 transition-all hover:scale-105 active:scale-95" 
-                                   onClick={() => router.push("/admin/users/create")}
-                              >
-                                   <HugeiconsIcon icon={UserPlus} className="mr-2 h-5 w-5" />
-                                   Register Patient
-                              </Button>
                               <Button
                                    size="lg"
                                    variant="outline"

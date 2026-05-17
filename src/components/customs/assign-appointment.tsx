@@ -117,7 +117,7 @@ export default function AssignAppointment({
           >
                <Card
                     className={cn(
-                         "border-2 overflow-hidden rounded-[2.5rem] shadow-xl transition-all duration-300",
+                         "border-2 overflow-hidden rounded-md shadow-xl transition-all duration-300",
                          currentStatus.border,
                          "hover:shadow-2xl hover:border-primary/30"
                     )}

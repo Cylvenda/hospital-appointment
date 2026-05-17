@@ -83,19 +83,19 @@ export default function DoctorDashboardPage() {
      return (
           <div className="mx-auto w-full max-w-8xl space-y-10 p-4 md:p-8 animate-in fade-in duration-500">
                {/* HEADER */}
-               <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between bg-linear-to-r from-slate-900 to-slate-800 p-10 rounded-2xl text-white shadow-2xl relative overflow-hidden">
+               <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between bg-primary p-10 rounded-2xl text-white shadow-2xl relative overflow-hidden">
                     <div className="relative z-10">
                          <div className="flex items-center gap-3 mb-2">
                               <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                              <p className="text-emerald-400 text-xs font-black uppercase tracking-widest">Active Practitioner</p>
+                              <p className="text-secondary text-xs font-black uppercase tracking-widest">Active Practitioner</p>
                          </div>
                          <h1 className="text-5xl font-black tracking-tight">Dr. {user?.last_name}</h1>
-                         <p className="text-slate-400 text-xl mt-2 font-medium">
+                         <p className="text-secondary text-lg mt-2 font-medium">
                               You have <span className="text-white font-bold">{stats.upcoming}</span> appointments awaiting assessment today.
                          </p>
                     </div>
                     <div className="flex gap-3 relative z-10">
-                         <Button variant="outline" className="rounded-md h-14 px-8 border-slate-700 text-white hover:bg-slate-800 bg-transparent font-bold" onClick={() => fetchAppointments()} disabled={loading}>
+                         <Button variant="default" className="rounded-md h-14 px-8 border-secondary text-white  bg-transparent font-bold" onClick={() => fetchAppointments()} disabled={loading}>
                               <HugeiconsIcon icon={Clock01Icon} className={cn("mr-2 h-5 w-5", loading && "animate-spin")} />
                               Sync Queue
                          </Button>
