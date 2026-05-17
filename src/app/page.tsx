@@ -434,7 +434,7 @@ export default function Page() {
                   </div>
                   <div className="flex items-center gap-2 rounded-full bg-primary-foreground/10 px-4 py-2 text-sm">
                     <HugeiconsIcon icon={CheckmarkCircle02Icon} size={16} />
-                    <span>Securing your data</span>
+                    <span>PDPA compliant (Tanzania)</span>
                   </div>
                 </div>
               </div>
