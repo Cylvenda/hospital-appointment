@@ -41,7 +41,7 @@ export default function RootLayout({
       <head />
       <body
         className={cn(
-          "min-h-screen bg-gray-50 text-gray-900 font-sans",
+          "min-h-screen bg-background text-foreground font-sans",
           poppins.className
         )}
       >

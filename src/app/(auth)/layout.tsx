@@ -16,7 +16,7 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
                               src="/meeet.webp"
                               alt="Meeting Background"
                               fill
-                              className="rounded-2xl"
+                              className="rounded-2xl dark:invert dark:hue-rotate-180 dark:opacity-90 dark:brightness-95 transition-all duration-300"
                               priority
                          />
                     </div>
