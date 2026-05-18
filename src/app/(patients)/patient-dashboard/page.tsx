@@ -16,6 +16,7 @@ import { getDashboardPath } from "@/lib/role-dashboard"
 import { cn } from "@/lib/utils"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { Calendar01Icon, Clock01Icon, UserIcon, CheckCircle, Cancel01Icon, HourglassIcon, PlusSignIcon, RefreshIcon } from "@hugeicons/core-free-icons"
+import { toast } from "react-toastify"
 
 export default function PatientDashboardPage() {
      const router = useRouter()
@@ -79,7 +80,14 @@ export default function PatientDashboardPage() {
                     <div className="flex gap-3">
                          <Button 
                               className="rounded-2xl px-6 shadow-lg shadow-primary/20 transition-all hover:scale-105 active:scale-95" 
-                              onClick={() => router.push("/patient-dashboard/appointments")}
+                              onClick={() => {
+                                   if (!user?.patient_profile?.is_profile_complete) {
+                                        toast.warning("Clinical Profile Incomplete: Please complete your registration details to activate scheduling options.")
+                                        router.push("/patient-dashboard/profile")
+                                   } else {
+                                        router.push("/patient-dashboard/appointments")
+                                   }
+                              }}
                          >
                               <HugeiconsIcon icon={PlusSignIcon} className="mr-2 h-4 w-4" />
                               Book Appointment
@@ -205,7 +213,14 @@ export default function PatientDashboardPage() {
                                                   <p className="font-medium text-muted-foreground">No upcoming appointments scheduled.</p>
                                                   <p className="text-sm text-muted-foreground/60">Regular check-ups are key to staying healthy!</p>
                                              </div>
-                                             <Button onClick={() => router.push("/patient-dashboard/appointments")}>
+                                             <Button onClick={() => {
+                                                  if (!user?.patient_profile?.is_profile_complete) {
+                                                       toast.warning("Clinical Profile Incomplete: Please complete your registration details to activate scheduling options.")
+                                                       router.push("/patient-dashboard/profile")
+                                                  } else {
+                                                       router.push("/patient-dashboard/appointments")
+                                                  }
+                                             }}>
                                                   Schedule Now
                                              </Button>
                                         </div>

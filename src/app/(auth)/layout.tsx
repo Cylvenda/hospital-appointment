@@ -29,11 +29,11 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
                                    className="inline-flex items-center gap-3 transition hover:opacity-90"
                               >
                                    <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-primary text-sm font-semibold text-primary-foreground shadow-lg shadow-primary/20">
-                                        PA
+                                        DP
                                    </div>
                                    <div>
                                         <p className="text-sm font-semibold tracking-[0.2em] text-primary uppercase">
-                                             PAMS
+                                             DPAMS
                                         </p>
                                    </div>
                               </Link>

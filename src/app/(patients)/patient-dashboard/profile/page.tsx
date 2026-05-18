@@ -218,8 +218,8 @@ export default function PatientProfilePage() {
           insurance_provider: data.insuranceProvider || null,
           insurance_number: data.insuranceNumber || null,
           nida_number: data.nidaNumber || null,
-          region: data.region ? { uuid: data.region } : null,
-          district: data.district ? { uuid: data.district } : null,
+          region_uuid: data.region || null,
+          district_uuid: data.district || null,
           next_of_kin: {
             name: data.kinName,
             phone: data.kinPhone,

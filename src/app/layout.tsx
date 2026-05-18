@@ -17,8 +17,8 @@ const poppins = Poppins({
 
 export const metadata: Metadata = {
   title: {
-    default: "Patient Appointment Management System",
-    template: "%s | PAMS",
+    default: "Digital Patient Pre-Registration and Appointment Management System",
+    template: "%s | DPAMS",
   },
   icons: {
     icon: "/meeet.webp",

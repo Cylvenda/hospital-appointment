@@ -18,9 +18,11 @@ import {
 } from "@/components/ui/select"
 import { Label } from "@/components/ui/label"
 import { useRouter } from "next/navigation"
+import { useAuthUserStore } from "@/store/auth/userAuth.store"
 
 export default function PatientAppointmentsPage() {
   const router = useRouter()
+  const { user, checkAuth } = useAuthUserStore()
   const {
     illnessCategories,
     fetchAppointments,
@@ -36,9 +38,29 @@ export default function PatientAppointmentsPage() {
   const [submitting, setSubmitting] = useState(false)
 
   useEffect(() => {
-    void fetchAppointments()
-    void fetchIllnessCategories()
-  }, [fetchAppointments, fetchIllnessCategories])
+    void (async () => {
+      const authenticated = await checkAuth()
+      if (!authenticated) {
+        router.replace("/login")
+        return
+      }
+
+      const currentUser = useAuthUserStore.getState().user
+      if (currentUser?.role !== "patient") {
+        router.replace("/")
+        return
+      }
+
+      if (!currentUser.patient_profile?.is_profile_complete) {
+        toast.warning("Clinical Profile Incomplete: Please complete your registration details to activate scheduling options.")
+        router.replace("/patient-dashboard/profile")
+        return
+      }
+
+      void fetchAppointments()
+      void fetchIllnessCategories()
+    })()
+  }, [checkAuth, fetchAppointments, fetchIllnessCategories, router])
 
   const isValid = 
     !!illnessCategoryId && 
