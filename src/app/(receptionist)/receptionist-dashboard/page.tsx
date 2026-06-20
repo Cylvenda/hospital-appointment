@@ -15,21 +15,19 @@ import { useAuthUserStore } from "@/store/auth/userAuth.store"
 import { useAppointmentStore } from "@/store/appointments/appointment.store"
 import { useAdminStore } from "@/store/admin/admin.store"
 import { getDashboardPath } from "@/lib/role-dashboard"
+import { AppointmentWorkflowLegend } from "@/components/appointment-workflow-legend"
 import { cn } from "@/lib/utils"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { 
-     UserGroupIcon, 
+     Doctor01Icon,
      CheckCircle, 
      HourglassIcon,
      RefreshIcon,
-     Doctor01Icon,
      Person,
-     UserPlus,
      Settings01Icon,
      Calendar03Icon,
      UserCircleIcon,
      ArrowRight01Icon,
-     SearchIcon,
      Notification01Icon,
      Medicine01Icon
 } from "@hugeicons/core-free-icons"
@@ -37,7 +35,7 @@ import {
 export default function ReceptionistDashboardPage() {
      const router = useRouter()
      const { user, checkAuth } = useAuthUserStore()
-     const { appointments, loading, error, fetchAppointments } = useAppointmentStore()
+     const { appointments, loading, fetchAppointments } = useAppointmentStore()
      const { overview, fetchOverview, fetchDoctors, doctors } = useAdminStore()
 
      useEffect(() => {
@@ -105,7 +103,7 @@ export default function ReceptionistDashboardPage() {
                                    Welcome back, {user?.first_name?.split(' ')[0] || "Receptionist"}!
                               </h1>
                               <p className="text-primary-foreground/80 max-w-md text-lg">
-                                   You have <span className="font-bold text-white">{pending.length} patients</span> waiting in the queue. Let's get them assigned!
+                                   You have <span className="font-bold text-white">{pending.length} patients</span> waiting in the queue. Let&apos;s get them assigned!
                               </p>
                          </div>
 
@@ -122,6 +120,10 @@ export default function ReceptionistDashboardPage() {
                               </Button>
                          </div>
                     </div>
+               </motion.div>
+
+               <motion.div variants={itemVariants}>
+                    <AppointmentWorkflowLegend />
                </motion.div>
 
                {/* BENTO GRID */}

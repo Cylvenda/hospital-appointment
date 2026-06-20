@@ -2,37 +2,25 @@
 
 import { useEffect, useMemo } from "react"
 import { useRouter } from "next/navigation"
-import {
-     Card,
-     CardContent,
-     CardDescription,
-     CardHeader,
-     CardTitle,
-} from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { useAuthUserStore } from "@/store/auth/userAuth.store"
 import { useAppointmentStore } from "@/store/appointments/appointment.store"
 import { getDashboardPath } from "@/lib/role-dashboard"
-import { toast } from "react-toastify"
 import { cn } from "@/lib/utils"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { 
      Calendar01Icon, 
      Clock01Icon, 
      UserGroupIcon, 
-     CheckCircle, 
-     Cancel01Icon, 
-     HourglassIcon,
-     Doctor01Icon,
-     Person,
-     ArrowRight02Icon
+     CheckCircle
 } from "@hugeicons/core-free-icons"
 import { DoctorAppointmentCard } from "@/components/customs/doctor-appointment-card"
+import { AppointmentWorkflowLegend } from "@/components/appointment-workflow-legend"
 
 export default function DoctorDashboardPage() {
      const router = useRouter()
      const { user, checkAuth } = useAuthUserStore()
-     const { appointments, loading, error, fetchAppointments, updateAppointment } = useAppointmentStore()
+     const { appointments, loading, fetchAppointments } = useAppointmentStore()
 
      useEffect(() => {
           void (async () => {
@@ -51,22 +39,6 @@ export default function DoctorDashboardPage() {
                await fetchAppointments()
           })()
      }, [checkAuth, fetchAppointments, router])
-
-     const handleStatusUpdate = async (appointmentId: string, status: string) => {
-          try {
-               await updateAppointment(appointmentId, { status })
-               toast.success(`Appointment marked as ${status}`)
-          } catch {
-               toast.error(`Failed to update appointment to ${status}`)
-          }
-     }
-
-     const today = useMemo(() => new Date().toISOString().split('T')[0], [])
-
-     const todaysAppointments = useMemo(
-          () => appointments.filter((appt) => appt.date === today),
-          [appointments, today]
-     )
 
      const pendingAssessment = useMemo(
           () => appointments.filter((appt) => appt.status === "accepted"),
@@ -91,7 +63,7 @@ export default function DoctorDashboardPage() {
                          </div>
                          <h1 className="text-5xl font-black tracking-tight">Dr. {user?.last_name}</h1>
                          <p className="text-secondary text-lg mt-2 font-medium">
-                              You have <span className="text-white font-bold">{stats.upcoming}</span> appointments awaiting assessment today.
+                              You have <span className="text-white font-bold">{stats.upcoming}</span> appointments ready for review today.
                          </p>
                     </div>
                     <div className="flex gap-3 relative z-10">
@@ -107,7 +79,7 @@ export default function DoctorDashboardPage() {
                {/* STATS GRID */}
                <div className="grid gap-6 sm:grid-cols-3">
                     {[
-                         { label: "Pending Assessment", value: stats.upcoming, icon: Clock01Icon, color: "text-amber-500", bg: "bg-amber-50/50", border: "border-amber-100" },
+                         { label: "Ready for Review", value: stats.upcoming, icon: Clock01Icon, color: "text-amber-500", bg: "bg-amber-50/50", border: "border-amber-100" },
                          { label: "Completed Visits", value: stats.completed, icon: CheckCircle, color: "text-emerald-500", bg: "bg-emerald-50/50", border: "border-emerald-100" },
                          { label: "Total Managed", value: stats.total, icon: UserGroupIcon, color: "text-blue-500", bg: "bg-blue-50/50", border: "border-blue-100" },
                     ].map((stat, i) => (
@@ -124,6 +96,8 @@ export default function DoctorDashboardPage() {
                </div>
 
                <div className="space-y-8">
+                    <AppointmentWorkflowLegend />
+
                     <div className="flex items-center justify-between">
                          <div className="flex items-center gap-3">
                               <div className="w-1.5 h-8 bg-primary rounded-full" />
@@ -136,8 +110,8 @@ export default function DoctorDashboardPage() {
 
                     {loading ? (
                          <div className="grid gap-8">
-                              {[1, 2].map(i => (
-                                   <div key={i} className="h-64 rounded-2xl bg-muted/40 animate-pulse border-2 border-dashed border-muted" />
+                              {[1, 2].map((item) => (
+                                   <div key={item} className="h-64 rounded-2xl bg-muted/40 animate-pulse border-2 border-dashed border-muted" />
                               ))}
                          </div>
                     ) : pendingAssessment.length === 0 ? (

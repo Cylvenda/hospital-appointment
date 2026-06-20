@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo } from "react"
 import { useRouter } from "next/navigation"
-import { motion, AnimatePresence } from "framer-motion"
+import { motion } from "framer-motion"
 import {
   Card,
   CardContent,
@@ -15,20 +15,19 @@ import {
   AlertCircleIcon,
   CalendarCheckIn01Icon,
   Clock03Icon,
-  FileAddIcon,
   StethoscopeIcon,
   UserCheck01Icon,
   UserGroupIcon,
   RefreshIcon,
   ArrowRight01Icon,
-  MoreHorizontalIcon,
-  Doctor01Icon,
   CheckCircle,
   Calendar03Icon
 } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { useAdminStore } from "@/store/admin/admin.store"
 import { useAppointmentStore } from "@/store/appointments/appointment.store"
+import { AppointmentWorkflowLegend } from "@/components/appointment-workflow-legend"
+import { getAppointmentStatusMeta } from "@/lib/appointment-workflow"
 import { cn } from "@/lib/utils"
 
 const containerVariants = {
@@ -121,8 +120,8 @@ export default function AdminDashboardPage() {
         patient: appointment.patient,
         doctor: appointment.doctor || "TBD",
         type: appointment.illnessCategory,
-        status: appointment.status === "accepted" ? "Confirmed" : appointment.status === "pending" ? "Pending" : "Cancelled",
-        tone: appointment.status === "accepted" ? "emerald" : appointment.status === "pending" ? "amber" : "rose",
+        status: getAppointmentStatusMeta(appointment.status, appointment.paymentStatus, "admin").label,
+        tone: getAppointmentStatusMeta(appointment.status, appointment.paymentStatus, "admin").tone,
       })),
     [appointments]
   )
@@ -165,9 +164,13 @@ export default function AdminDashboardPage() {
         </div>
       </motion.div>
 
+      <motion.div variants={itemVariants}>
+        <AppointmentWorkflowLegend />
+      </motion.div>
+
       {/* STATS BENTO GRID */}
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-        {stats.map((stat, idx) => (
+        {stats.map((stat) => (
           <motion.div key={stat.title} variants={itemVariants}>
             <Card className="h-full rounded-md border-none shadow-sm transition-all hover:shadow-md hover:translate-y-[-2px]">
               <CardContent className="flex items-center gap-5 p-6">
@@ -198,7 +201,7 @@ export default function AdminDashboardPage() {
                       <HugeiconsIcon icon={Calendar03Icon} className="w-6 h-6 text-primary" />
                       Daily Appointment Flow
                     </CardTitle>
-                    <CardDescription>Live overview of today's schedule</CardDescription>
+                    <CardDescription>Live overview of today&apos;s schedule</CardDescription>
                   </div>
                   <Button variant="ghost" size="sm" className="rounded-md text-primary" onClick={() => router.push("/admin/appointments")}>
                     Manage All <HugeiconsIcon icon={ArrowRight01Icon} className="ml-1 w-4 h-4" />
@@ -208,7 +211,7 @@ export default function AdminDashboardPage() {
               <CardContent className="p-0">
                 <div className="divide-y divide-muted/40">
                   {upcomingAppointments.length > 0 ? (
-                    upcomingAppointments.map((app, idx) => (
+                    upcomingAppointments.map((app) => (
                       <div key={app.id} className="group flex items-center justify-between p-5 transition-colors hover:bg-primary/[0.02]">
                         <div className="flex items-center gap-4">
                           <div className="flex flex-col items-center justify-center rounded-md bg-muted/50 px-3 py-2 text-center min-w-[70px]">

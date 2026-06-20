@@ -13,6 +13,8 @@ import { Button } from "@/components/ui/button"
 import { useAuthUserStore } from "@/store/auth/userAuth.store"
 import { useAppointmentStore } from "@/store/appointments/appointment.store"
 import { getDashboardPath } from "@/lib/role-dashboard"
+import { AppointmentWorkflowLegend } from "@/components/appointment-workflow-legend"
+import { getAppointmentStatusMeta } from "@/lib/appointment-workflow"
 import { cn } from "@/lib/utils"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { Calendar01Icon, Clock01Icon, UserIcon, CheckCircle, Cancel01Icon, HourglassIcon, PlusSignIcon, RefreshIcon } from "@hugeicons/core-free-icons"
@@ -21,7 +23,7 @@ import { toast } from "react-toastify"
 export default function PatientDashboardPage() {
      const router = useRouter()
      const { user, checkAuth } = useAuthUserStore()
-     const { appointments, loading, error, fetchAppointments } = useAppointmentStore()
+     const { appointments, loading, fetchAppointments } = useAppointmentStore()
 
      useEffect(() => {
           void (async () => {
@@ -56,6 +58,10 @@ export default function PatientDashboardPage() {
                .filter(a => a.status === "accepted" && new Date(a.date) >= now)
                .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())[0]
      }, [appointments])
+
+     const nextAppointmentMeta = nextAppointment
+          ? getAppointmentStatusMeta(nextAppointment.status, nextAppointment.paymentStatus, "patient")
+          : null
 
      const recentHistory = useMemo(() => {
           return appointments
@@ -109,6 +115,8 @@ export default function PatientDashboardPage() {
                <div className="grid gap-8 lg:grid-cols-3">
                     {/* LEFT COLUMN: STATS & NEXT APPOINTMENT */}
                     <div className="lg:col-span-2 space-y-8">
+                         <AppointmentWorkflowLegend />
+
                          {/* STATS */}
                          <div className="grid gap-4 sm:grid-cols-4">
                               {[
@@ -172,7 +180,7 @@ export default function PatientDashboardPage() {
                               </CardHeader>
                               <CardContent className="p-6">
                                    {nextAppointment ? (
-                                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                                             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                                              <div className="space-y-4">
                                                   <div className="flex items-center gap-3">
                                                        <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center">
@@ -195,8 +203,15 @@ export default function PatientDashboardPage() {
                                                   </div>
                                              </div>
                                              <div className="flex flex-col items-start md:items-end gap-2">
-                                                  <div className="px-4 py-1.5 rounded-full bg-emerald-100 text-emerald-700 text-xs font-bold uppercase tracking-wider">
-                                                       {nextAppointment.status}
+                                                  <div className={cn(
+                                                       "px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider",
+                                                       nextAppointmentMeta?.tone === "amber" && "bg-amber-100 text-amber-700",
+                                                       nextAppointmentMeta?.tone === "emerald" && "bg-emerald-100 text-emerald-700",
+                                                       nextAppointmentMeta?.tone === "blue" && "bg-blue-100 text-blue-700",
+                                                       nextAppointmentMeta?.tone === "rose" && "bg-rose-100 text-rose-700",
+                                                       nextAppointmentMeta?.tone === "slate" && "bg-slate-100 text-slate-700"
+                                                  )}>
+                                                       {nextAppointmentMeta?.label}
                                                   </div>
                                                   <p className="text-sm font-medium text-primary">{nextAppointment.illnessCategory}</p>
                                                   <Button variant="outline" className="mt-2 rounded-md" onClick={() => router.push(`/patient-dashboard/appointments/${nextAppointment.id}`)}>
@@ -258,12 +273,21 @@ export default function PatientDashboardPage() {
                                                             <p className="text-sm font-semibold truncate">{appt.illnessCategory}</p>
                                                             <p className="text-xs text-muted-foreground">{appt.date}</p>
                                                        </div>
-                                                       <span className={cn(
-                                                            "text-[10px] font-bold uppercase px-2 py-0.5 rounded-md",
-                                                            appt.status === "completed" ? "bg-blue-50 text-blue-700" : "bg-rose-50 text-rose-700"
-                                                       )}>
-                                                            {appt.status}
-                                                       </span>
+                                                       {(() => {
+                                                            const statusMeta = getAppointmentStatusMeta(appt.status, appt.paymentStatus, "patient")
+                                                            return (
+                                                                 <span className={cn(
+                                                                      "text-[10px] font-bold uppercase px-2 py-0.5 rounded-md",
+                                                                      statusMeta.tone === "amber" && "bg-amber-50 text-amber-700",
+                                                                      statusMeta.tone === "emerald" && "bg-emerald-50 text-emerald-700",
+                                                                      statusMeta.tone === "blue" && "bg-blue-50 text-blue-700",
+                                                                      statusMeta.tone === "rose" && "bg-rose-50 text-rose-700",
+                                                                      statusMeta.tone === "slate" && "bg-slate-50 text-slate-700"
+                                                                 )}>
+                                                                      {statusMeta.label}
+                                                                 </span>
+                                                            )
+                                                       })()}
                                                   </div>
                                              ))
                                         ) : (

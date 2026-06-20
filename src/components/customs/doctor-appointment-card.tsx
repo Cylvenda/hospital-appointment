@@ -33,6 +33,7 @@ import {
      InformationCircleIcon
 } from "@hugeicons/core-free-icons"
 import { cn } from "@/lib/utils"
+import { getAppointmentStatusMeta } from "@/lib/appointment-workflow"
 
 type Props = {
      appointment: Appointment
@@ -49,6 +50,11 @@ export const DoctorAppointmentCard = ({ appointment, hideViewDetails = false }: 
      // Form states for completion
      const [diagnosis, setDiagnosis] = useState(appointment.diagnosis || "")
      const [clinicalNotes, setClinicalNotes] = useState(appointment.notes || "")
+     const statusMeta = getAppointmentStatusMeta(
+          appointment.status,
+          appointment.paymentStatus,
+          "doctor"
+     )
 
      const handleComplete = async () => {
           if (!diagnosis.trim()) {
@@ -120,7 +126,7 @@ export const DoctorAppointmentCard = ({ appointment, hideViewDetails = false }: 
                                              "px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border",
                                              statusStyles[appointment.status] || statusStyles.pending
                                         )}>
-                                             {appointment.status === "accepted" ? "Action Required" : appointment.status}
+                                             {statusMeta.label}
                                         </div>
                                    </div>
 
@@ -178,36 +184,15 @@ export const DoctorAppointmentCard = ({ appointment, hideViewDetails = false }: 
                               </div>
 
                               {/* Right Side: Actions */}
-                              {(appointment.status === "accepted" || appointment.status === "pending") && (
+                              {appointment.status === "accepted" && (
                                    <div className="w-full md:w-64 bg-muted/20 border-l p-8 flex flex-col justify-center gap-4">
-                                        {appointment.status === "pending" ? (
-                                             <Button 
-                                                  onClick={async () => {
-                                                       setLoading(true)
-                                                       try {
-                                                            await updateAppointment(appointment.id, { status: "accepted" })
-                                                            toast.success("Assignment accepted.")
-                                                       } catch {
-                                                            toast.error("Failed to accept assignment.")
-                                                       } finally {
-                                                            setLoading(false)
-                                                       }
-                                                  }}
-                                                  disabled={loading}
-                                                  className="h-14 rounded-md font-black bg-emerald-600 hover:bg-emerald-700 shadow-lg shadow-emerald-200 hover:scale-[1.02] active:scale-95 transition-all w-full"
-                                             >
-                                                  <HugeiconsIcon icon={Tick02Icon} className="w-5 h-5 mr-2" />
-                                                  Accept Assignment
-                                             </Button>
-                                        ) : (
-                                             <Button 
-                                                  onClick={() => setIsCompleteOpen(true)}
-                                                  className="h-14 rounded-md font-black shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all w-full"
-                                             >
-                                                  <HugeiconsIcon icon={Tick02Icon} className="w-5 h-5 mr-2" />
-                                                  Finish Appointment
-                                             </Button>
-                                        )}
+                                        <Button 
+                                             onClick={() => setIsCompleteOpen(true)}
+                                             className="h-14 rounded-md font-black shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all w-full"
+                                        >
+                                             <HugeiconsIcon icon={Tick02Icon} className="w-5 h-5 mr-2" />
+                                             Complete Visit
+                                        </Button>
                                         <Button 
                                              variant="outline"
                                              onClick={() => setIsCancelOpen(true)}
@@ -228,7 +213,7 @@ export const DoctorAppointmentCard = ({ appointment, hideViewDetails = false }: 
                                    </div>
                               )}
 
-                              {!(appointment.status === "accepted" || appointment.status === "pending") && !hideViewDetails && (
+                              {appointment.status !== "accepted" && !hideViewDetails && (
                                    <div className="w-full md:w-64 bg-muted/20 border-l p-8 flex flex-col justify-end gap-4">
                                         <Button 
                                              variant="outline"

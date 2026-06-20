@@ -18,6 +18,7 @@ import { PayingForAppointment } from "./popup-payment"
 import { UpdateAppointmentDialog } from "./update-appointment"
 import { Calendar01Icon, Clock01Icon, UserIcon, CheckCircle, Cancel01Icon, HourglassIcon, InformationCircleIcon, Tick02Icon, Note01Icon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
+import { getAppointmentStatusMeta } from "@/lib/appointment-workflow"
 
 type Props = {
      appointment: Appointment
@@ -63,19 +64,11 @@ export default function AppointmentDisplay({
           appointment.status === "pending" && 
           appointment.paymentStatus === "pending"
 
-     const getConditionText = () => {
-          if (appointment.status === "pending") {
-               if (appointment.paymentStatus === "pending") return "Waiting for payment"
-               if (appointment.paymentStatus === "completed") return "Waiting for doctor assignment"
-               return "Pending review"
-          }
-          if (appointment.status === "accepted") return "Doctor assigned, upcoming appointment"
-          if (appointment.status === "completed") return "Appointment finished"
-          if (appointment.status === "cancelled") return "Appointment was cancelled"
-          if (appointment.status === "declined") return "Appointment was declined"
-          if (appointment.status === "expired") return "Appointment has expired"
-          return ""
-     }
+     const statusMeta = getAppointmentStatusMeta(
+          appointment.status,
+          appointment.paymentStatus,
+          "patient"
+     )
 
      return (
           <Card className={cn(
@@ -95,7 +88,7 @@ export default function AppointmentDisplay({
                               <div className="flex items-center gap-2">
                                    <Badge variant="outline" className={cn("rounded-md px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider", statusColors[appointment.status])}>
                                         <HugeiconsIcon icon={statusIcons[appointment.status]} className="w-3 h-3 mr-1" />
-                                        {appointment.status}
+                                        {statusMeta.label}
                                    </Badge>
                                    {appointment.paymentStatus === "completed" && (
                                         <Badge className="bg-emerald-500 text-white border-none rounded-lg text-[10px]">PAID</Badge>
@@ -105,7 +98,7 @@ export default function AppointmentDisplay({
                                    {appointment.illnessCategory}
                               </CardTitle>
                               <CardDescription className="line-clamp-2 italic text-muted-foreground/80">
-                                   "{appointment.note}"
+                                   {appointment.note}
                               </CardDescription>
                          </div>
                          <div className="text-right">
@@ -167,7 +160,7 @@ export default function AppointmentDisplay({
                               <div className="space-y-2">
                                    <div className="flex items-center gap-2">
                                         <HugeiconsIcon icon={Tick02Icon} className="w-4 h-4 text-blue-600 dark:text-blue-400" />
-                                        <p className="text-xs font-black uppercase tracking-widest text-blue-600 dark:text-blue-400 opacity-80">Doctor's Diagnosis</p>
+                                        <p className="text-xs font-black uppercase tracking-widest text-blue-600 dark:text-blue-400 opacity-80">Doctor&apos;s Diagnosis</p>
                                    </div>
                                    <p className="text-sm font-bold text-foreground">{appointment.diagnosis}</p>
                               </div>
@@ -187,7 +180,7 @@ export default function AppointmentDisplay({
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-4 border-t border-muted/40 mt-4">
                          <div className="text-[11px] font-bold text-muted-foreground/70 uppercase tracking-wider flex items-center gap-1.5 self-start sm:self-center">
                               <HugeiconsIcon icon={InformationCircleIcon} className="w-4 h-4" />
-                              {getConditionText()}
+                              {statusMeta.summary}
                          </div>
                          <div className="flex flex-wrap items-center justify-end gap-3 w-full sm:w-auto">
                               {!hideViewDetails && (

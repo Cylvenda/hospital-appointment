@@ -9,11 +9,9 @@ import { motion, AnimatePresence } from "framer-motion"
 import {
      Card,
      CardContent,
-     CardDescription,
      CardHeader,
      CardTitle,
 } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
 import { DatePicker } from "@/components/ui/date-picker"
 import { TimePicker } from "@/components/ui/time-picker"
 import {
@@ -26,6 +24,7 @@ import {
 import { AlertCircleIcon, Calendar03Icon, Clock01Icon, UserCircleIcon, CheckmarkCircle02Icon, Cancel01Icon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { cn } from "@/lib/utils"
+import { getAppointmentStatusMeta } from "@/lib/appointment-workflow"
 
 type Props = {
      appointment: Appointment
@@ -63,6 +62,11 @@ export default function AssignAppointment({
      const isPending = appointment.status === "pending"
      const isAccepted = appointment.status === "accepted"
      const isPaymentComplete = appointment.paymentStatus === "completed"
+     const statusMeta = getAppointmentStatusMeta(
+          appointment.status,
+          appointment.paymentStatus,
+          "receptionist"
+     )
      
      const statusConfig = {
           pending: { tone: "secondary", color: "text-amber-600", bg: "bg-amber-50", border: "border-amber-200" },
@@ -139,7 +143,7 @@ export default function AssignAppointment({
                                         </div>
                                         {appointment.note && (
                                              <p className="text-sm text-muted-foreground mt-3 leading-relaxed bg-muted/30 p-4 rounded-2xl border border-muted/50 italic">
-                                                  "{appointment.note}"
+                                                  {appointment.note}
                                              </p>
                                         )}
                                    </div>
@@ -147,10 +151,10 @@ export default function AssignAppointment({
 
                               <div className="flex flex-col items-end gap-3">
                                    <Badge
-                                        variant={currentStatus.tone as any}
+                                        variant={currentStatus.tone}
                                         className={cn("px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest shadow-sm", currentStatus.color, currentStatus.bg)}
                                    >
-                                        {appointment.status}
+                                        {statusMeta.label}
                                    </Badge>
                                    <div className="text-right">
                                         <p className="text-[10px] font-black uppercase tracking-tighter text-muted-foreground/50">Payment Status</p>
@@ -300,7 +304,7 @@ export default function AssignAppointment({
                                                   canAssign ? "text-emerald-700 bg-emerald-100/50" : "text-muted-foreground bg-muted/50"
                                              )}>
                                                   {canAssign
-                                                       ? "✓ Valid configuration ready for submission."
+                                                       ? "✓ Appointment is ready to be assigned."
                                                        : isPaymentComplete
                                                             ? "⚠ Please complete all required fields."
                                                             : "🔒 Waiting for payment verification."}
@@ -340,7 +344,7 @@ export default function AssignAppointment({
                                                   <HugeiconsIcon icon={CheckmarkCircle02Icon} className="w-6 h-6" />
                                              </div>
                                              <div>
-                                                  <p className="font-bold text-foreground">Appointment Confirmed</p>
+                                                  <p className="font-bold text-foreground">Appointment Scheduled</p>
                                                   <p className="text-sm text-muted-foreground">The patient and doctor have been notified.</p>
                                              </div>
                                         </div>

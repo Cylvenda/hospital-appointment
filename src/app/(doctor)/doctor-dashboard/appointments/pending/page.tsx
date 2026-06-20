@@ -24,9 +24,9 @@ export default function DoctorPendingAppointmentsPage() {
     }
   }, [initialize, initialized])
 
-  // "Pending" for doctors are appointments assigned to them (pending or accepted)
+  // For doctors, the actionable queue is appointments already assigned and ready for assessment.
   const pendingAppointments = useMemo(
-    () => appointments.filter((appointment) => ["pending", "accepted"].includes(appointment.status)),
+    () => appointments.filter((appointment) => appointment.status === "accepted"),
     [appointments]
   )
 
@@ -65,14 +65,14 @@ export default function DoctorPendingAppointmentsPage() {
     <div className="w-full space-y-10 max-w-8xl p-4 md:p-8">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
         <div>
-          <h1 className="text-4xl font-black tracking-tight italic">Upcoming Visits</h1>
+          <h1 className="text-4xl font-black tracking-tight italic">Ready for Assessment</h1>
           <p className="text-muted-foreground text-lg mt-1 font-medium">
-            Active appointments awaiting your assessment.
+            Appointments assigned to you and waiting for clinical review.
           </p>
         </div>
         <div className="flex items-center gap-4 bg-muted/30 px-6 py-3 rounded-3xl border border-muted-foreground/10">
              <div className="text-right">
-                  <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground opacity-60">Pending Assessment</p>
+                  <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground opacity-60">Ready Now</p>
                   <p className="text-xl font-black">{pendingAppointments.length}</p>
              </div>
              <div className="w-px h-8 bg-muted-foreground/10 mx-2" />
@@ -99,9 +99,9 @@ export default function DoctorPendingAppointmentsPage() {
                     <HugeiconsIcon icon={Loading} className="w-10 h-10" />
                </div>
                <div className="space-y-1">
-                    <p className="text-2xl font-black text-foreground">All Clear</p>
+                    <p className="text-2xl font-black text-foreground">Queue is Clear</p>
                     <p className="text-muted-foreground max-w-xs mx-auto font-medium">
-                      You have no pending appointments at the moment. Take a moment to rest!
+                      No assigned appointments are ready for assessment right now.
                     </p>
                </div>
              </motion.div>
