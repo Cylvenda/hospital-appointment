@@ -4,6 +4,7 @@ import { useEffect, useMemo } from "react"
 import { Button } from "@/components/ui/button"
 import { useAppointmentStore } from "@/store/appointments/appointment.store"
 import AppointmentDisplay from "@/components/customs/pattient-appointment"
+import { filterAppointmentsForQueue } from "@/lib/appointment-queues"
 
 export default function ReceptionistAppointmentsPage() {
   const {
@@ -22,7 +23,7 @@ export default function ReceptionistAppointmentsPage() {
   }, [initialize, initialized])
 
   const acceptedAppointments = useMemo(
-    () => appointments.filter((appointment) => appointment.status === "accepted"),
+    () => filterAppointmentsForQueue(appointments, "patient", "upcoming"),
     [appointments]
   )
 
@@ -52,9 +53,9 @@ export default function ReceptionistAppointmentsPage() {
   return (
     <div className="w-full space-y-4 max-w-8xl">
       <div>
-        <h1 className="text-2xl font-semibold">Accepted Appointments</h1>
+        <h1 className="text-2xl font-semibold">Upcoming Appointments</h1>
         <p className="text-sm text-muted-foreground">
-          Review accepted appointments that are ready for scheduling or follow-up.
+          Review appointments that have been confirmed or are on the way to being scheduled.
         </p>
       </div>
 

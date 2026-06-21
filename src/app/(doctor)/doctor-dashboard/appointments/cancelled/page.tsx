@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { useAppointmentStore } from "@/store/appointments/appointment.store"
 import { DoctorAppointmentCard } from "@/components/customs/doctor-appointment-card"
+import { filterAppointmentsForQueue } from "@/lib/appointment-queues"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { RefreshIcon, Cancel01Icon, Medicine01Icon } from "@hugeicons/core-free-icons"
 import { cn } from "@/lib/utils"
@@ -25,7 +26,7 @@ export default function DoctorCancelledAppointmentsPage() {
   }, [initialize, initialized])
 
   const cancelledAppointments = useMemo(
-    () => appointments.filter((appointment) => appointment.status === "cancelled"),
+    () => filterAppointmentsForQueue(appointments, "doctor", "cancelled"),
     [appointments]
   )
 

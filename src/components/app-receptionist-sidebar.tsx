@@ -12,7 +12,7 @@ import {
      SidebarRail,
 } from "@/components/ui/sidebar"
 import { HugeiconsIcon } from "@hugeicons/react"
-import { LayoutBottomIcon, RoboticIcon, Settings05Icon, DashboardCircleIcon, Doctor01Icon, UserAccountIcon, Loading, CallDoneIcon, CheckCheck, AllahFreeIcons, Bell, StethoscopeIcon } from "@hugeicons/core-free-icons"
+import { LayoutBottomIcon, RoboticIcon, Settings05Icon, DashboardCircleIcon, Doctor01Icon, UserAccountIcon, CallDoneIcon, CheckCheck, AllahFreeIcons, Bell, StethoscopeIcon } from "@hugeicons/core-free-icons"
 import { Separator } from "./ui/separator"
 import { useAuthUserStore } from "@/store/auth/userAuth.store"
 
@@ -25,49 +25,39 @@ const navMain = [
           ),
      },
      {
-          title: "Appointments",
-          url: "#",
+          title: "New Requests",
+          url: "/receptionist-dashboard/appointments/pending",
           icon: (
                <HugeiconsIcon color="var(--primary)" icon={RoboticIcon} strokeWidth={2} />
           ),
-          items: [
-
-               {
-                    title: "Pending",
-                    url: "/receptionist-dashboard/appointments/pending",
-                    icon: (
-                         <HugeiconsIcon color="var(--primary)" icon={Loading} size={"17"} />
-                    ),
-               },
-               {
-                    title: "Accepted",
-                    url: "/receptionist-dashboard/appointments/accepted",
-                    icon: (
-                         <HugeiconsIcon color="var(--primary)" icon={CheckCheck} size={"17"} />
-                    ),
-               },
-               {
-                    title: "Completed",
-                    url: "/receptionist-dashboard/appointments/completed",
-                    icon: (
-                         <HugeiconsIcon color="var(--primary)" icon={CallDoneIcon} size={"17"} />
-                    ),
-               },
-               {
-                    title: "Cancelled",
-                    url: "/receptionist-dashboard/appointments/cancelled",
-                    icon: (
-                         <HugeiconsIcon color="var(--primary)" icon={CallDoneIcon} size={"17"} />
-                    ),
-               },
-               {
-                    title: "All",
-                    url: "/receptionist-dashboard/appointments/all",
-                    icon: (
-                         <HugeiconsIcon color="var(--primary)" icon={AllahFreeIcons} size={"17"} />
-                    ),
-               },
-          ],
+     },
+     {
+          title: "Assigned Today",
+          url: "/receptionist-dashboard/appointments/accepted",
+          icon: (
+               <HugeiconsIcon color="var(--primary)" icon={CheckCheck} strokeWidth={2} />
+          ),
+     },
+     {
+          title: "Completed Queue",
+          url: "/receptionist-dashboard/appointments/completed",
+          icon: (
+               <HugeiconsIcon color="var(--primary)" icon={CallDoneIcon} strokeWidth={2} />
+          ),
+     },
+     {
+          title: "Cancelled Queue",
+          url: "/receptionist-dashboard/appointments/cancelled",
+          icon: (
+               <HugeiconsIcon color="var(--primary)" icon={CallDoneIcon} strokeWidth={2} />
+          ),
+     },
+     {
+          title: "All Appointments",
+          url: "/receptionist-dashboard/appointments/all",
+          icon: (
+               <HugeiconsIcon color="var(--primary)" icon={AllahFreeIcons} strokeWidth={2} />
+          ),
      },
      {
           title: "Doctors",

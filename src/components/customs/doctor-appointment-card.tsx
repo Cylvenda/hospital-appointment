@@ -7,6 +7,7 @@ import {
      Card,
      CardContent,
 } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
 import {
      Dialog,
      DialogContent,
@@ -23,7 +24,6 @@ import type { Appointment } from "@/store/appointments/appointment.types"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { 
      Clock01Icon, 
-     Calendar03Icon, 
      UserIcon, 
      MedicineBottle01Icon, 
      Tick02Icon, 
@@ -34,6 +34,7 @@ import {
 } from "@hugeicons/core-free-icons"
 import { cn } from "@/lib/utils"
 import { getAppointmentStatusMeta } from "@/lib/appointment-workflow"
+import { hasAppointmentStatus } from "@/lib/appointment-queues"
 
 type Props = {
      appointment: Appointment
@@ -55,6 +56,15 @@ export const DoctorAppointmentCard = ({ appointment, hideViewDetails = false }: 
           appointment.paymentStatus,
           "doctor"
      )
+     const toneStyles = {
+          amber: "bg-amber-100 text-amber-700 border-amber-200",
+          emerald: "bg-emerald-100 text-emerald-700 border-emerald-200",
+          blue: "bg-blue-100 text-blue-700 border-blue-200",
+          rose: "bg-rose-100 text-rose-700 border-rose-200",
+          slate: "bg-slate-100 text-slate-700 border-slate-200",
+     } as const
+     const isAssigned = hasAppointmentStatus(appointment, "accepted")
+     const isCompleted = hasAppointmentStatus(appointment, "completed")
 
      const handleComplete = async () => {
           if (!diagnosis.trim()) {
@@ -91,15 +101,6 @@ export const DoctorAppointmentCard = ({ appointment, hideViewDetails = false }: 
           }
      }
 
-     const statusStyles = {
-          pending: "bg-amber-100 text-amber-700 border-amber-200",
-          accepted: "bg-emerald-100 text-emerald-700 border-emerald-200",
-          completed: "bg-blue-100 text-blue-700 border-blue-200",
-          cancelled: "bg-rose-100 text-rose-700 border-rose-200",
-          declined: "bg-gray-100 text-gray-700 border-gray-200",
-          expired: "bg-slate-100 text-slate-700 border-slate-200"
-     }
-
      return (
           <motion.div
                layout
@@ -107,123 +108,128 @@ export const DoctorAppointmentCard = ({ appointment, hideViewDetails = false }: 
                animate={{ opacity: 1, y: 0 }}
                exit={{ opacity: 0, scale: 0.95 }}
           >
-               <Card className="rounded-md border-2 border-muted/40 shadow-sm overflow-hidden group hover:shadow-xl hover:border-primary/20 transition-all duration-300">
+               <Card className="group overflow-hidden rounded-[1.25rem] border border-border/60 bg-card/95 shadow-[0_12px_28px_rgba(15,23,42,0.05)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_18px_36px_rgba(15,23,42,0.08)]">
                     <CardContent className="p-0">
-                         <div className="flex flex-col md:flex-row">
-                              {/* Left Side: Patient Info & Time */}
-                              <div className="p-8 flex-1 space-y-6">
-                                   <div className="flex items-start justify-between">
-                                        <div className="flex items-center gap-4">
-                                             <div className="w-14 h-14 rounded-3xl bg-primary/10 flex items-center justify-center text-primary shrink-0 group-hover:scale-110 transition-transform">
-                                                  <HugeiconsIcon icon={UserIcon} className="w-7 h-7" />
-                                             </div>
-                                             <div>
-                                                  <h3 className="text-2xl font-black tracking-tight">{appointment.patient}</h3>
-                                                  <p className="text-muted-foreground font-medium">{appointment.email}</p>
-                                             </div>
-                                        </div>
-                                        <div className={cn(
-                                             "px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border",
-                                             statusStyles[appointment.status] || statusStyles.pending
-                                        )}>
-                                             {statusMeta.label}
-                                        </div>
-                                   </div>
-
-                                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                        <div className="flex items-center gap-3 bg-muted/30 p-4 rounded-2xl border border-muted-foreground/5">
-                                             <div className="w-10 h-10 rounded-xl bg-background flex items-center justify-center shadow-sm">
-                                                  <HugeiconsIcon icon={Calendar03Icon} className="w-5 h-5 text-primary" />
-                                             </div>
-                                             <div>
-                                                  <p className="text-[10px] font-black uppercase tracking-tighter text-muted-foreground opacity-60 leading-none mb-1">Appointment Date</p>
-                                                  <p className="font-bold text-sm">{appointment.date || "Not Scheduled"}</p>
-                                             </div>
-                                        </div>
-                                        <div className="flex items-center gap-3 bg-muted/30 p-4 rounded-2xl border border-muted-foreground/5">
-                                             <div className="w-10 h-10 rounded-xl bg-background flex items-center justify-center shadow-sm">
-                                                  <HugeiconsIcon icon={Clock01Icon} className="w-5 h-5 text-primary" />
-                                             </div>
-                                             <div>
-                                                  <p className="text-[10px] font-black uppercase tracking-tighter text-muted-foreground opacity-60 leading-none mb-1">Time Slot</p>
-                                                  <p className="font-bold text-sm">{appointment.startTime || "--:--"} - {appointment.endTime || "--:--"}</p>
-                                             </div>
-                                        </div>
-                                   </div>
-
-                                   <div className="space-y-3">
-                                        <div className="flex items-center gap-2">
-                                             <HugeiconsIcon icon={InformationCircleIcon} className="w-4 h-4 text-muted-foreground" />
-                                             <p className="text-xs font-black uppercase tracking-widest text-muted-foreground opacity-60">Patient Symptoms</p>
-                                        </div>
-                                        <p className="text-base font-medium leading-relaxed bg-primary/5 p-4 rounded-md border border-primary/10 italic">
-                                             &quot;{appointment.note}&quot;
-                                        </p>
-                                   </div>
-
-                                   {appointment.status === "completed" && (
-                                        <div className="pt-4 mt-4 border-t-2 border-dashed border-muted space-y-4">
-                                             <div className="space-y-2">
-                                                  <div className="flex items-center gap-2">
-                                                       <HugeiconsIcon icon={Tick02Icon} className="w-4 h-4 text-emerald-500" />
-                                                       <p className="text-xs font-black uppercase tracking-widest text-emerald-600 opacity-60">Recorded Diagnosis</p>
-                                                  </div>
-                                                  <p className="text-sm font-bold text-emerald-900">{appointment.diagnosis}</p>
-                                             </div>
-                                             {appointment.notes && (
-                                                  <div className="space-y-2">
-                                                       <div className="flex items-center gap-2">
-                                                            <HugeiconsIcon icon={Note01Icon} className="w-4 h-4 text-muted-foreground" />
-                                                            <p className="text-xs font-black uppercase tracking-widest text-muted-foreground opacity-60">Clinical Notes</p>
+                         <div className="h-1 bg-gradient-to-r from-primary via-emerald-500 to-blue-500" />
+                         <div className="grid gap-0 lg:grid-cols-[minmax(0,1fr)_15rem]">
+                              <div className="p-4 sm:p-5">
+                                   <div className="flex flex-col gap-4">
+                                        <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+                                             <div className="min-w-0 flex-1">
+                                                  <div className="flex flex-wrap items-center gap-2">
+                                                       <div className={cn("rounded-full border px-2.5 py-0.5 text-[10px] font-black uppercase tracking-[0.2em]", toneStyles[statusMeta.tone])}>
+                                                            {statusMeta.label}
                                                        </div>
-                                                       <p className="text-sm text-muted-foreground leading-relaxed">{appointment.notes}</p>
+                                                       {appointment.paymentStatus === "completed" && (
+                                                            <Badge className="rounded-full border-0 bg-emerald-500 px-2.5 py-0.5 text-[10px] font-black uppercase tracking-[0.2em] text-white">
+                                                                 Verified
+                                                            </Badge>
+                                                       )}
                                                   </div>
-                                             )}
+                                                  <div className="mt-2.5 flex items-start gap-3">
+                                                       <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary shadow-sm ring-1 ring-primary/10">
+                                                            <HugeiconsIcon icon={UserIcon} className="h-6 w-6" />
+                                                       </div>
+                                                       <div className="min-w-0">
+                                                            <h3 className="truncate text-[1.5rem] font-black tracking-tight sm:text-[1.7rem]">
+                                                                 {appointment.patient}
+                                                            </h3>
+                                                            <p className="mt-1 text-xs text-muted-foreground">{appointment.email}</p>
+                                                            <p className="mt-1.5 line-clamp-2 text-xs leading-5 text-muted-foreground/80">{appointment.note}</p>
+                                                       </div>
+                                                  </div>
+                                             </div>
+
+                                             <div className="grid gap-2 sm:grid-cols-2 lg:w-[15rem]">
+                                                  <div className="rounded-2xl border border-border/60 bg-muted/20 px-3 py-2.5 shadow-sm">
+                                                       <p className="text-[10px] font-black uppercase tracking-[0.22em] text-muted-foreground">Date</p>
+                                                      <p className="mt-1 text-xs font-bold text-foreground">{appointment.date || "Not Scheduled"}</p>
+                                                 </div>
+                                                 <div className="rounded-2xl border border-border/60 bg-muted/20 px-3 py-2.5 shadow-sm">
+                                                      <p className="text-[10px] font-black uppercase tracking-[0.22em] text-muted-foreground">Time</p>
+                                                      <p className="mt-1 flex items-center gap-2 text-xs font-bold text-foreground">
+                                                            <HugeiconsIcon icon={Clock01Icon} className="h-3.5 w-3.5 text-primary" />
+                                                            {appointment.startTime || "--:--"} - {appointment.endTime || "--:--"}
+                                                      </p>
+                                                 </div>
+                                             </div>
                                         </div>
-                                   )}
+
+                                        <div className="grid gap-2.5 md:grid-cols-3">
+                                             {[
+                                                  { label: "Diagnosis", value: appointment.diagnosis || "Pending review", tone: "blue" },
+                                                  { label: "Notes", value: appointment.notes || "No clinical notes yet", tone: "slate" },
+                                                  { label: "Doctor", value: appointment.doctor || "Unassigned", tone: "emerald" },
+                                             ].map((item) => (
+                                                  <div key={item.label} className="rounded-2xl border border-border/60 bg-card p-3 shadow-sm">
+                                                       <p className="text-[10px] font-black uppercase tracking-[0.22em] text-muted-foreground">{item.label}</p>
+                                                       <p className="mt-1.5 line-clamp-2 text-xs font-medium leading-5 text-foreground">{item.value}</p>
+                                                  </div>
+                                             ))}
+                                        </div>
+
+                                        {isCompleted && appointment.diagnosis && (
+                                             <div className="rounded-2xl border border-blue-500/20 bg-gradient-to-br from-blue-500/5 to-transparent p-3.5 shadow-sm">
+                                                  <div className="flex items-start gap-3">
+                                                       <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-2xl bg-blue-500/10 text-blue-700">
+                                                            <HugeiconsIcon icon={Tick02Icon} className="h-3.5 w-3.5" />
+                                                       </div>
+                                                       <div className="min-w-0 flex-1">
+                                                            <p className="text-[10px] font-black uppercase tracking-[0.22em] text-blue-700/70">Recorded Diagnosis</p>
+                                                            <p className="mt-1 text-sm font-bold text-foreground">{appointment.diagnosis}</p>
+                                                            {appointment.notes && (
+                                                                 <p className="mt-1.5 text-xs leading-5 text-muted-foreground">{appointment.notes}</p>
+                                                            )}
+                                                       </div>
+                                                  </div>
+                                             </div>
+                                       )}
+                                   </div>
                               </div>
 
-                              {/* Right Side: Actions */}
-                              {appointment.status === "accepted" && (
-                                   <div className="w-full md:w-64 bg-muted/20 border-l p-8 flex flex-col justify-center gap-4">
-                                        <Button 
-                                             onClick={() => setIsCompleteOpen(true)}
-                                             className="h-14 rounded-md font-black shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all w-full"
-                                        >
-                                             <HugeiconsIcon icon={Tick02Icon} className="w-5 h-5 mr-2" />
-                                             Complete Visit
-                                        </Button>
-                                        <Button 
-                                             variant="outline"
-                                             onClick={() => setIsCancelOpen(true)}
-                                             className="h-14 rounded-md border-2 font-bold text-rose-600 border-rose-100 hover:bg-rose-50 hover:border-rose-200 transition-all w-full"
-                                        >
-                                             <HugeiconsIcon icon={Cancel01Icon} className="w-5 h-5 mr-2" />
-                                             Cancel Visit
-                                        </Button>
-                                        {!hideViewDetails && (
-                                             <Button 
-                                                  variant="outline"
-                                                  onClick={() => router.push(`/doctor-dashboard/appointments/${appointment.id}`)}
-                                                  className="h-14 rounded-md border-2 font-bold shadow-sm hover:bg-muted/50 transition-all w-full mt-auto"
-                                             >
-                                                  View Details
-                                             </Button>
-                                        )}
-                                   </div>
-                              )}
+                              <div className="border-t border-border/60 bg-muted/20 p-4 lg:border-l lg:border-t-0 lg:p-5">
+                                   <div className="flex h-full flex-col justify-between gap-4">
+                                        <div className="rounded-2xl border border-border/60 bg-card p-3.5 shadow-sm">
+                                             <div className="flex items-center gap-2">
+                                                  <HugeiconsIcon icon={InformationCircleIcon} className="h-3.5 w-3.5 text-primary" />
+                                                  <p className="text-[10px] font-black uppercase tracking-[0.22em] text-muted-foreground">Status</p>
+                                             </div>
+                                             <p className="mt-1.5 text-xs font-medium leading-5 text-muted-foreground">{statusMeta.summary}</p>
+                                        </div>
 
-                              {appointment.status !== "accepted" && !hideViewDetails && (
-                                   <div className="w-full md:w-64 bg-muted/20 border-l p-8 flex flex-col justify-end gap-4">
-                                        <Button 
-                                             variant="outline"
-                                             onClick={() => router.push(`/doctor-dashboard/appointments/${appointment.id}`)}
-                                             className="h-14 rounded-md border-2 font-bold shadow-sm hover:bg-muted/50 transition-all w-full"
-                                        >
-                                             View Details
-                                        </Button>
+                                        <div className="space-y-2.5">
+                                             {isAssigned && (
+                                                  <>
+                                                       <Button
+                                                            onClick={() => setIsCompleteOpen(true)}
+                                                            className="h-10 w-full rounded-full bg-primary px-4 font-black shadow-lg shadow-primary/20 transition-all hover:scale-[1.01] active:scale-95"
+                                                       >
+                                                            <HugeiconsIcon icon={Tick02Icon} className="mr-2 h-4 w-4" />
+                                                            Complete Visit
+                                                       </Button>
+                                                       <Button
+                                                            variant="outline"
+                                                            onClick={() => setIsCancelOpen(true)}
+                                                            className="h-10 w-full rounded-full border-2 border-rose-200 px-4 font-bold text-rose-600 transition-all hover:bg-rose-50"
+                                                       >
+                                                            <HugeiconsIcon icon={Cancel01Icon} className="mr-2 h-4 w-4" />
+                                                            Cancel Visit
+                                                       </Button>
+                                                  </>
+                                             )}
+
+                                             {!hideViewDetails && (
+                                                  <Button
+                                                       variant="outline"
+                                                       onClick={() => router.push(`/doctor-dashboard/appointments/${appointment.id}`)}
+                                                       className="h-10 w-full rounded-full border-2 border-border/70 px-4 font-semibold shadow-sm transition-all hover:bg-muted/60"
+                                                  >
+                                                       View Details
+                                                  </Button>
+                                             )}
+                                        </div>
                                    </div>
-                              )}
+                              </div>
                          </div>
                     </CardContent>
                </Card>
@@ -231,7 +237,7 @@ export const DoctorAppointmentCard = ({ appointment, hideViewDetails = false }: 
                {/* Completion Dialog */}
                <Dialog open={isCompleteOpen} onOpenChange={setIsCompleteOpen}>
                     <DialogContent className="sm:max-w-2xl rounded-md p-0 overflow-hidden border-none shadow-2xl">
-                         <div className="bg-primary p-8 text-white">
+                         <div className="bg-primary p-6 text-white">
                               <DialogHeader>
                                    <div className="w-12 h-12 rounded-2xl bg-white/20 flex items-center justify-center mb-4 backdrop-blur-md">
                                         <HugeiconsIcon icon={Doctor01Icon} className="w-6 h-6 text-white" />
@@ -243,7 +249,7 @@ export const DoctorAppointmentCard = ({ appointment, hideViewDetails = false }: 
                               </DialogHeader>
                          </div>
 
-                         <div className="p-8 space-y-6">
+                         <div className="space-y-5 p-6 sm:p-7">
                               <div className="space-y-4">
                                    <div className="flex items-center gap-2 mb-2">
                                         <div className="w-1 h-4 bg-primary rounded-full" />
@@ -256,7 +262,7 @@ export const DoctorAppointmentCard = ({ appointment, hideViewDetails = false }: 
                                              value={diagnosis}
                                              onChange={(e) => setDiagnosis(e.target.value)}
                                              placeholder="e.g. Acute Pharyngitis"
-                                             className="w-full h-14 rounded-md pl-14 pr-6 border-2 focus:border-primary transition-all bg-muted/20 focus:bg-background text-base font-bold outline-none"
+                                             className="h-12 w-full rounded-md border-2 bg-muted/20 pl-14 pr-5 text-base font-bold outline-none transition-all focus:border-primary focus:bg-background"
                                         />
                                    </div>
                               </div>
@@ -272,18 +278,18 @@ export const DoctorAppointmentCard = ({ appointment, hideViewDetails = false }: 
                                              value={clinicalNotes}
                                              onChange={(e) => setClinicalNotes(e.target.value)}
                                              placeholder="Prescribed treatment, follow-up advice, etc..."
-                                             className="min-h-40 rounded-md pl-14 pt-5 border-2 border-secondary focus:border-primary transition-all bg-muted/20 focus:bg-background text-base font-medium resize-none outline-none"
+                                             className="min-h-32 resize-none rounded-md border-2 border-secondary bg-muted/20 pl-14 pt-4 text-base font-medium outline-none transition-all focus:border-primary focus:bg-background"
                                         />
                                    </div>
                               </div>
                          </div>
 
-                         <DialogFooter className="p-8 bg-muted/30 border-t flex items-center justify-between gap-4">
-                              <Button variant="ghost" onClick={() => setIsCompleteOpen(false)} disabled={loading} className="rounded-md h-10 px-8 font-bold text-muted-foreground hover:text-foreground">
+                         <DialogFooter className="flex items-center justify-between gap-4 border-t bg-muted/30 p-6 sm:p-7">
+                              <Button variant="ghost" onClick={() => setIsCompleteOpen(false)} disabled={loading} className="h-10 rounded-md px-6 font-bold text-muted-foreground hover:text-foreground">
                                    Cancel
                               </Button>
-                              <Button onClick={handleComplete} disabled={loading} className="rounded-md h-10 px-8 font-black shadow-xl shadow-primary/20 transition-all hover:scale-[1.02] active:scale-95">
-                                   <HugeiconsIcon icon={Tick02Icon} className="w-5 h-5 mr-2" />
+                              <Button onClick={handleComplete} disabled={loading} className="h-10 rounded-md px-6 font-black shadow-xl shadow-primary/20 transition-all hover:scale-[1.02] active:scale-95">
+                                   <HugeiconsIcon icon={Tick02Icon} className="mr-2 h-4 w-4" />
                                    {loading ? "Recording..." : "Finalize & Complete"}
                               </Button>
                          </DialogFooter>
@@ -292,21 +298,21 @@ export const DoctorAppointmentCard = ({ appointment, hideViewDetails = false }: 
 
                {/* Cancellation Dialog */}
                <Dialog open={isCancelOpen} onOpenChange={setIsCancelOpen}>
-                    <DialogContent className="sm:max-w-md rounded-md p-8 text-center">
-                         <div className="w-20 h-20 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center mx-auto mb-6">
-                              <HugeiconsIcon icon={Cancel01Icon} className="w-10 h-10" />
+                    <DialogContent className="sm:max-w-md rounded-md p-7 text-center">
+                         <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-rose-100 text-rose-600">
+                              <HugeiconsIcon icon={Cancel01Icon} className="h-8 w-8" />
                          </div>
                          <DialogHeader>
                               <DialogTitle className="text-2xl font-black tracking-tight text-center">Cancel Appointment?</DialogTitle>
-                              <DialogDescription className="text-lg font-medium text-center pt-2">
+                              <DialogDescription className="pt-2 text-base font-medium text-center">
                                    Are you sure you want to cancel the visit with <span className="text-foreground font-bold">{appointment.patient}</span>?
                               </DialogDescription>
                          </DialogHeader>
-                         <DialogFooter className="flex flex-col sm:flex-row gap-3 pt-8 items-center justify-between ">
-                              <Button variant="ghost" onClick={() => setIsCancelOpen(false)} disabled={loading} className="border-secondary rounded-md h-12 font-bold">
+                         <DialogFooter className="flex flex-col items-center justify-between gap-3 pt-6 sm:flex-row">
+                              <Button variant="ghost" onClick={() => setIsCancelOpen(false)} disabled={loading} className="h-10 rounded-md border-secondary font-bold">
                                    Go Back
                               </Button>
-                              <Button variant="destructive" onClick={handleCancel} disabled={loading} className="border-secondary rounded-md h-12 font-bold ">
+                              <Button variant="destructive" onClick={handleCancel} disabled={loading} className="h-10 rounded-md border-secondary font-bold">
                                    {loading ? "Cancelling..." : "Confirm Cancellation"}
                               </Button>
                          </DialogFooter>

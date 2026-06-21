@@ -24,8 +24,20 @@ type CreateAppointmentPayload = {
 }
 
 export const appointmentService = {
-     async listAppointments(): Promise<ApiResponse<AppointmentApi[]>> {
-          const response = await api.get<AppointmentApi[]>(API_ENDPOINTS.APPOINTMENTS)
+     async listAppointments(queue?: string): Promise<ApiResponse<AppointmentApi[]>> {
+          const response = await api.get<AppointmentApi[]>(API_ENDPOINTS.APPOINTMENTS, {
+               params: queue ? { queue } : undefined,
+          })
+          return {
+               status: response.status,
+               data: response.data,
+          }
+     },
+
+     async listAppointmentQueues(): Promise<ApiResponse<{ name: string; label: string; count: number }[]>> {
+          const response = await api.get<{ name: string; label: string; count: number }[]>(
+               `${API_ENDPOINTS.APPOINTMENTS}queues/`
+          )
           return {
                status: response.status,
                data: response.data,

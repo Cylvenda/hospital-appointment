@@ -12,7 +12,7 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar"
 import { HugeiconsIcon } from "@hugeicons/react"
-import { LayoutBottomIcon, RoboticIcon, Settings05Icon, DashboardCircleIcon, Doctor01Icon, People, Person, UserGroupIcon, UserAccountIcon, AllahFreeIcons, CallDoneIcon, CheckCheck, Loading, Bell, StethoscopeIcon } from "@hugeicons/core-free-icons"
+import { LayoutBottomIcon, Settings05Icon, DashboardCircleIcon, Doctor01Icon, People, Person, UserGroupIcon, UserAccountIcon, AllahFreeIcons, CallDoneIcon, CheckCheck, Loading, Bell, StethoscopeIcon } from "@hugeicons/core-free-icons"
 import { Separator } from "./ui/separator"
 import { useAuthUserStore } from "@/store/auth/userAuth.store"
 
@@ -32,50 +32,39 @@ const navMain = [
     )
   },
   {
-    title: "Appointments",
+    title: "New Appointments",
+    url: "/appointments/pending",
+    icon: (
+      <HugeiconsIcon color="var(--primary)" icon={Loading} strokeWidth={2} />
+    ),
+  },
+  {
+    title: "Scheduled",
+    url: "/appointments/accepted",
+    icon: (
+      <HugeiconsIcon color="var(--primary)" icon={CheckCheck} strokeWidth={2} />
+    ),
+  },
+  {
+    title: "Completed",
+    url: "/appointments/completed",
+    icon: (
+      <HugeiconsIcon color="var(--primary)" icon={CallDoneIcon} strokeWidth={2} />
+    ),
+  },
+  {
+    title: "Cancelled",
+    url: "/appointments/cancelled",
+    icon: (
+      <HugeiconsIcon color="var(--primary)" icon={CallDoneIcon} strokeWidth={2} />
+    ),
+  },
+  {
+    title: "All Appointments",
     url: "/appointments/all",
     icon: (
-      <HugeiconsIcon color="var(--primary)" icon={RoboticIcon} strokeWidth={2} />
+      <HugeiconsIcon color="var(--primary)" icon={AllahFreeIcons} strokeWidth={2} />
     ),
-    items: [
-
-      {
-        title: "Pending",
-        url: "/appointments/pending",
-        icon: (
-          <HugeiconsIcon color="var(--primary)" icon={Loading} size={"17"} />
-        ),
-      },
-      {
-        title: "Accepted",
-        url: "/appointments/accepted",
-        icon: (
-          <HugeiconsIcon color="var(--primary)" icon={CheckCheck} size={"17"} />
-        ),
-      },
-      {
-        title: "Completed",
-        url: "/appointments/completed",
-        icon: (
-          <HugeiconsIcon color="var(--primary)" icon={CallDoneIcon} size={"17"} />
-        ),
-      },
-      {
-        title: "Cancelled",
-        url: "/appointments/cancelled",
-        icon: (
-          <HugeiconsIcon color="var(--primary)" icon={CallDoneIcon} size={"17"} />
-        ),
-      },
-      {
-        title: "All",
-        url: "/appointments/all",
-        icon: (
-          <HugeiconsIcon color="var(--primary)" icon={AllahFreeIcons} size={"17"} />
-        ),
-      },
-
-    ],
   },
   {
     title: "Doctors",

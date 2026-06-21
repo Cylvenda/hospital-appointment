@@ -25,55 +25,46 @@ const navMain = [
           )
      },
      {
-          title: "Appointments",
-          url: "#",
+          title: "Book Appointment",
+          url: "/patient-dashboard/appointments",
           icon: (
                <HugeiconsIcon color="var(--primary)" icon={RoboticIcon} strokeWidth={2} />
           ),
-          items: [
-               {
-                    title: "Create New",
-                    url: "/patient-dashboard/appointments",
-                    icon: (
-                         <HugeiconsIcon color="var(--primary)" icon={Loading} size={"17"} />
-                    ),
-               },
-               {
-                    title: "Pending",
-                    url: "/patient-dashboard/appointments/pending",
-                    icon: (
-                         <HugeiconsIcon color="var(--primary)" icon={Loading} size={"17"} />
-                    ),
-               },
-               {
-                    title: "Accepted",
-                    url: "/patient-dashboard/appointments/accepted",
-                    icon: (
-                         <HugeiconsIcon color="var(--primary)" icon={CheckCheck} size={"17"} />
-                    ),
-               },
-               {
-                    title: "Completed",
-                    url: "/patient-dashboard/appointments/completed",
-                    icon: (
-                         <HugeiconsIcon color="var(--primary)" icon={CallDoneIcon} size={"17"} />
-                    ),
-               },
-               {
-                    title: "Cancelled",
-                    url: "/patient-dashboard/appointments/cancelled",
-                    icon: (
-                         <HugeiconsIcon color="var(--primary)" icon={CallDoneIcon} size={"17"} />
-                    ),
-               },
-               {
-                    title: "All",
-                    url: "/patient-dashboard/appointments/all",
-                    icon: (
-                         <HugeiconsIcon color="var(--primary)" icon={AllahFreeIcons} size={"17"} />
-                    ),
-               },
-          ],
+     },
+     {
+          title: "Pending",
+          url: "/patient-dashboard/appointments/pending",
+          icon: (
+               <HugeiconsIcon color="var(--primary)" icon={Loading} strokeWidth={2} />
+          ),
+     },
+     {
+          title: "Upcoming",
+          url: "/patient-dashboard/appointments/accepted",
+          icon: (
+               <HugeiconsIcon color="var(--primary)" icon={CheckCheck} strokeWidth={2} />
+          ),
+     },
+     {
+          title: "Completed Visits",
+          url: "/patient-dashboard/appointments/completed",
+          icon: (
+               <HugeiconsIcon color="var(--primary)" icon={CallDoneIcon} strokeWidth={2} />
+          ),
+     },
+     {
+          title: "Cancelled Visits",
+          url: "/patient-dashboard/appointments/cancelled",
+          icon: (
+               <HugeiconsIcon color="var(--primary)" icon={CallDoneIcon} strokeWidth={2} />
+          ),
+     },
+     {
+          title: "All History",
+          url: "/patient-dashboard/appointments/all",
+          icon: (
+               <HugeiconsIcon color="var(--primary)" icon={AllahFreeIcons} strokeWidth={2} />
+          ),
      },
      {
           title: "Profile",

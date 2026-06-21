@@ -18,19 +18,19 @@ export type AppointmentStatusMeta = {
 export const appointmentWorkflowSteps = [
   {
     title: "Request submitted",
-    summary: "The patient creates an appointment with preferred dates and symptoms.",
+    summary: "The patient creates an appointment and the system places it in the intake queue.",
   },
   {
     title: "Payment verified",
-    summary: "Once payment is confirmed, the queue becomes eligible for assignment.",
+    summary: "Once payment is confirmed, the request becomes eligible for scheduling and handoff.",
   },
   {
     title: "Assigned to clinician",
-    summary: "Receptionist or admin schedules the visit and allocates a doctor.",
+    summary: "Reception or admin schedules the visit and places it in a clinical queue.",
   },
   {
     title: "Clinical outcome recorded",
-    summary: "The doctor completes the visit, adds notes, or closes the case.",
+    summary: "The doctor completes the visit, adds notes, and closes the clinical record.",
   },
 ] as const
 
@@ -43,8 +43,8 @@ export function getAppointmentStatusMeta(
     if (paymentStatus === "completed") {
       if (audience === "doctor") {
         return {
-          label: "Ready for assignment",
-          summary: "Payment is complete and the team can place the appointment in a doctor's queue.",
+          label: "Ready for review",
+          summary: "Payment is complete and the appointment can move into a doctor's queue.",
           tone: "blue",
         }
       }
@@ -52,14 +52,14 @@ export function getAppointmentStatusMeta(
       if (audience === "patient") {
         return {
           label: "Awaiting assignment",
-          summary: "Your payment is confirmed and the care team is placing the appointment on the schedule.",
+          summary: "Your payment is confirmed and the care team is placing the request on the schedule.",
           tone: "blue",
         }
       }
 
       return {
         label: "Ready to assign",
-        summary: "The appointment is paid and can now be scheduled.",
+        summary: "The appointment is paid and can now be scheduled into a work queue.",
         tone: "blue",
       }
     }
@@ -88,20 +88,20 @@ export function getAppointmentStatusMeta(
       }
     }
 
-    if (audience === "patient") {
+      if (audience === "patient") {
+        return {
+          label: "Scheduled",
+          summary: "A clinician has been assigned and the visit is on the calendar.",
+          tone: "emerald",
+        }
+      }
+
       return {
-        label: "Scheduled",
-        summary: "A clinician has been assigned and the visit is on the calendar.",
+        label: "Assigned",
+        summary: "The visit has been scheduled with a doctor and is ready for the next step.",
         tone: "emerald",
       }
     }
-
-    return {
-      label: "Assigned",
-      summary: "The visit has been scheduled with a doctor and is ready for next steps.",
-      tone: "emerald",
-    }
-  }
 
   if (status === "completed") {
     return {

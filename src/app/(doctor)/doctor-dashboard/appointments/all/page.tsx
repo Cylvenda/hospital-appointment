@@ -3,6 +3,8 @@
 import { useEffect, useMemo } from "react"
 import { Button } from "@/components/ui/button"
 import { useAppointmentStore } from "@/store/appointments/appointment.store"
+import { getAppointmentStatusMeta } from "@/lib/appointment-workflow"
+import { cn } from "@/lib/utils"
 
 export default function DoctorAllAppointmentsPage() {
   const {
@@ -77,13 +79,15 @@ export default function DoctorAllAppointmentsPage() {
                     <p className="text-sm mt-2">{appointment.note}</p>
                   )}
                 </div>
-                <span className={`inline-flex px-3 py-1 text-xs font-medium rounded-full ${
-                  appointment.status === "accepted" ? "bg-green-100 text-green-700" :
-                  appointment.status === "pending" ? "bg-yellow-100 text-yellow-700" :
-                  appointment.status === "completed" ? "bg-blue-100 text-blue-700" :
-                  "bg-red-100 text-red-700"
-                }`}>
-                  {appointment.status}
+                <span className={cn(
+                  "inline-flex rounded-full px-3 py-1 text-xs font-medium",
+                  getAppointmentStatusMeta(appointment.status, appointment.paymentStatus, "doctor").tone === "emerald" && "bg-green-100 text-green-700",
+                  getAppointmentStatusMeta(appointment.status, appointment.paymentStatus, "doctor").tone === "amber" && "bg-yellow-100 text-yellow-700",
+                  getAppointmentStatusMeta(appointment.status, appointment.paymentStatus, "doctor").tone === "blue" && "bg-blue-100 text-blue-700",
+                  getAppointmentStatusMeta(appointment.status, appointment.paymentStatus, "doctor").tone === "rose" && "bg-red-100 text-red-700",
+                  getAppointmentStatusMeta(appointment.status, appointment.paymentStatus, "doctor").tone === "slate" && "bg-slate-100 text-slate-700"
+                )}>
+                  {getAppointmentStatusMeta(appointment.status, appointment.paymentStatus, "doctor").label}
                 </span>
               </div>
             </div>

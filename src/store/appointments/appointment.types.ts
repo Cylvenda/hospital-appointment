@@ -25,6 +25,7 @@ export type Appointment = {
      diagnosis: string | null
      notes: string | null
      status: AppointmentStatus
+     createdAt: string
 }
 
 export type Doctor = {

@@ -26,6 +26,7 @@ import { useAdminStore } from "@/store/admin/admin.store"
 import { useAppointmentStore } from "@/store/appointments/appointment.store"
 import { PasswordInput } from "@/components/password-input"
 import { Label } from "@/components/ui/label"
+import { filterAppointmentsForQueue } from "@/lib/appointment-queues"
 
 const deskTasks = [
   "Confirm walk-in patients and issue queue numbers",
@@ -63,7 +64,7 @@ export default function ReceptionistPage() {
         phone: user.phone,
         desk: `Front Desk ${String.fromCharCode(65 + index)}`,
         shift: "Active shift",
-        handled: appointments.filter((appointment) => appointment.status === "accepted").length,
+        handled: filterAppointmentsForQueue(appointments, "receptionist", "today").length,
       })),
     [appointments, users]
   )
@@ -122,7 +123,7 @@ export default function ReceptionistPage() {
         </div>
         <div className="rounded-4xl border border-sidebar-border bg-card p-5 shadow-sm">
           <p className="text-sm text-muted-foreground">Walk-ins Today</p>
-          <p className="mt-2 text-3xl font-semibold">{appointments.filter((appointment) => appointment.status === "pending").length}</p>
+          <p className="mt-2 text-3xl font-semibold">{filterAppointmentsForQueue(appointments, "receptionist", "awaiting-payment").length}</p>
         </div>
         <div className="rounded-4xl border border-sidebar-border bg-card p-5 shadow-sm">
           <p className="text-sm text-muted-foreground">Open Desks</p>
@@ -203,7 +204,7 @@ export default function ReceptionistPage() {
                   <HugeiconsIcon icon={UserGroupIcon} strokeWidth={1.8} className="size-4" />
                   Waiting Patients
                 </p>
-                <p className="mt-2 text-2xl font-semibold">{appointments.filter((appointment) => appointment.status === "pending").length}</p>
+                <p className="mt-2 text-2xl font-semibold">{filterAppointmentsForQueue(appointments, "receptionist", "awaiting-payment").length}</p>
               </div>
               <div className="rounded-3xl bg-muted/60 p-4">
                 <p className="flex items-center gap-2 text-sm text-muted-foreground">

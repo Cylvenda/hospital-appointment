@@ -15,6 +15,8 @@ import {
   AlertCircleIcon,
   CalendarCheckIn01Icon,
   Clock03Icon,
+  Doctor01Icon,
+  MoreHorizontalIcon,
   StethoscopeIcon,
   UserCheck01Icon,
   UserGroupIcon,
@@ -28,6 +30,7 @@ import { useAdminStore } from "@/store/admin/admin.store"
 import { useAppointmentStore } from "@/store/appointments/appointment.store"
 import { AppointmentWorkflowLegend } from "@/components/appointment-workflow-legend"
 import { getAppointmentStatusMeta } from "@/lib/appointment-workflow"
+import { filterAppointmentsForQueue } from "@/lib/appointment-queues"
 import { cn } from "@/lib/utils"
 
 const containerVariants = {
@@ -78,7 +81,7 @@ export default function AdminDashboardPage() {
     () => [
       {
         title: "Today's Visits",
-        value: overview?.today_appointments ?? 0,
+        value: filterAppointmentsForQueue(appointments, "admin", "daily-schedule").length || (overview?.today_appointments ?? 0),
         note: "Scheduled for today",
         icon: CalendarCheckIn01Icon,
         color: "text-blue-600",
@@ -102,14 +105,14 @@ export default function AdminDashboardPage() {
       },
       {
         title: "Pending Sync",
-        value: overview?.pending_appointments ?? 0,
+        value: filterAppointmentsForQueue(appointments, "receptionist", "awaiting-doctor-assignment").length || (overview?.pending_appointments ?? 0),
         note: "Requires validation",
         icon: AlertCircleIcon,
         color: "text-amber-600",
         bg: "bg-amber-50",
       },
     ],
-    [doctors, overview]
+    [appointments, doctors, overview]
   )
 
   const upcomingAppointments = useMemo(

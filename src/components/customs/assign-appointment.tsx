@@ -21,10 +21,11 @@ import {
      SelectTrigger,
      SelectValue,
 } from "@/components/ui/select"
-import { AlertCircleIcon, Calendar03Icon, Clock01Icon, UserCircleIcon, CheckmarkCircle02Icon, Cancel01Icon } from "@hugeicons/core-free-icons"
+import { Clock01Icon, UserCircleIcon, CheckmarkCircle02Icon, Cancel01Icon, InformationCircleIcon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { cn } from "@/lib/utils"
 import { getAppointmentStatusMeta } from "@/lib/appointment-workflow"
+import { hasAppointmentStatus } from "@/lib/appointment-queues"
 
 type Props = {
      appointment: Appointment
@@ -54,30 +55,27 @@ export default function AssignAppointment({
      const [loading, setLoading] = useState(false)
      const router = useRouter()
      const pathname = usePathname()
-     
-     const basePath = pathname.includes("receptionist-dashboard") 
-          ? "/receptionist-dashboard/appointments" 
-          : "/appointments"
 
-     const isPending = appointment.status === "pending"
-     const isAccepted = appointment.status === "accepted"
+     const isPending = hasAppointmentStatus(appointment, "pending")
+     const isAccepted = hasAppointmentStatus(appointment, "accepted")
      const isPaymentComplete = appointment.paymentStatus === "completed"
+     const basePath = pathname.includes("receptionist-dashboard")
+          ? "/receptionist-dashboard/appointments"
+          : "/appointments"
      const statusMeta = getAppointmentStatusMeta(
           appointment.status,
           appointment.paymentStatus,
           "receptionist"
      )
-     
-     const statusConfig = {
-          pending: { tone: "secondary", color: "text-amber-600", bg: "bg-amber-50", border: "border-amber-200" },
-          accepted: { tone: "default", color: "text-emerald-600", bg: "bg-emerald-50", border: "border-emerald-200" },
-          cancelled: { tone: "destructive", color: "text-rose-600", bg: "bg-rose-50", border: "border-rose-200" },
-          declined: { tone: "destructive", color: "text-rose-600", bg: "bg-rose-50", border: "border-rose-200" },
-          expired: { tone: "secondary", color: "text-slate-600", bg: "bg-slate-50", border: "border-slate-200" },
-          completed: { tone: "secondary", color: "text-blue-600", bg: "bg-blue-50", border: "border-blue-200" },
+     const toneStyles = {
+          amber: { tone: "secondary", color: "text-amber-600", bg: "bg-amber-50", border: "border-amber-200" },
+          emerald: { tone: "default", color: "text-emerald-600", bg: "bg-emerald-50", border: "border-emerald-200" },
+          blue: { tone: "default", color: "text-blue-600", bg: "bg-blue-50", border: "border-blue-200" },
+          rose: { tone: "destructive", color: "text-rose-600", bg: "bg-rose-50", border: "border-rose-200" },
+          slate: { tone: "secondary", color: "text-slate-600", bg: "bg-slate-50", border: "border-slate-200" },
      } as const
-
-     const currentStatus = statusConfig[appointment.status as keyof typeof statusConfig] || statusConfig.pending
+     
+     const currentStatus = toneStyles[statusMeta.tone]
 
      const canAssign = Boolean(
           doctorId && appointmentDate && startTime && endTime && isPaymentComplete && !loading
@@ -121,241 +119,248 @@ export default function AssignAppointment({
           >
                <Card
                     className={cn(
-                         "border-2 overflow-hidden rounded-md shadow-xl transition-all duration-300",
+                         "group overflow-hidden rounded-[1.25rem] border border-border/60 bg-card/95 shadow-[0_10px_28px_rgba(15,23,42,0.05)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_18px_40px_rgba(15,23,42,0.08)]",
                          currentStatus.border,
-                         "hover:shadow-2xl hover:border-primary/30"
                     )}
                >
-                    <CardHeader className="p-8 pb-4">
-                         <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
-                              <div className="flex items-start gap-5">
-                                   <div className="w-16 h-16 rounded-3xl bg-primary/10 flex items-center justify-center text-primary shrink-0 shadow-inner">
-                                        <HugeiconsIcon icon={UserCircleIcon} className="w-9 h-9" />
-                                   </div>
-                                   <div className="space-y-1">
-                                        <CardTitle className="text-2xl font-black tracking-tight">
-                                             {appointment.patient}
-                                        </CardTitle>
-                                        <div className="flex items-center gap-2">
-                                             <span className="text-sm font-medium text-muted-foreground">{appointment.email}</span>
-                                             <div className="w-1 h-1 rounded-full bg-muted-foreground/30" />
-                                             <span className="text-xs font-black uppercase tracking-widest text-primary/60">{appointment.illnessCategory}</span>
+                    <div className="h-0.5 bg-gradient-to-r from-primary via-amber-400 to-emerald-500" />
+
+                    <CardHeader className="p-0">
+                         <div className="grid gap-0 lg:grid-cols-[minmax(0,1fr)_16rem]">
+                              <div className="p-4 sm:p-5">
+                                   <div className="flex flex-col gap-4">
+                                        <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+                                             <div className="min-w-0 flex-1">
+                                                  <div className="flex flex-wrap items-center gap-2">
+                                                       <Badge variant="outline" className={cn("rounded-full px-2.5 py-0.5 text-[9px] font-black uppercase tracking-[0.22em]", currentStatus.color, currentStatus.bg)}>
+                                                            {statusMeta.label}
+                                                       </Badge>
+                                                       <Badge className={cn("rounded-full border-0 px-2.5 py-0.5 text-[9px] font-black uppercase tracking-[0.22em]", isPaymentComplete ? "bg-emerald-500 text-white" : "bg-amber-500 text-white")}>
+                                                            {isPaymentComplete ? "Payment verified" : "Awaiting payment"}
+                                                       </Badge>
+                                                  </div>
+
+                                                  <div className="mt-3 flex items-start gap-3">
+                                                       <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary shadow-sm ring-1 ring-primary/10">
+                                                            <HugeiconsIcon icon={UserCircleIcon} className="h-6 w-6" />
+                                                       </div>
+                                                       <div className="min-w-0">
+                                                            <CardTitle className="truncate text-xl font-black tracking-tight sm:text-2xl">
+                                                                 {appointment.patient}
+                                                            </CardTitle>
+                                                            <p className="mt-1 text-sm text-muted-foreground">{appointment.email}</p>
+                                                            <p className="mt-1 text-[10px] font-black uppercase tracking-[0.22em] text-primary/60">
+                                                                 {appointment.illnessCategory}
+                                                            </p>
+                                                       </div>
+                                                  </div>
+                                             </div>
+
+                                             <div className="grid gap-2 sm:grid-cols-2 lg:w-[16rem]">
+                                                  <div className="rounded-xl border border-border/60 bg-muted/20 px-3 py-2.5 shadow-sm">
+                                                       <p className="text-[10px] font-black uppercase tracking-[0.22em] text-muted-foreground">Preferred</p>
+                                                       <p className="mt-1 text-sm font-bold text-foreground">{appointmentDate || "Pick a date"}</p>
+                                                       <p className="mt-1 text-[11px] text-muted-foreground">
+                                                            {startTime || "--:--"} - {endTime || "--:--"}
+                                                       </p>
+                                                  </div>
+                                                  <div className="rounded-xl border border-border/60 bg-muted/20 px-3 py-2.5 shadow-sm">
+                                                       <p className="text-[10px] font-black uppercase tracking-[0.22em] text-muted-foreground">State</p>
+                                                       <p className="mt-1 text-sm font-bold text-foreground">{isPending ? "Waiting on front desk" : "Scheduling complete"}</p>
+                                                       <p className="mt-1 text-[11px] text-muted-foreground">{appointment.doctor || "No doctor yet"}</p>
+                                                  </div>
+                                             </div>
                                         </div>
+
                                         {appointment.note && (
-                                             <p className="text-sm text-muted-foreground mt-3 leading-relaxed bg-muted/30 p-4 rounded-2xl border border-muted/50 italic">
-                                                  {appointment.note}
-                                             </p>
+                                             <div className="rounded-2xl border border-border/60 bg-muted/20 p-3 shadow-sm">
+                                                  <div className="flex items-start gap-2">
+                                                       <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-background text-primary shadow-sm ring-1 ring-border/60">
+                                                            <HugeiconsIcon icon={InformationCircleIcon} className="h-3.5 w-3.5" />
+                                                       </div>
+                                                       <div className="min-w-0">
+                                                            <p className="text-[10px] font-black uppercase tracking-[0.22em] text-muted-foreground">Patient Note</p>
+                                                            <p className="mt-1 line-clamp-2 text-sm leading-5 text-muted-foreground">{appointment.note}</p>
+                                                       </div>
+                                                  </div>
+                                             </div>
                                         )}
+
+                                        <div className="grid gap-2 md:grid-cols-3">
+                                             {[
+                                                  { label: "Choice 1", date: appointment.preferredDate },
+                                                  { label: "Choice 2", date: appointment.preferredDate2 },
+                                                  { label: "Choice 3", date: appointment.preferredDate3 },
+                                             ].map((choice, i) => (
+                                                  <motion.button
+                                                       key={i}
+                                                       type="button"
+                                                       whileHover={choice.date && isPaymentComplete && !loading ? { scale: 1.02 } : {}}
+                                                       whileTap={choice.date && isPaymentComplete && !loading ? { scale: 0.98 } : {}}
+                                                       onClick={() => {
+                                                            if (choice.date && isPaymentComplete && !loading) {
+                                                                 setAppointmentDate(choice.date)
+                                                            }
+                                                       }}
+                                                       className={cn(
+                                                            "rounded-xl border p-3 text-left transition-all duration-300",
+                                                            choice.date ? "cursor-pointer" : "cursor-not-allowed opacity-40",
+                                                            appointmentDate === choice.date
+                                                                 ? "border-primary bg-primary text-primary-foreground shadow-lg shadow-primary/15"
+                                                                 : "border-border/60 bg-card hover:border-primary/40"
+                                                       )}
+                                                  >
+                                                       <p className={cn(
+                                                            "text-[9px] font-black uppercase tracking-[0.22em]",
+                                                            appointmentDate === choice.date ? "text-primary-foreground/70" : "text-muted-foreground"
+                                                       )}>
+                                                            {choice.label}
+                                                       </p>
+                                                       <p className="mt-1.5 text-sm font-bold truncate">{choice.date || "Not set"}</p>
+                                                  </motion.button>
+                                             ))}
+                                        </div>
                                    </div>
                               </div>
 
-                              <div className="flex flex-col items-end gap-3">
-                                   <Badge
-                                        variant={currentStatus.tone}
-                                        className={cn("px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest shadow-sm", currentStatus.color, currentStatus.bg)}
-                                   >
-                                        {statusMeta.label}
-                                   </Badge>
-                                   <div className="text-right">
-                                        <p className="text-[10px] font-black uppercase tracking-tighter text-muted-foreground/50">Payment Status</p>
-                                        <p className={cn("text-sm font-bold", isPaymentComplete ? "text-emerald-600" : "text-amber-600")}>
-                                             {isPaymentComplete ? "✓ Verified" : "⚠ Awaiting Payment"}
-                                        </p>
-                                   </div>
-                              </div>
-                         </div>
+                              <div className="border-t border-border/60 bg-muted/20 p-4 lg:border-l lg:border-t-0 lg:p-4">
+                                   <div className="flex h-full flex-col justify-between gap-4">
+                                        <div className="rounded-2xl border border-border/60 bg-card p-3 shadow-sm">
+                                             <div className="flex items-center gap-2">
+                                                  <HugeiconsIcon icon={Clock01Icon} className="h-4 w-4 text-primary" />
+                                                  <p className="text-[10px] font-black uppercase tracking-[0.22em] text-muted-foreground">Action Status</p>
+                                             </div>
+                                             <p className="mt-1.5 text-sm font-medium leading-5 text-muted-foreground">
+                                                  {isPaymentComplete
+                                                       ? "This request can be scheduled once the required fields are filled."
+                                                       : "Scheduling stays locked until payment is verified."}
+                                             </p>
+                                        </div>
 
-                         <div className="mt-8">
-                              <p className="text-xs font-black uppercase tracking-widest text-muted-foreground mb-4 flex items-center gap-2">
-                                   <HugeiconsIcon icon={Calendar03Icon} className="w-4 h-4" /> Patient Preferences
-                              </p>
-                              <div className="flex flex-wrap gap-3">
-                                   {[
-                                        { label: "Choice 1", date: appointment.preferredDate },
-                                        { label: "Choice 2", date: appointment.preferredDate2 },
-                                        { label: "Choice 3", date: appointment.preferredDate3 },
-                                   ].map((choice, i) => (
-                                        <motion.div
-                                             key={i}
-                                             whileHover={choice.date && isPaymentComplete && !loading ? { scale: 1.05 } : {}}
-                                             whileTap={choice.date && isPaymentComplete && !loading ? { scale: 0.95 } : {}}
-                                             onClick={() => {
-                                                  if (choice.date && isPaymentComplete && !loading) {
-                                                       setAppointmentDate(choice.date)
-                                                  }
-                                             }}
-                                             className={cn(
-                                                  "px-5 py-3 rounded-2xl border-2 transition-all duration-300",
-                                                  choice.date ? "cursor-pointer" : "opacity-30 cursor-not-allowed",
-                                                  appointmentDate === choice.date
-                                                       ? "bg-primary text-primary-foreground border-primary shadow-xl shadow-primary/20"
-                                                       : "bg-background border-muted hover:border-primary/50"
-                                             )}
-                                        >
-                                             <p className={cn(
-                                                  "text-[9px] uppercase font-black tracking-widest mb-1",
-                                                  appointmentDate === choice.date ? "text-primary-foreground/70" : "text-muted-foreground"
+                                        <div className="space-y-3">
+                                             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
+                                                  <div className="space-y-2">
+                                                       <label className="text-[10px] font-black uppercase tracking-[0.22em] text-muted-foreground">
+                                                            Assigned Doctor
+                                                       </label>
+                                                       <Select value={doctorId} onValueChange={setDoctorId}>
+                                                            <SelectTrigger
+                                                                 className="h-11 rounded-xl border-2 border-border/60 bg-background px-3.5 text-sm font-semibold transition-all focus:border-primary"
+                                                                 disabled={!isPaymentComplete || loading}
+                                                            >
+                                                                 <SelectValue placeholder="Select doctor" />
+                                                            </SelectTrigger>
+                                                            <SelectContent className="rounded-2xl border-2 border-border/60 shadow-2xl">
+                                                                 {doctors.map((doc) => (
+                                                                      <SelectItem key={doc.id} value={doc.id} className="rounded-xl my-1 mx-2">
+                                                                           <div className="flex items-center gap-2">
+                                                                                <div className="h-2 w-2 rounded-full bg-emerald-500" />
+                                                                                <span className="font-semibold">{doc.name}</span>
+                                                                           </div>
+                                                                      </SelectItem>
+                                                                 ))}
+                                                            </SelectContent>
+                                                       </Select>
+                                                  </div>
+
+                                                  <div className="space-y-2">
+                                                       <label className="text-[10px] font-black uppercase tracking-[0.22em] text-muted-foreground">
+                                                            Slot Date
+                                                       </label>
+                                                       <DatePicker
+                                                            value={appointmentDate}
+                                                            onChange={setAppointmentDate}
+                                                            className="h-11 rounded-xl border-2 border-border/60 bg-background px-3.5 text-sm font-semibold transition-all focus:border-primary"
+                                                            disabled={!isPaymentComplete || loading}
+                                                       />
+                                                  </div>
+
+                                                  <div className="space-y-2">
+                                                       <label className="text-[10px] font-black uppercase tracking-[0.22em] text-muted-foreground">
+                                                            Start Time
+                                                       </label>
+                                                       <TimePicker
+                                                            value={startTime}
+                                                            onChange={setStartTime}
+                                                            className="h-11 rounded-xl border-2 border-border/60 bg-background px-3.5 text-sm font-semibold transition-all focus:border-primary"
+                                                            disabled={!isPaymentComplete || loading}
+                                                       />
+                                                  </div>
+
+                                                  <div className="space-y-2">
+                                                       <label className="text-[10px] font-black uppercase tracking-[0.22em] text-muted-foreground">
+                                                            End Time
+                                                       </label>
+                                                       <TimePicker
+                                                            value={endTime}
+                                                            onChange={setEndTime}
+                                                            className="h-11 rounded-xl border-2 border-border/60 bg-background px-3.5 text-sm font-semibold transition-all focus:border-primary"
+                                                            disabled={!isPaymentComplete || loading}
+                                                       />
+                                                  </div>
+                                             </div>
+
+                                             <div className={cn(
+                                                  "rounded-xl px-3.5 py-2.5 text-sm font-semibold",
+                                                  canAssign ? "bg-emerald-500/10 text-emerald-700" : "bg-muted/50 text-muted-foreground"
                                              )}>
-                                                  {choice.label}
-                                             </p>
-                                             <p className="text-sm font-black truncate">
-                                                  {choice.date || "Not set"}
-                                             </p>
-                                        </motion.div>
-                                   ))}
+                                                  {canAssign
+                                                       ? "Appointment is ready to be assigned."
+                                                       : isPaymentComplete
+                                                            ? "Complete the fields above to assign."
+                                                            : "Waiting for payment verification."}
+                                             </div>
+                                        </div>
+
+                                        <div className="space-y-3">
+                                             <Button
+                                                  onClick={handleAssign}
+                                                  disabled={!canAssign}
+                                                  className="h-11 w-full rounded-full bg-primary font-black shadow-lg shadow-primary/20 transition-all hover:scale-[1.01] active:scale-95"
+                                             >
+                                                  {loading ? "Processing..." : "Confirm & Assign"}
+                                             </Button>
+
+                                             <Button
+                                                  variant="outline"
+                                                  className="h-11 w-full rounded-full border-2 border-rose-200 font-bold text-rose-600 transition-all hover:bg-rose-50"
+                                                  type="button"
+                                                  onClick={handleCancel}
+                                                  disabled={loading || !isPaymentComplete}
+                                             >
+                                                  {loading ? "Processing..." : "Cancel Appointment"}
+                                             </Button>
+                                        </div>
+                                   </div>
                               </div>
                          </div>
                     </CardHeader>
 
-                    <CardContent className="p-8 pt-0 space-y-8">
+                    <CardContent className="border-t border-border/60 px-5 py-4 sm:px-6">
                          <AnimatePresence>
-                              {isPending && (
-                                   <motion.div 
-                                        initial={{ opacity: 0, height: 0 }}
-                                        animate={{ opacity: 1, height: "auto" }}
-                                        className="space-y-6 pt-6 border-t border-dashed border-muted"
-                                   >
-                                        <div className="flex flex-col gap-2">
-                                             <h4 className="text-lg font-bold text-foreground flex items-center gap-2">
-                                                  <HugeiconsIcon icon={Clock01Icon} className="w-5 h-5 text-primary" />
-                                                  Schedule Appointment Slot
-                                             </h4>
-                                             <p className="text-sm text-muted-foreground">
-                                                  Select the appropriate medical professional and define the appointment window.
-                                             </p>
-                                        </div>
-
-                                        {!isPaymentComplete && (
-                                             <div className="flex items-center gap-4 rounded-[2rem] border-2 border-amber-200 bg-amber-50/50 p-6 text-amber-900 shadow-inner">
-                                                  <div className="w-10 h-10 rounded-full bg-amber-500 text-white flex items-center justify-center shrink-0">
-                                                       <HugeiconsIcon icon={AlertCircleIcon} className="w-6 h-6" />
-                                                  </div>
-                                                  <p className="text-sm font-medium leading-relaxed">
-                                                       Scheduling is <span className="font-bold underline">locked</span> until payment is verified. Patients must complete their transaction before they can be assigned to a doctor.
-                                                  </p>
-                                             </div>
-                                        )}
-
-                                        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-                                             <div className="space-y-2">
-                                                  <label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-1">
-                                                       Assigned Doctor
-                                                  </label>
-                                                  <Select value={doctorId} onValueChange={setDoctorId}>
-                                                       <SelectTrigger
-                                                            className="h-14 rounded-2xl border-2 border-muted bg-background focus:border-primary transition-all text-sm font-bold px-6"
-                                                            disabled={!isPaymentComplete || loading}
-                                                       >
-                                                            <SelectValue placeholder="Select Staff" />
-                                                       </SelectTrigger>
-                                                       <SelectContent className="rounded-2xl shadow-2xl border-2 border-muted">
-                                                            {doctors.map((doc) => (
-                                                                 <SelectItem key={doc.id} value={doc.id} className="rounded-xl my-1 mx-2">
-                                                                      <div className="flex items-center gap-2">
-                                                                           <div className="w-2 h-2 rounded-full bg-emerald-500" />
-                                                                           <span className="font-bold">{doc.name}</span>
-                                                                      </div>
-                                                                 </SelectItem>
-                                                            ))}
-                                                       </SelectContent>
-                                                  </Select>
-                                             </div>
-
-                                             <div className="space-y-2">
-                                                  <label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-1">
-                                                       Slot Date
-                                                  </label>
-                                                  <DatePicker
-                                                       value={appointmentDate}
-                                                       onChange={setAppointmentDate}
-                                                       className="h-14 rounded-2xl border-2 border-muted bg-background focus:border-primary transition-all text-sm font-bold text-center"
-                                                       disabled={!isPaymentComplete || loading}
-                                                  />
-                                             </div>
-
-                                             <div className="space-y-2">
-                                                  <label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-1">
-                                                       Start Time
-                                                  </label>
-                                                  <TimePicker
-                                                       value={startTime}
-                                                       onChange={setStartTime}
-                                                       className="h-14 rounded-2xl border-2 border-muted bg-background focus:border-primary transition-all text-sm font-bold text-center"
-                                                       disabled={!isPaymentComplete || loading}
-                                                  />
-                                             </div>
-
-                                             <div className="space-y-2">
-                                                  <label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-1">
-                                                       End Time
-                                                  </label>
-                                                  <TimePicker
-                                                       value={endTime}
-                                                       onChange={setEndTime}
-                                                       className="h-14 rounded-2xl border-2 border-muted bg-background focus:border-primary transition-all text-sm font-bold text-center"
-                                                       disabled={!isPaymentComplete || loading}
-                                                  />
-                                             </div>
-                                        </div>
-
-                                        <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between pt-4">
-                                             <p className={cn(
-                                                  "text-sm font-bold transition-all px-4 py-2 rounded-full",
-                                                  canAssign ? "text-emerald-700 bg-emerald-100/50" : "text-muted-foreground bg-muted/50"
-                                             )}>
-                                                  {canAssign
-                                                       ? "✓ Appointment is ready to be assigned."
-                                                       : isPaymentComplete
-                                                            ? "⚠ Please complete all required fields."
-                                                            : "🔒 Waiting for payment verification."}
-                                             </p>
-
-                                             <div className="flex flex-col gap-4 sm:w-auto sm:flex-row">
-                                                  <Button
-                                                       onClick={handleAssign}
-                                                       disabled={!canAssign}
-                                                       className="h-14 rounded-md px-10 text-base font-black shadow-lg shadow-primary/20 transition-all hover:scale-[1.02] active:scale-95"
-                                                  >
-                                                       {loading ? "Processing..." : "Confirm & Assign Slot"}
-                                                  </Button>
-
-                                                  <Button
-                                                       variant="outline"
-                                                       className="h-14 rounded-md px-8 border-2 text-rose-600 border-rose-100 hover:bg-rose-50 hover:border-rose-200 transition-all font-bold"
-                                                       type="button"
-                                                       onClick={handleCancel}
-                                                       disabled={loading || !isPaymentComplete}
-                                                  >
-                                                       {loading ? "Processing..." : "Cancel Appointment"}
-                                                  </Button>
-                                             </div>
-                                        </div>
-                                   </motion.div>
-                              )}
-
                               {isAccepted && (
                                    <motion.div 
                                         initial={{ opacity: 0 }}
                                         animate={{ opacity: 1 }}
-                                        className="flex flex-col sm:flex-row items-center justify-between gap-6 pt-8 border-t border-dashed border-muted"
+                                        className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
                                    >
-                                        <div className="flex items-center gap-4">
-                                             <div className="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-600 flex items-center justify-center">
-                                                  <HugeiconsIcon icon={CheckmarkCircle02Icon} className="w-6 h-6" />
+                                        <div className="flex items-center gap-3">
+                                             <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-emerald-100 text-emerald-600">
+                                                  <HugeiconsIcon icon={CheckmarkCircle02Icon} className="h-4.5 w-4.5" />
                                              </div>
                                              <div>
-                                                  <p className="font-bold text-foreground">Appointment Scheduled</p>
+                                                  <p className="text-sm font-bold text-foreground">Appointment scheduled</p>
                                                   <p className="text-sm text-muted-foreground">The patient and doctor have been notified.</p>
                                              </div>
                                         </div>
                                         <Button
                                              variant="outline"
-                                             className="h-14 rounded-md px-10 border-2 text-rose-600 border-rose-100 hover:bg-rose-50 hover:border-rose-200 transition-all font-bold group"
+                                             className="h-10 rounded-full border-2 border-rose-200 px-4 font-bold text-rose-600 transition-all hover:bg-rose-50"
                                              type="button"
                                              onClick={handleCancel}
                                              disabled={loading}
                                         >
-                                             <HugeiconsIcon icon={Cancel01Icon} className="w-5 h-5 mr-2 group-hover:rotate-90 transition-transform" />
+                                             <HugeiconsIcon icon={Cancel01Icon} className="mr-2 h-4 w-4" />
                                              {loading ? "Processing..." : "Revoke & Cancel"}
                                         </Button>
                                    </motion.div>
@@ -363,11 +368,11 @@ export default function AssignAppointment({
                          </AnimatePresence>
 
                          {!hideViewDetails && (
-                              <div className="flex justify-end pt-6 mt-6 border-t border-muted/30">
+                              <div className="flex justify-end pt-3 mt-3 border-t border-border/60">
                                    <Button 
                                         variant="outline"
                                         onClick={() => router.push(`${basePath}/${appointment.id}`)}
-                                        className="rounded-md font-bold shadow-sm"
+                                        className="h-10 rounded-full border-border/70 px-4 font-semibold shadow-sm"
                                    >
                                         View Details
                                    </Button>

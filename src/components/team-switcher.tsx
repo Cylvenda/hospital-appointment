@@ -3,11 +3,8 @@
 import * as React from "react"
 import {
   SidebarMenu,
-  SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
-import { HugeiconsIcon } from "@hugeicons/react"
-import { UnfoldMoreIcon } from "@hugeicons/core-free-icons"
 
 export function TeamSwitcher({
   teams,
@@ -22,10 +19,7 @@ export function TeamSwitcher({
   return (
     <SidebarMenu>
       <SidebarMenuItem>
-        <SidebarMenuButton
-          size="lg"
-          className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
-        >
+        <div className="flex items-center gap-3 rounded-2xl border border-sidebar-border/70 bg-sidebar-accent/40 px-3 py-3">
           <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
             {teams.logo}
           </div>
@@ -33,8 +27,7 @@ export function TeamSwitcher({
             <span className="truncate font-medium">{teams.name}</span>
             <span className="truncate text-xs">{teams.role}</span>
           </div>
-          <HugeiconsIcon icon={UnfoldMoreIcon} strokeWidth={2} className="ml-auto" />
-        </SidebarMenuButton>
+        </div>
       </SidebarMenuItem>
     </SidebarMenu>
   )

@@ -12,7 +12,7 @@ import {
      SidebarRail,
 } from "@/components/ui/sidebar"
 import { HugeiconsIcon } from "@hugeicons/react"
-import { LayoutBottomIcon, RoboticIcon, Settings05Icon, DashboardCircleIcon, Doctor01Icon, UserAccountIcon, Loading, CallDoneIcon, CheckCheck, AllahFreeIcons, Bell, Cancel01Icon } from "@hugeicons/core-free-icons"
+import { LayoutBottomIcon, RoboticIcon, Settings05Icon, DashboardCircleIcon, UserAccountIcon, CallDoneIcon, Bell, Cancel01Icon } from "@hugeicons/core-free-icons"
 import { Separator } from "./ui/separator"
 import { useAuthUserStore } from "@/store/auth/userAuth.store"
 
@@ -25,34 +25,25 @@ const navMain = [
           ),
      },
      {
-          title: "Appointments",
-          url: "#",
+          title: "Assigned Patients",
+          url: "/doctor-dashboard/appointments/pending",
           icon: (
                <HugeiconsIcon color="var(--primary)" icon={RoboticIcon} strokeWidth={2} />
           ),
-          items: [
-               {
-                    title: "Pending",
-                    url: "/doctor-dashboard/appointments/pending",
-                    icon: (
-                         <HugeiconsIcon color="var(--primary)" icon={Loading} size={"17"} />
-                    ),
-               },
-               {
-                    title: "Completed",
-                    url: "/doctor-dashboard/appointments/completed",
-                    icon: (
-                         <HugeiconsIcon color="var(--primary)" icon={CallDoneIcon} size={"17"} />
-                    ),
-               },
-               {
-                    title: "Cancelled",
-                    url: "/doctor-dashboard/appointments/cancelled",
-                    icon: (
-                         <HugeiconsIcon color="var(--primary)" icon={Cancel01Icon} size={"17"} />
-                    ),
-               },
-          ],
+     },
+     {
+          title: "Completed Consultations",
+          url: "/doctor-dashboard/appointments/completed",
+          icon: (
+               <HugeiconsIcon color="var(--primary)" icon={CallDoneIcon} strokeWidth={2} />
+          ),
+     },
+     {
+          title: "Cancelled Visits",
+          url: "/doctor-dashboard/appointments/cancelled",
+          icon: (
+               <HugeiconsIcon color="var(--primary)" icon={Cancel01Icon} strokeWidth={2} />
+          ),
      },
      {
           title: "Profile",

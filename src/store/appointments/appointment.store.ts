@@ -28,7 +28,7 @@ type AppointmentStore = {
      loading: boolean
      error: string | null
      initialized: boolean
-     fetchAppointments: () => Promise<void>
+     fetchAppointments: (queue?: string) => Promise<void>
      fetchDoctors: () => Promise<void>
      fetchIllnessCategories: () => Promise<void>
      createIllnessCategory: (payload: { name: string; description: string }) => Promise<void>
@@ -68,7 +68,8 @@ function mapAppointment(apiAppointment: AppointmentApi): Appointment {
           note: apiAppointment.description ?? "No appointment note provided.",
           diagnosis: apiAppointment.diagnosis,
           notes: apiAppointment.notes,
-          status: apiAppointment.status
+          status: apiAppointment.status,
+          createdAt: apiAppointment.created_at,
      }
 }
 
@@ -110,11 +111,11 @@ export const useAppointmentStore = create<AppointmentStore>((set) => ({
      error: null,
      initialized: false,
 
-     fetchAppointments: async () => {
+     fetchAppointments: async (queue?: string) => {
           set({ loading: true, error: null })
 
           try {
-               const response = await appointmentService.listAppointments()
+               const response = await appointmentService.listAppointments(queue)
                set({
                     appointments: response.data.map(mapAppointment),
                     loading: false,

@@ -16,6 +16,7 @@ import { useAppointmentStore } from "@/store/appointments/appointment.store"
 import { useAdminStore } from "@/store/admin/admin.store"
 import { getDashboardPath } from "@/lib/role-dashboard"
 import { AppointmentWorkflowLegend } from "@/components/appointment-workflow-legend"
+import { filterAppointmentsForQueue } from "@/lib/appointment-queues"
 import { cn } from "@/lib/utils"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { 
@@ -57,12 +58,12 @@ export default function ReceptionistDashboardPage() {
      }, [checkAuth, fetchAppointments, fetchOverview, fetchDoctors, router])
 
      const pending = useMemo(
-          () => appointments.filter((item) => item.status === "pending"),
+          () => filterAppointmentsForQueue(appointments, "receptionist", "awaiting-payment"),
           [appointments]
      )
 
      const assignedToday = useMemo(
-          () => appointments.filter((item) => item.status === "accepted" && item.date === new Date().toISOString().split('T')[0]),
+          () => filterAppointmentsForQueue(appointments, "receptionist", "today"),
           [appointments]
      )
 

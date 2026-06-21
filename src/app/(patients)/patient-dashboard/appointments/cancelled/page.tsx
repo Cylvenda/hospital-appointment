@@ -4,6 +4,7 @@ import { useEffect, useMemo } from "react"
 import { Button } from "@/components/ui/button"
 import { useAppointmentStore } from "@/store/appointments/appointment.store"
 import AppointmentDisplay from "@/components/customs/pattient-appointment"
+import { filterAppointmentsForQueue } from "@/lib/appointment-queues"
 
 export default function ReceptionistAppointmentsPage() {
   const {
@@ -22,7 +23,7 @@ export default function ReceptionistAppointmentsPage() {
   }, [initialize, initialized])
 
   const cancelledAppointments = useMemo(
-    () => appointments.filter((appointment) => appointment.status === "cancelled"),
+    () => filterAppointmentsForQueue(appointments, "patient", "cancelled"),
     [appointments]
   )
 

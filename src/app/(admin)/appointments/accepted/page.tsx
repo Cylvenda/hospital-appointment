@@ -4,6 +4,7 @@ import { useEffect, useMemo } from "react"
 import AssignAppointment from "@/components/customs/assign-appointment"
 import { Button } from "@/components/ui/button"
 import { useAppointmentStore } from "@/store/appointments/appointment.store"
+import { filterAppointmentsForQueue } from "@/lib/appointment-queues"
 
 export default function ReceptionistAppointmentsPage() {
   const {
@@ -24,11 +25,9 @@ export default function ReceptionistAppointmentsPage() {
   }, [initialize, initialized])
 
   const acceptedAppointments = useMemo(
-    () => appointments.filter((appointment) => appointment.status === "accepted"),
+    () => filterAppointmentsForQueue(appointments, "admin", "accepted"),
     [appointments]
   )
-
-  console.log("Accepted one are: ", appointments)
 
   if (loading && appointments.length === 0) {
     return (

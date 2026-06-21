@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { useAppointmentStore } from "@/store/appointments/appointment.store"
 import { DoctorAppointmentCard } from "@/components/customs/doctor-appointment-card"
+import { filterAppointmentsForQueue } from "@/lib/appointment-queues"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { RefreshIcon, CheckCheck, Medicine01Icon } from "@hugeicons/core-free-icons"
 import { cn } from "@/lib/utils"
@@ -25,7 +26,7 @@ export default function DoctorAcceptedAppointmentsPage() {
   }, [initialize, initialized])
 
   const acceptedAppointments = useMemo(
-    () => appointments.filter((appointment) => appointment.status === "accepted"),
+    () => filterAppointmentsForQueue(appointments, "doctor", "waiting-for-consultation"),
     [appointments]
   )
 
@@ -64,9 +65,9 @@ export default function DoctorAcceptedAppointmentsPage() {
     <div className="w-full space-y-10 max-w-8xl p-4 md:p-8">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
         <div>
-          <h1 className="text-4xl font-black tracking-tight italic">Assessment Queue</h1>
+          <h1 className="text-4xl font-black tracking-tight italic">Waiting for Consultation</h1>
           <p className="text-muted-foreground text-lg mt-1 font-medium">
-            Appointments ready for your clinical review and completion.
+            Appointments assigned to you but not yet inside the live consultation window.
           </p>
         </div>
         <div className="flex items-center gap-4 bg-muted/30 px-6 py-3 rounded-3xl border border-muted-foreground/10">

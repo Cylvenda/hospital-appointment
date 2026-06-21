@@ -15,6 +15,7 @@ import { useAppointmentStore } from "@/store/appointments/appointment.store"
 import { getDashboardPath } from "@/lib/role-dashboard"
 import { AppointmentWorkflowLegend } from "@/components/appointment-workflow-legend"
 import { getAppointmentStatusMeta } from "@/lib/appointment-workflow"
+import { filterAppointmentsForQueue } from "@/lib/appointment-queues"
 import { cn } from "@/lib/utils"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { Calendar01Icon, Clock01Icon, UserIcon, CheckCircle, Cancel01Icon, HourglassIcon, PlusSignIcon, RefreshIcon } from "@hugeicons/core-free-icons"
@@ -44,18 +45,22 @@ export default function PatientDashboardPage() {
      }, [checkAuth, fetchAppointments, router])
 
      const stats = useMemo(() => {
-          const pending = appointments.filter((i) => i.status === "pending").length
-          const approved = appointments.filter((i) => i.status === "accepted").length
-          const cancelled = appointments.filter((i) => i.status === "cancelled").length
-          const completed = appointments.filter((i) => i.status === "completed").length
+          const pending = filterAppointmentsForQueue(appointments, "patient", "upcoming").filter(
+               (appointment) => appointment.paymentStatus === "pending"
+          ).length
+          const approved = filterAppointmentsForQueue(appointments, "patient", "upcoming").filter(
+               (appointment) => Boolean(appointment.doctorId)
+          ).length
+          const cancelled = filterAppointmentsForQueue(appointments, "patient", "cancelled").length
+          const completed = filterAppointmentsForQueue(appointments, "patient", "completed").length
 
           return { pending, approved, cancelled, completed }
      }, [appointments])
 
      const nextAppointment = useMemo(() => {
           const now = new Date()
-          return appointments
-               .filter(a => a.status === "accepted" && new Date(a.date) >= now)
+          return filterAppointmentsForQueue(appointments, "patient", "upcoming")
+               .filter(a => Boolean(a.doctorId) && a.date && new Date(a.date) >= now)
                .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())[0]
      }, [appointments])
 
@@ -64,8 +69,8 @@ export default function PatientDashboardPage() {
           : null
 
      const recentHistory = useMemo(() => {
-          return appointments
-               .filter(a => a.status !== "pending" && a !== nextAppointment)
+          return filterAppointmentsForQueue(appointments, "patient", "completed")
+               .filter(a => a !== nextAppointment)
                .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
                .slice(0, 4)
      }, [appointments, nextAppointment])
@@ -254,42 +259,42 @@ export default function PatientDashboardPage() {
                               <CardContent className="px-2">
                                    <div className="space-y-1">
                                         {recentHistory.length > 0 ? (
-                                             recentHistory.map((appt) => (
-                                                  <div
-                                                       key={appt.id}
-                                                       className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted/50 transition-colors cursor-pointer group"
-                                                       onClick={() => router.push(`/patient-dashboard/appointments/${appt.id}`)}
-                                                  >
-                                                       <div className={cn(
-                                                            "w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-transform group-hover:scale-110",
-                                                            appt.status === "completed" ? "bg-blue-100" : "bg-rose-100"
-                                                       )}>
-                                                            <HugeiconsIcon 
-                                                                 icon={appt.status === "completed" ? CheckCircle : Cancel01Icon} 
-                                                                 className={cn("w-5 h-5", appt.status === "completed" ? "text-blue-600" : "text-rose-600")} 
-                                                            />
+                                             recentHistory.map((appt) => {
+                                                  const statusMeta = getAppointmentStatusMeta(appt.status, appt.paymentStatus, "patient")
+                                                  const isCompleted = statusMeta.label === "Completed"
+
+                                                  return (
+                                                       <div
+                                                            key={appt.id}
+                                                            className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted/50 transition-colors cursor-pointer group"
+                                                            onClick={() => router.push(`/patient-dashboard/appointments/${appt.id}`)}
+                                                       >
+                                                            <div className={cn(
+                                                                 "w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-transform group-hover:scale-110",
+                                                                 isCompleted ? "bg-blue-100" : "bg-rose-100"
+                                                            )}>
+                                                                 <HugeiconsIcon
+                                                                      icon={isCompleted ? CheckCircle : Cancel01Icon}
+                                                                      className={cn("w-5 h-5", isCompleted ? "text-blue-600" : "text-rose-600")}
+                                                                 />
+                                                            </div>
+                                                            <div className="min-w-0 flex-1">
+                                                                 <p className="text-sm font-semibold truncate">{appt.illnessCategory}</p>
+                                                                 <p className="text-xs text-muted-foreground">{appt.date}</p>
+                                                            </div>
+                                                            <span className={cn(
+                                                                 "text-[10px] font-bold uppercase px-2 py-0.5 rounded-md",
+                                                                 statusMeta.tone === "amber" && "bg-amber-50 text-amber-700",
+                                                                 statusMeta.tone === "emerald" && "bg-emerald-50 text-emerald-700",
+                                                                 statusMeta.tone === "blue" && "bg-blue-50 text-blue-700",
+                                                                 statusMeta.tone === "rose" && "bg-rose-50 text-rose-700",
+                                                                 statusMeta.tone === "slate" && "bg-slate-50 text-slate-700"
+                                                            )}>
+                                                                 {statusMeta.label}
+                                                            </span>
                                                        </div>
-                                                       <div className="min-w-0 flex-1">
-                                                            <p className="text-sm font-semibold truncate">{appt.illnessCategory}</p>
-                                                            <p className="text-xs text-muted-foreground">{appt.date}</p>
-                                                       </div>
-                                                       {(() => {
-                                                            const statusMeta = getAppointmentStatusMeta(appt.status, appt.paymentStatus, "patient")
-                                                            return (
-                                                                 <span className={cn(
-                                                                      "text-[10px] font-bold uppercase px-2 py-0.5 rounded-md",
-                                                                      statusMeta.tone === "amber" && "bg-amber-50 text-amber-700",
-                                                                      statusMeta.tone === "emerald" && "bg-emerald-50 text-emerald-700",
-                                                                      statusMeta.tone === "blue" && "bg-blue-50 text-blue-700",
-                                                                      statusMeta.tone === "rose" && "bg-rose-50 text-rose-700",
-                                                                      statusMeta.tone === "slate" && "bg-slate-50 text-slate-700"
-                                                                 )}>
-                                                                      {statusMeta.label}
-                                                                 </span>
-                                                            )
-                                                       })()}
-                                                  </div>
-                                             ))
+                                                  )
+                                             })
                                         ) : (
                                              <div className="py-10 text-center text-sm text-muted-foreground px-4">
                                                   No recent history to display.

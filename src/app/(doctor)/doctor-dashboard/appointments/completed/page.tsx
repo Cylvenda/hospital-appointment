@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { useAppointmentStore } from "@/store/appointments/appointment.store"
 import { DoctorAppointmentCard } from "@/components/customs/doctor-appointment-card"
+import { filterAppointmentsForQueue } from "@/lib/appointment-queues"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { RefreshIcon, CheckCheck, Medicine01Icon } from "@hugeicons/core-free-icons"
 import { cn } from "@/lib/utils"
@@ -25,7 +26,7 @@ export default function DoctorCompletedAppointmentsPage() {
   }, [initialize, initialized])
 
   const completedAppointments = useMemo(
-    () => appointments.filter((appointment) => appointment.status === "completed"),
+    () => filterAppointmentsForQueue(appointments, "doctor", "completed"),
     [appointments]
   )
 
@@ -100,7 +101,7 @@ export default function DoctorCompletedAppointmentsPage() {
                <div className="space-y-1">
                     <p className="text-2xl font-black text-foreground">Archive Empty</p>
                     <p className="text-muted-foreground max-w-xs mx-auto font-medium">
-                      You haven't marked any appointments as completed yet.
+                      You haven&apos;t marked any appointments as completed yet.
                     </p>
                </div>
              </motion.div>

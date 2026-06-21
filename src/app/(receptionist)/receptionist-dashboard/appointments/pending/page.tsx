@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import AssignAppointment from "@/components/customs/assign-appointment"
 import { Button } from "@/components/ui/button"
 import { useAppointmentStore } from "@/store/appointments/appointment.store"
+import { filterAppointmentsForQueue } from "@/lib/appointment-queues"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { Medicine01Icon, RefreshIcon, CheckCircle } from "@hugeicons/core-free-icons"
 import { cn } from "@/lib/utils"
@@ -28,7 +29,7 @@ export default function ReceptionistAppointmentsPage() {
   }, [initialize, initialized])
 
   const pendingAppointments = useMemo(
-    () => appointments.filter((appointment) => appointment.status === "pending"),
+    () => filterAppointmentsForQueue(appointments, "receptionist", "awaiting-payment"),
     [appointments]
   )
 
@@ -64,28 +65,28 @@ export default function ReceptionistAppointmentsPage() {
   }
 
   return (
-    <div className="w-full space-y-10 max-w-8xl p-4 md:p-8">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
+    <div className="w-full max-w-7xl space-y-6 p-4 md:p-6">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-4xl font-black tracking-tight">Queue Management</h1>
-          <p className="text-muted-foreground text-lg mt-1">
-            Review and assign practitioners to pending patient requests.
+          <h1 className="text-2xl font-black tracking-tight sm:text-3xl">Awaiting Payment</h1>
+          <p className="mt-1 max-w-2xl text-sm text-muted-foreground sm:text-base">
+            Review requests that are still waiting for payment confirmation.
           </p>
         </div>
-        <div className="flex items-center gap-4 bg-muted/30 px-6 py-3 rounded-3xl border border-muted-foreground/10">
+        <div className="flex items-center gap-3 rounded-2xl border border-muted-foreground/10 bg-muted/30 px-4 py-2.5">
              <div className="text-right">
-                  <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground opacity-60">Total Pending</p>
-                  <p className="text-xl font-black">{pendingAppointments.length}</p>
+                  <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground opacity-60">In Queue</p>
+                  <p className="text-lg font-black">{pendingAppointments.length}</p>
              </div>
-             <div className="w-px h-8 bg-muted-foreground/10 mx-2" />
+             <div className="mx-1 h-7 w-px bg-muted-foreground/10" />
              <Button 
                variant="ghost" 
                size="icon" 
-               className="rounded-2xl h-12 w-12 hover:bg-background"
+               className="h-10 w-10 rounded-2xl hover:bg-background"
                onClick={() => void initialize()}
                disabled={loading}
              >
-                  <HugeiconsIcon icon={RefreshIcon} className={cn("w-5 h-5", loading && "animate-spin")} />
+                  <HugeiconsIcon icon={RefreshIcon} className={cn("h-4 w-4", loading && "animate-spin")} />
              </Button>
         </div>
       </div>
@@ -95,22 +96,22 @@ export default function ReceptionistAppointmentsPage() {
              <motion.div 
                initial={{ opacity: 0, scale: 0.95 }}
                animate={{ opacity: 1, scale: 1 }}
-               className="rounded-[3rem] border-2 border-dashed border-muted bg-muted/10 p-20 text-center flex flex-col items-center gap-6"
+               className="flex flex-col items-center gap-5 rounded-[2rem] border-2 border-dashed border-muted bg-muted/10 p-10 text-center"
              >
-               <div className="w-20 h-20 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center">
-                    <HugeiconsIcon icon={CheckCircle} className="w-10 h-10" />
+               <div className="flex h-14 w-14 items-center justify-center rounded-full bg-emerald-100 text-emerald-600">
+                    <HugeiconsIcon icon={CheckCircle} className="h-7 w-7" />
                </div>
                <div className="space-y-1">
-                    <p className="text-2xl font-black text-foreground">Zero Backlog</p>
-                    <p className="text-muted-foreground max-w-xs mx-auto">
-                      All appointments have been processed. New requests will appear here in real-time.
+                    <p className="text-xl font-black text-foreground">Zero Backlog</p>
+                    <p className="mx-auto max-w-xs text-sm text-muted-foreground">
+                      No requests are waiting on payment right now. New items will appear here in real-time.
                     </p>
                </div>
              </motion.div>
            ) : (
              <motion.div 
                layout
-               className="grid gap-8"
+               className="grid gap-4"
              >
                {pendingAppointments.map((appointment) => (
                  <AssignAppointment

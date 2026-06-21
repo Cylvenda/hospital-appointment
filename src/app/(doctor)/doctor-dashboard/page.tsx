@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { useAuthUserStore } from "@/store/auth/userAuth.store"
 import { useAppointmentStore } from "@/store/appointments/appointment.store"
 import { getDashboardPath } from "@/lib/role-dashboard"
+import { filterAppointmentsForQueue } from "@/lib/appointment-queues"
 import { cn } from "@/lib/utils"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { 
@@ -41,12 +42,12 @@ export default function DoctorDashboardPage() {
      }, [checkAuth, fetchAppointments, router])
 
      const pendingAssessment = useMemo(
-          () => appointments.filter((appt) => appt.status === "accepted"),
+          () => filterAppointmentsForQueue(appointments, "doctor", "assigned"),
           [appointments]
      )
 
      const stats = useMemo(() => {
-          const completed = appointments.filter(a => a.status === "completed").length
+          const completed = filterAppointmentsForQueue(appointments, "doctor", "completed").length
           const upcoming = pendingAssessment.length
           const total = appointments.length
           return { completed, upcoming, total }

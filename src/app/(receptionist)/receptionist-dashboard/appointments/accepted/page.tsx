@@ -4,6 +4,7 @@ import { useEffect, useMemo } from "react"
 import AssignAppointment from "@/components/customs/assign-appointment"
 import { Button } from "@/components/ui/button"
 import { useAppointmentStore } from "@/store/appointments/appointment.store"
+import { filterAppointmentsForQueue } from "@/lib/appointment-queues"
 
 export default function ReceptionistAppointmentsPage() {
   const {
@@ -24,11 +25,9 @@ export default function ReceptionistAppointmentsPage() {
   }, [initialize, initialized])
 
   const acceptedAppointments = useMemo(
-    () => appointments.filter((appointment) => appointment.status === "accepted"),
+    () => filterAppointmentsForQueue(appointments, "receptionist", "awaiting-doctor-assignment"),
     [appointments]
   )
-
-  console.log("Accepted one are: ", appointments)
 
   if (loading && appointments.length === 0) {
     return (
@@ -54,9 +53,9 @@ export default function ReceptionistAppointmentsPage() {
   return (
     <div className="w-full space-y-4 max-w-8xl">
       <div>
-        <h1 className="text-2xl font-semibold">Accepted Appointments</h1>
+        <h1 className="text-2xl font-semibold">Awaiting Doctor Assignment</h1>
         <p className="text-sm text-muted-foreground">
-          Review accepted appointments that are ready for scheduling or follow-up.
+          Review paid appointments that still need a clinician and time slot.
         </p>
       </div>
 

@@ -14,19 +14,12 @@ import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
 import {
   appointmentWorkflowSteps,
-  getAppointmentStatusMeta,
 } from "@/lib/appointment-workflow"
+import { getRoleQueueEntries } from "@/lib/appointment-queues"
 
 type Props = {
   className?: string
 }
-
-const legendStatuses = [
-  { status: "pending" as const, audience: "default" as const },
-  { status: "accepted" as const, audience: "doctor" as const },
-  { status: "completed" as const, audience: "default" as const },
-  { status: "cancelled" as const, audience: "default" as const },
-]
 
 const toneClasses = {
   amber: "bg-amber-500/10 text-amber-700 border-amber-200",
@@ -37,6 +30,8 @@ const toneClasses = {
 } as const
 
 export function AppointmentWorkflowLegend({ className }: Props) {
+  const receptionistQueues = getRoleQueueEntries("receptionist").slice(0, 4)
+
   return (
     <Card className={cn("rounded-3xl border-primary/10 bg-card/90 shadow-sm", className)}>
       <CardContent className="space-y-6 p-6">
@@ -46,26 +41,29 @@ export function AppointmentWorkflowLegend({ className }: Props) {
               Appointment Workflow
             </p>
             <h3 className="text-xl font-black tracking-tight">
-              One status flow for all roles
+              One canonical record, role-specific queues
             </h3>
             <p className="max-w-2xl text-sm text-muted-foreground">
-              Patients create a request, the payment is verified, reception assigns the visit, and the doctor closes the case.
+              Patients create one appointment record, and each team sees the slice of work that matters to them.
             </p>
           </div>
 
           <div className="flex flex-wrap gap-2">
-            {legendStatuses.map(({ status, audience }) => {
-              const meta = getAppointmentStatusMeta(status, status === "pending" ? "pending" : null, audience)
+            {receptionistQueues.map(({ queue, label }) => {
               return (
                 <Badge
-                  key={`${status}-${audience}`}
+                  key={queue}
                   variant="outline"
                   className={cn(
                     "rounded-full border px-3 py-1 text-[10px] font-black uppercase tracking-widest",
-                    toneClasses[meta.tone]
+                    queue === "new" || queue === "awaiting-payment"
+                      ? toneClasses.amber
+                      : queue === "awaiting-doctor-assignment"
+                        ? toneClasses.blue
+                        : toneClasses.emerald
                   )}
                 >
-                  {meta.label}
+                  {label}
                 </Badge>
               )
             })}
@@ -102,10 +100,10 @@ export function AppointmentWorkflowLegend({ className }: Props) {
         <div className="flex flex-col gap-2 rounded-2xl border border-dashed border-muted/70 bg-muted/10 p-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
             <HugeiconsIcon icon={ArrowRight02Icon} className="h-4 w-4 text-primary" />
-            <span>Payment completed is the gate that moves a request from waiting to assignable.</span>
+            <span>Payment confirmed is the gate that moves a request from waiting to assignable.</span>
           </div>
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-            Same state, role-specific wording
+            Same appointment, different operational views
           </p>
         </div>
       </CardContent>
