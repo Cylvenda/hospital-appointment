@@ -85,13 +85,16 @@ export default function AppointmentDisplay({
                <div className={cn("absolute inset-x-0 top-0 h-1", isPending ? statusBarStyles.amber : hasAppointmentStatus(appointment, "accepted") ? statusBarStyles.emerald : hasAppointmentStatus(appointment, "cancelled", "declined") ? statusBarStyles.rose : statusBarStyles.blue)} />
 
                <CardHeader className="relative p-0">
-                    <div className={cn(
+                     <div className={cn(
                          "flex flex-col gap-4 p-4 sm:p-5",
                          isPending ? "bg-gradient-to-br from-amber-50/80 via-background to-background" : "bg-gradient-to-br from-background via-background to-muted/20"
                     )}>
                          <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
                               <div className="min-w-0 flex-1">
                                    <div className="flex flex-wrap items-center gap-2">
+                                        <Badge variant="outline" className="rounded-full border-border/70 px-2.5 py-0.5 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">
+                                             Appointment ID: {appointment.appointmentId ?? "Pending"}
+                                        </Badge>
                                         <Badge variant="outline" className={cn("rounded-full px-2.5 py-0.5 text-[10px] font-black uppercase tracking-[0.2em]", toneStyles[statusMeta.tone])}>
                                              <HugeiconsIcon icon={statusIcon[statusMeta.tone]} className="mr-1.5 h-3 w-3" />
                                              {statusMeta.label}
@@ -130,7 +133,7 @@ export default function AppointmentDisplay({
                                         </p>
                                         <p className="text-[10px] font-medium text-muted-foreground">TZS</p>
                                    </div>
-                                   <div className="rounded-2xl border border-border/60 bg-card px-3 py-2.5 shadow-sm">
+                              <div className="rounded-2xl border border-border/60 bg-card px-3 py-2.5 shadow-sm">
                                         <p className="text-[10px] font-black uppercase tracking-[0.22em] text-muted-foreground">Visit</p>
                                         <p className="mt-1 text-xs font-bold text-foreground">
                                              {appointment.date || "Not scheduled"}

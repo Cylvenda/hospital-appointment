@@ -37,4 +37,9 @@ export const userServices = {
           }
      },
 
+     async exportMyReport(format: "pdf" | "docx") {
+          return api.get(`/me/report/export/?format=${format}`, {
+               responseType: 'blob'
+          })
+     },
 }

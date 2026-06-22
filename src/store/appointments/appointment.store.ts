@@ -52,6 +52,7 @@ type AppointmentStore = {
 function mapAppointment(apiAppointment: AppointmentApi): Appointment {
      return {
           id: apiAppointment.uuid,
+          appointmentId: apiAppointment.appointment_id,
           patient: apiAppointment.patient_name,
           email: apiAppointment.patient_email,
           fee: apiAppointment.fee,

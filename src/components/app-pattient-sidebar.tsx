@@ -12,7 +12,7 @@ import {
      SidebarRail,
 } from "@/components/ui/sidebar"
 import { HugeiconsIcon } from "@hugeicons/react"
-import { LayoutBottomIcon, RoboticIcon, Settings05Icon, DashboardCircleIcon, UserAccountIcon, AllahFreeIcons, CallDoneIcon, CheckCheck, Loading, Bell } from "@hugeicons/core-free-icons"
+import { LayoutBottomIcon, RoboticIcon, Settings05Icon, DashboardCircleIcon, UserAccountIcon, AllahFreeIcons, CallDoneIcon, CheckCheck, Loading, Bell, Book01Icon } from "@hugeicons/core-free-icons"
 import { Separator } from "./ui/separator"
 import { useAuthUserStore } from "@/store/auth/userAuth.store"
 
@@ -64,6 +64,13 @@ const navMain = [
           url: "/patient-dashboard/appointments/all",
           icon: (
                <HugeiconsIcon color="var(--primary)" icon={AllahFreeIcons} strokeWidth={2} />
+          ),
+     },
+     {
+          title: "Health Education",
+          url: "/patient-dashboard/health-education",
+          icon: (
+               <HugeiconsIcon color="var(--primary)" icon={Book01Icon} strokeWidth={2} />
           ),
      },
      {

@@ -12,13 +12,13 @@ import {
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
-import {
-  appointmentWorkflowSteps,
-} from "@/lib/appointment-workflow"
+import { getAppointmentWorkflowSteps } from "@/lib/appointment-workflow"
 import { getRoleQueueEntries } from "@/lib/appointment-queues"
+import type { AppointmentRole } from "@/lib/appointment-queues"
 
 type Props = {
   className?: string
+  role?: AppointmentRole
 }
 
 const toneClasses = {
@@ -29,8 +29,9 @@ const toneClasses = {
   slate: "bg-slate-500/10 text-slate-700 border-slate-200",
 } as const
 
-export function AppointmentWorkflowLegend({ className }: Props) {
-  const receptionistQueues = getRoleQueueEntries("receptionist").slice(0, 4)
+export function AppointmentWorkflowLegend({ className, role = "receptionist" }: Props) {
+  const queueEntries = getRoleQueueEntries(role).slice(0, 4)
+  const workflowSteps = getAppointmentWorkflowSteps(role)
 
   return (
     <Card className={cn("rounded-3xl border-primary/10 bg-card/90 shadow-sm", className)}>
@@ -49,7 +50,7 @@ export function AppointmentWorkflowLegend({ className }: Props) {
           </div>
 
           <div className="flex flex-wrap gap-2">
-            {receptionistQueues.map(({ queue, label }) => {
+            {queueEntries.map(({ queue, label }) => {
               return (
                 <Badge
                   key={queue}
@@ -71,7 +72,7 @@ export function AppointmentWorkflowLegend({ className }: Props) {
         </div>
 
         <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
-          {appointmentWorkflowSteps.map((step, index) => {
+          {workflowSteps.map((step, index) => {
             const icon = [Calendar03Icon, HourglassIcon, UserGroupIcon, Doctor01Icon][index] || CheckCircle
             return (
               <div
@@ -100,7 +101,11 @@ export function AppointmentWorkflowLegend({ className }: Props) {
         <div className="flex flex-col gap-2 rounded-2xl border border-dashed border-muted/70 bg-muted/10 p-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
             <HugeiconsIcon icon={ArrowRight02Icon} className="h-4 w-4 text-primary" />
-            <span>Payment confirmed is the gate that moves a request from waiting to assignable.</span>
+            <span>
+              {role === "doctor"
+                ? "Clinicians see only the workflow needed to review and complete a visit."
+                : "Each role sees the part of the workflow that matches their responsibilities."}
+            </span>
           </div>
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
             Same appointment, different operational views

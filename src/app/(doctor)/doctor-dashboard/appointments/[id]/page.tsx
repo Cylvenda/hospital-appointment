@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { ArrowLeft02Icon } from "@hugeicons/core-free-icons"
 import { DoctorAppointmentCard } from "@/components/customs/doctor-appointment-card"
+import { ClinicalWorkspace } from "@/components/customs/clinical-workspace"
 
 export default function DoctorSingleAppointmentPage() {
   const params = useParams()
@@ -67,10 +68,13 @@ export default function DoctorSingleAppointmentPage() {
       </div>
 
       {appointment && (
-        <DoctorAppointmentCard
-          appointment={appointment}
-          hideViewDetails={true}
-        />
+        <div className="space-y-8">
+          <DoctorAppointmentCard
+            appointment={appointment}
+            hideViewDetails={true}
+          />
+          <ClinicalWorkspace appointment={appointment} />
+        </div>
       )}
     </div>
   )

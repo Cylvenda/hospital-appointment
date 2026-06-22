@@ -86,7 +86,8 @@ export function DatePicker({
   }
 
   const handleDateSelect = (day: number) => {
-    const selected = new Date(currentYear, currentMonth, day + 1) // adding 1 offset for UTC/local iso conversion
+    // Build the date in UTC so the displayed day does not drift when serialized.
+    const selected = new Date(Date.UTC(currentYear, currentMonth, day))
     const formatted = selected.toISOString().split("T")[0]
     onChange?.(formatted)
     setIsOpen(false)

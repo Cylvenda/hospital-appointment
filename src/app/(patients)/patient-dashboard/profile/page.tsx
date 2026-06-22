@@ -83,6 +83,7 @@ export default function PatientProfilePage() {
   const user = useAuthUserStore((state) => state.user)
   const updateProfile = useAuthUserStore((state) => state.updateProfile)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const patientId = user?.patient_profile?.patient_id ?? "Pending assignment"
   
   // Live Regions & Districts state
   const [regions, setRegions] = useState<Region[]>([])
@@ -263,6 +264,12 @@ export default function PatientProfilePage() {
           <p className="text-sm text-muted-foreground">
             Provide your registration details so the care team can prepare for your visits.
           </p>
+          <div className="inline-flex items-center gap-2 rounded-2xl border border-border/70 bg-background px-4 py-2 text-sm shadow-sm">
+            <span className="text-xs font-black uppercase tracking-[0.22em] text-muted-foreground">
+              Patient ID
+            </span>
+            <span className="font-semibold text-foreground">{patientId}</span>
+          </div>
         </div>
         <div>
           <Button

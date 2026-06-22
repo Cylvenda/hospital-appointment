@@ -12,7 +12,7 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar"
 import { HugeiconsIcon } from "@hugeicons/react"
-import { LayoutBottomIcon, Settings05Icon, DashboardCircleIcon, Doctor01Icon, People, Person, UserGroupIcon, UserAccountIcon, AllahFreeIcons, CallDoneIcon, CheckCheck, Loading, Bell, StethoscopeIcon } from "@hugeicons/core-free-icons"
+import { LayoutBottomIcon, Settings05Icon, DashboardCircleIcon, Doctor01Icon, People, Person, UserGroupIcon, UserAccountIcon, AllahFreeIcons, CallDoneIcon, CheckCheck, Loading, Bell, StethoscopeIcon, Book01Icon, Search01Icon } from "@hugeicons/core-free-icons"
 import { Separator } from "./ui/separator"
 import { useAuthUserStore } from "@/store/auth/userAuth.store"
 
@@ -25,10 +25,24 @@ const navMain = [
     )
   },
   {
+    title: "Quick Search",
+    url: "/dashboard/search",
+    icon: (
+      <HugeiconsIcon color="var(--primary)" icon={Search01Icon} strokeWidth={2} />
+    )
+  },
+  {
     title: "Illness Categories",
     url: "/illness-categories",
     icon: (
       <HugeiconsIcon color="var(--primary)" icon={StethoscopeIcon} strokeWidth={2} />
+    )
+  },
+  {
+    title: "Health Education",
+    url: "/health-education",
+    icon: (
+      <HugeiconsIcon color="var(--primary)" icon={Book01Icon} strokeWidth={2} />
     )
   },
   {
@@ -39,8 +53,8 @@ const navMain = [
     ),
   },
   {
-    title: "Scheduled",
-    url: "/appointments/accepted",
+    title: "Assignments",
+    url: "/appointments/assignments",
     icon: (
       <HugeiconsIcon color="var(--primary)" icon={CheckCheck} strokeWidth={2} />
     ),

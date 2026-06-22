@@ -8,6 +8,7 @@ export type AppointmentStatus =
 
 export type Appointment = {
      id: string
+     appointmentId: string | null
      patient: string
      email: string
      fee: string
@@ -42,6 +43,7 @@ export type IllnessCategory = {
 
 export type AppointmentApi = {
      uuid: string
+     appointment_id: string | null
      patient_name: string
      patient_email: string
      fee: string

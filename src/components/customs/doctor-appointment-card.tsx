@@ -117,14 +117,12 @@ export const DoctorAppointmentCard = ({ appointment, hideViewDetails = false }: 
                                         <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
                                              <div className="min-w-0 flex-1">
                                                   <div className="flex flex-wrap items-center gap-2">
+                                                       <Badge variant="outline" className="rounded-full border-border/70 px-2.5 py-0.5 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">
+                                                            Appointment ID: {appointment.appointmentId ?? "Pending"}
+                                                       </Badge>
                                                        <div className={cn("rounded-full border px-2.5 py-0.5 text-[10px] font-black uppercase tracking-[0.2em]", toneStyles[statusMeta.tone])}>
                                                             {statusMeta.label}
                                                        </div>
-                                                       {appointment.paymentStatus === "completed" && (
-                                                            <Badge className="rounded-full border-0 bg-emerald-500 px-2.5 py-0.5 text-[10px] font-black uppercase tracking-[0.2em] text-white">
-                                                                 Verified
-                                                            </Badge>
-                                                       )}
                                                   </div>
                                                   <div className="mt-2.5 flex items-start gap-3">
                                                        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary shadow-sm ring-1 ring-primary/10">

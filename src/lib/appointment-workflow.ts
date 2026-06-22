@@ -34,21 +34,44 @@ export const appointmentWorkflowSteps = [
   },
 ] as const
 
+export const doctorAppointmentWorkflowSteps = [
+  {
+    title: "Request submitted",
+    summary: "The patient creates an appointment and the system places it in the intake queue.",
+  },
+  {
+    title: "Request cleared",
+    summary: "The request is ready for clinical review and can move into the doctor's queue.",
+  },
+  {
+    title: "Assigned to clinician",
+    summary: "Reception or admin schedules the visit and places it in a clinical queue.",
+  },
+  {
+    title: "Clinical outcome recorded",
+    summary: "The doctor completes the visit, adds notes, and closes the clinical record.",
+  },
+] as const
+
+export function getAppointmentWorkflowSteps(audience: AppointmentAudience = "default") {
+  return audience === "doctor" ? doctorAppointmentWorkflowSteps : appointmentWorkflowSteps
+}
+
 export function getAppointmentStatusMeta(
   status: AppointmentStatus,
   paymentStatus: AppointmentPaymentStatus = null,
   audience: AppointmentAudience = "default"
 ): AppointmentStatusMeta {
   if (status === "pending") {
-    if (paymentStatus === "completed") {
-      if (audience === "doctor") {
-        return {
-          label: "Ready for review",
-          summary: "Payment is complete and the appointment can move into a doctor's queue.",
-          tone: "blue",
-        }
+    if (audience === "doctor") {
+      return {
+        label: "Pending review",
+        summary: "This request is waiting to be assigned to a clinician.",
+        tone: "slate",
       }
+    }
 
+    if (paymentStatus === "completed") {
       if (audience === "patient") {
         return {
           label: "Awaiting assignment",
@@ -88,20 +111,20 @@ export function getAppointmentStatusMeta(
       }
     }
 
-      if (audience === "patient") {
-        return {
-          label: "Scheduled",
-          summary: "A clinician has been assigned and the visit is on the calendar.",
-          tone: "emerald",
-        }
-      }
-
+    if (audience === "patient") {
       return {
-        label: "Assigned",
-        summary: "The visit has been scheduled with a doctor and is ready for the next step.",
+        label: "Scheduled",
+        summary: "A clinician has been assigned and the visit is on the calendar.",
         tone: "emerald",
       }
     }
+
+    return {
+      label: "Assigned",
+      summary: "The visit has been scheduled with a doctor and is ready for the next step.",
+      tone: "emerald",
+    }
+  }
 
   if (status === "completed") {
     return {

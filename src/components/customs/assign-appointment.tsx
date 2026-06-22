@@ -26,6 +26,7 @@ import { HugeiconsIcon } from "@hugeicons/react"
 import { cn } from "@/lib/utils"
 import { getAppointmentStatusMeta } from "@/lib/appointment-workflow"
 import { hasAppointmentStatus } from "@/lib/appointment-queues"
+import { toast } from "react-toastify"
 
 type Props = {
      appointment: Appointment
@@ -94,6 +95,9 @@ export default function AssignAppointment({
                     startTime,
                     endTime,
                })
+               toast.success("Appointment assigned successfully")
+          } catch (error: any) {
+               toast.error(error?.message || "Failed to assign appointment")
           } finally {
                setLoading(false)
           }
@@ -104,6 +108,9 @@ export default function AssignAppointment({
 
           try {
                await onCancel?.(appointment.id)
+               toast.success("Appointment cancelled successfully")
+          } catch (error: any) {
+               toast.error(error?.message || "Failed to cancel appointment")
           } finally {
                setLoading(false)
           }
@@ -132,6 +139,9 @@ export default function AssignAppointment({
                                         <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
                                              <div className="min-w-0 flex-1">
                                                   <div className="flex flex-wrap items-center gap-2">
+                                                       <Badge variant="outline" className="rounded-full border-border/70 px-2.5 py-0.5 text-[9px] font-black uppercase tracking-[0.22em] text-muted-foreground">
+                                                            Appointment ID: {appointment.appointmentId ?? "Pending"}
+                                                       </Badge>
                                                        <Badge variant="outline" className={cn("rounded-full px-2.5 py-0.5 text-[9px] font-black uppercase tracking-[0.22em]", currentStatus.color, currentStatus.bg)}>
                                                             {statusMeta.label}
                                                        </Badge>
@@ -191,9 +201,9 @@ export default function AssignAppointment({
                                                   { label: "Choice 1", date: appointment.preferredDate },
                                                   { label: "Choice 2", date: appointment.preferredDate2 },
                                                   { label: "Choice 3", date: appointment.preferredDate3 },
-                                             ].map((choice, i) => (
+                                             ].map((choice) => (
                                                   <motion.button
-                                                       key={i}
+                                                       key={choice.label}
                                                        type="button"
                                                        whileHover={choice.date && isPaymentComplete && !loading ? { scale: 1.02 } : {}}
                                                        whileTap={choice.date && isPaymentComplete && !loading ? { scale: 0.98 } : {}}

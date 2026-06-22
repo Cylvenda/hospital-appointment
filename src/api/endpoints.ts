@@ -35,6 +35,21 @@ export const API_ENDPOINTS = {
       ADMIN_DOCTORS: "admin/doctors/",
       ADMIN_SETTINGS: "admin/settings/",
 
-      // Notifications
-      NOTIFICATIONS: "notifications/",
+     // Notifications
+     NOTIFICATIONS: "notifications/",
+
+     // Clinical workflow
+     CONSULTATIONS: "consultations/",
+     DIAGNOSES: "diagnoses/",
+     PRESCRIPTIONS: "prescriptions/",
+     PRESCRIPTION_ITEMS: "prescription-items/",
+     LAB_TESTS: "lab-tests/",
+     LAB_REQUESTS: "lab-requests/",
+     LAB_REQUEST_ITEMS: "lab-request-items/",
+     LAB_RESULTS: "lab-results/",
+     INVOICES: "invoices/",
+     INVOICE_ITEMS: "invoice-items/",
+     MEDICINES: "medicines/",
+     DISPENSINGS: "dispensings/",
+     DISPENSING_ITEMS: "dispensing-items/",
 }

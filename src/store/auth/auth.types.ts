@@ -19,6 +19,7 @@ export type NextOfKin = {
 
 export type PatientProfile = {
      uuid: string
+     patient_id?: string
      dob?: string
      gender?: string
      education?: string

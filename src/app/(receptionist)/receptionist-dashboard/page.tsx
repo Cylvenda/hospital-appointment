@@ -30,12 +30,13 @@ import {
      UserCircleIcon,
      ArrowRight01Icon,
      Notification01Icon,
-     Medicine01Icon
+     Medicine01Icon,
+     File01Icon
 } from "@hugeicons/core-free-icons"
 
 export default function ReceptionistDashboardPage() {
      const router = useRouter()
-     const { user, checkAuth } = useAuthUserStore()
+     const { user, checkAuth, exportMyReport } = useAuthUserStore()
      const { appointments, loading, fetchAppointments } = useAppointmentStore()
      const { overview, fetchOverview, fetchDoctors, doctors } = useAdminStore()
 
@@ -118,6 +119,24 @@ export default function ReceptionistDashboardPage() {
                               >
                                    <HugeiconsIcon icon={RefreshIcon} className={cn("mr-2 h-5 w-5", loading && "animate-spin")} />
                                    Sync Data
+                              </Button>
+                              <Button
+                                   size="lg"
+                                   variant="outline"
+                                   className="rounded-md border-white/30 bg-white/10 text-white backdrop-blur-md hover:bg-white/20 transition-all"
+                                   onClick={() => exportMyReport("pdf")}
+                              >
+                                   <HugeiconsIcon icon={File01Icon} className="mr-2 h-5 w-5" />
+                                   PDF Report
+                              </Button>
+                              <Button
+                                   size="lg"
+                                   variant="outline"
+                                   className="rounded-md border-white/30 bg-white/10 text-white backdrop-blur-md hover:bg-white/20 transition-all"
+                                   onClick={() => exportMyReport("docx")}
+                              >
+                                   <HugeiconsIcon icon={File01Icon} className="mr-2 h-5 w-5" />
+                                   DOCX Report
                               </Button>
                          </div>
                     </div>
@@ -276,7 +295,7 @@ export default function ReceptionistDashboardPage() {
                                         <p className="text-sm font-semibold text-indigo-600/70 uppercase tracking-wider">Active Doctors</p>
                                         <p className="text-4xl font-black text-indigo-900 dark:text-indigo-100">{doctors.filter(d => d.is_available).length}</p>
                                         <p className="text-xs text-indigo-600/60 mt-1 flex items-center gap-1">
-                                             <div className="w-2 h-2 rounded-full bg-emerald-500" /> Online Now
+                                             <span className="w-2 h-2 rounded-full bg-emerald-500" /> Online Now
                                         </p>
                                    </div>
                               </CardContent>

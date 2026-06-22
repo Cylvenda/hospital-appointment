@@ -25,6 +25,7 @@ export default function PatientDashboardPage() {
      const router = useRouter()
      const { user, checkAuth } = useAuthUserStore()
      const { appointments, loading, fetchAppointments } = useAppointmentStore()
+     const patientId = user?.patient_profile?.patient_id ?? "Pending assignment"
 
      useEffect(() => {
           void (async () => {
@@ -86,6 +87,12 @@ export default function PatientDashboardPage() {
                          <p className="text-muted-foreground mt-1">
                               Here&apos;s an overview of your healthcare journey.
                          </p>
+                         <div className="mt-4 inline-flex items-center gap-2 rounded-2xl border border-border/70 bg-card px-4 py-2 text-sm shadow-sm">
+                              <span className="text-xs font-black uppercase tracking-[0.22em] text-muted-foreground">
+                                   Patient ID
+                              </span>
+                              <span className="font-semibold text-foreground">{patientId}</span>
+                         </div>
                     </div>
 
                     <div className="flex gap-3">
@@ -196,7 +203,7 @@ export default function PatientDashboardPage() {
                                                             <p className="text-lg font-semibold">{nextAppointment.doctor || "TBD"}</p>
                                                        </div>
                                                   </div>
-                                                  <div className="grid grid-cols-2 gap-6">
+                                                 <div className="grid grid-cols-2 gap-6">
                                                        <div className="flex items-center gap-2">
                                                             <HugeiconsIcon icon={Calendar01Icon} className="w-4 h-4 text-muted-foreground" />
                                                             <span className="text-sm font-medium">{nextAppointment.date}</span>
@@ -213,12 +220,15 @@ export default function PatientDashboardPage() {
                                                        nextAppointmentMeta?.tone === "amber" && "bg-amber-100 text-amber-700",
                                                        nextAppointmentMeta?.tone === "emerald" && "bg-emerald-100 text-emerald-700",
                                                        nextAppointmentMeta?.tone === "blue" && "bg-blue-100 text-blue-700",
-                                                       nextAppointmentMeta?.tone === "rose" && "bg-rose-100 text-rose-700",
-                                                       nextAppointmentMeta?.tone === "slate" && "bg-slate-100 text-slate-700"
+                                                      nextAppointmentMeta?.tone === "rose" && "bg-rose-100 text-rose-700",
+                                                      nextAppointmentMeta?.tone === "slate" && "bg-slate-100 text-slate-700"
                                                   )}>
                                                        {nextAppointmentMeta?.label}
                                                   </div>
                                                   <p className="text-sm font-medium text-primary">{nextAppointment.illnessCategory}</p>
+                                                  <p className="text-xs font-medium text-muted-foreground">
+                                                       Appointment ID: {nextAppointment.appointmentId ?? "Pending"}
+                                                  </p>
                                                   <Button variant="outline" className="mt-2 rounded-md" onClick={() => router.push(`/patient-dashboard/appointments/${nextAppointment.id}`)}>
                                                        View Details
                                                   </Button>
@@ -281,6 +291,9 @@ export default function PatientDashboardPage() {
                                                             <div className="min-w-0 flex-1">
                                                                  <p className="text-sm font-semibold truncate">{appt.illnessCategory}</p>
                                                                  <p className="text-xs text-muted-foreground">{appt.date}</p>
+                                                                 <p className="text-[11px] text-muted-foreground">
+                                                                      Appointment ID: {appt.appointmentId ?? "Pending"}
+                                                                 </p>
                                                             </div>
                                                             <span className={cn(
                                                                  "text-[10px] font-bold uppercase px-2 py-0.5 rounded-md",

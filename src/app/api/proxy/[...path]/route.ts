@@ -12,7 +12,9 @@ function normalizeApiRoot(value: string) {
 }
 
 function buildBackendUrl(pathSegments: string[], request: NextRequest) {
-     const pathname = pathSegments.join("/")
+     // Filter out empty segments to avoid double slashes when joining
+     const cleanSegments = pathSegments.filter(Boolean)
+     const pathname = cleanSegments.join("/")
      const url = new URL(`${pathname}/`, BACKEND_API_ROOT)
      url.search = request.nextUrl.search
      return url

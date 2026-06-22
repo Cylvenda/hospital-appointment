@@ -12,7 +12,7 @@ import {
      SidebarRail,
 } from "@/components/ui/sidebar"
 import { HugeiconsIcon } from "@hugeicons/react"
-import { LayoutBottomIcon, RoboticIcon, Settings05Icon, DashboardCircleIcon, Doctor01Icon, UserAccountIcon, CallDoneIcon, CheckCheck, AllahFreeIcons, Bell, StethoscopeIcon } from "@hugeicons/core-free-icons"
+import { LayoutBottomIcon, RoboticIcon, Settings05Icon, DashboardCircleIcon, Doctor01Icon, UserAccountIcon, CallDoneIcon, CheckCheck, AllahFreeIcons, Bell, StethoscopeIcon, Book01Icon, Search01Icon } from "@hugeicons/core-free-icons"
 import { Separator } from "./ui/separator"
 import { useAuthUserStore } from "@/store/auth/userAuth.store"
 
@@ -25,6 +25,13 @@ const navMain = [
           ),
      },
      {
+          title: "Quick Search",
+          url: "/receptionist-dashboard/search",
+          icon: (
+               <HugeiconsIcon color="var(--primary)" icon={Search01Icon} strokeWidth={2} />
+          ),
+     },
+     {
           title: "New Requests",
           url: "/receptionist-dashboard/appointments/pending",
           icon: (
@@ -32,8 +39,8 @@ const navMain = [
           ),
      },
      {
-          title: "Assigned Today",
-          url: "/receptionist-dashboard/appointments/accepted",
+          title: "Assignments",
+          url: "/receptionist-dashboard/appointments/assignments",
           icon: (
                <HugeiconsIcon color="var(--primary)" icon={CheckCheck} strokeWidth={2} />
           ),
@@ -71,6 +78,13 @@ const navMain = [
           url: "/receptionist-dashboard/illness-categories",
           icon: (
                <HugeiconsIcon color="var(--primary)" icon={StethoscopeIcon} strokeWidth={2} />
+          ),
+     },
+     {
+          title: "Health Education",
+          url: "/receptionist-dashboard/health-education",
+          icon: (
+               <HugeiconsIcon color="var(--primary)" icon={Book01Icon} strokeWidth={2} />
           ),
      },
      {

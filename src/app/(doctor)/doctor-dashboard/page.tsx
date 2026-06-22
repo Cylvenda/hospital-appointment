@@ -13,14 +13,15 @@ import {
      Calendar01Icon, 
      Clock01Icon, 
      UserGroupIcon, 
-     CheckCircle
+     CheckCircle,
+     File01Icon
 } from "@hugeicons/core-free-icons"
 import { DoctorAppointmentCard } from "@/components/customs/doctor-appointment-card"
 import { AppointmentWorkflowLegend } from "@/components/appointment-workflow-legend"
 
 export default function DoctorDashboardPage() {
      const router = useRouter()
-     const { user, checkAuth } = useAuthUserStore()
+     const { user, checkAuth, exportMyReport } = useAuthUserStore()
      const { appointments, loading, fetchAppointments } = useAppointmentStore()
 
      useEffect(() => {
@@ -72,6 +73,14 @@ export default function DoctorDashboardPage() {
                               <HugeiconsIcon icon={Clock01Icon} className={cn("mr-2 h-5 w-5", loading && "animate-spin")} />
                               Sync Queue
                          </Button>
+                         <Button variant="outline" className="rounded-md h-14 px-8 border-white/30 text-white bg-white/10 hover:bg-white/20 transition-all font-bold backdrop-blur-md" onClick={() => exportMyReport("pdf")}>
+                              <HugeiconsIcon icon={File01Icon} className="mr-2 h-5 w-5" />
+                              PDF
+                         </Button>
+                         <Button variant="outline" className="rounded-md h-14 px-8 border-white/30 text-white bg-white/10 hover:bg-white/20 transition-all font-bold backdrop-blur-md" onClick={() => exportMyReport("docx")}>
+                              <HugeiconsIcon icon={File01Icon} className="mr-2 h-5 w-5" />
+                              DOCX
+                         </Button>
                     </div>
                     {/* Decorative element */}
                     <div className="absolute -right-20 -bottom-20 w-80 h-80 bg-primary/10 rounded-full blur-3xl" />
@@ -97,7 +106,7 @@ export default function DoctorDashboardPage() {
                </div>
 
                <div className="space-y-8">
-                    <AppointmentWorkflowLegend />
+                    <AppointmentWorkflowLegend role="doctor" />
 
                     <div className="flex items-center justify-between">
                          <div className="flex items-center gap-3">

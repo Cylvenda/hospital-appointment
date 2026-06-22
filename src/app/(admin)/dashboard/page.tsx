@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo } from "react"
 import { useRouter } from "next/navigation"
-import { motion } from "framer-motion"
+import { motion, type Variants } from "framer-motion"
 import {
   Card,
   CardContent,
@@ -23,9 +23,11 @@ import {
   RefreshIcon,
   ArrowRight01Icon,
   CheckCircle,
-  Calendar03Icon
+  Calendar03Icon,
+  File01Icon
 } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
+import { useAuthUserStore } from "@/store/auth/userAuth.store"
 import { useAdminStore } from "@/store/admin/admin.store"
 import { useAppointmentStore } from "@/store/appointments/appointment.store"
 import { AppointmentWorkflowLegend } from "@/components/appointment-workflow-legend"
@@ -33,7 +35,7 @@ import { getAppointmentStatusMeta } from "@/lib/appointment-workflow"
 import { filterAppointmentsForQueue } from "@/lib/appointment-queues"
 import { cn } from "@/lib/utils"
 
-const containerVariants = {
+const containerVariants: Variants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
@@ -43,7 +45,7 @@ const containerVariants = {
   },
 }
 
-const itemVariants = {
+const itemVariants: Variants = {
   hidden: { y: 20, opacity: 0 },
   visible: {
     y: 0,
@@ -67,6 +69,7 @@ function toneClasses(tone: string) {
 
 export default function AdminDashboardPage() {
   const router = useRouter()
+  const { exportMyReport } = useAuthUserStore()
   const { overview, doctors, users, fetchOverview, fetchDoctors, fetchUsers } = useAdminStore()
   const { appointments, initialize: initializeAppointments, loading: appointmentsLoading } = useAppointmentStore()
 
@@ -102,6 +105,14 @@ export default function AdminDashboardPage() {
         icon: StethoscopeIcon,
         color: "text-indigo-600",
         bg: "bg-indigo-50",
+      },
+      {
+        title: "Lab Techs",
+        value: overview?.total_lab_techs ?? 0,
+        note: "Clinical laboratory staff",
+        icon: UserGroupIcon,
+        color: "text-cyan-600",
+        bg: "bg-cyan-50",
       },
       {
         title: "Pending Sync",
@@ -162,6 +173,24 @@ export default function AdminDashboardPage() {
             >
               <HugeiconsIcon icon={RefreshIcon} className={cn("mr-2 h-5 w-5", appointmentsLoading && "animate-spin")} />
               Sync Data
+            </Button>
+            <Button
+              size="lg"
+              variant="outline"
+              className="rounded-md border-white/30 bg-white/10 text-white backdrop-blur-md hover:bg-white/20 transition-all"
+              onClick={() => exportMyReport("pdf")}
+            >
+              <HugeiconsIcon icon={File01Icon} className="mr-2 h-5 w-5" />
+              PDF Report
+            </Button>
+            <Button
+              size="lg"
+              variant="outline"
+              className="rounded-md border-white/30 bg-white/10 text-white backdrop-blur-md hover:bg-white/20 transition-all"
+              onClick={() => exportMyReport("docx")}
+            >
+              <HugeiconsIcon icon={File01Icon} className="mr-2 h-5 w-5" />
+              DOCX Report
             </Button>
           </div>
         </div>

@@ -2,6 +2,7 @@ export type AdminOverview = {
      total_users: number
      total_patients: number
      total_doctors: number
+     total_lab_techs: number
      total_receptionists: number
      active_users: number
      today_appointments: number

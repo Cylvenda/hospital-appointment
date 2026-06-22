@@ -25,7 +25,7 @@ import Link from "next/link"
 import { useAdminStore } from "@/store/admin/admin.store"
 import { PasswordInput } from "@/components/password-input"
 
-type UserRole = "user" | "receptionist" | "doctor"
+type UserRole = "user" | "receptionist" | "doctor" | "lab_tech"
 
 interface FormErrors {
   first_name?: string
@@ -35,6 +35,7 @@ interface FormErrors {
   password?: string
   confirm_password?: string
   license_number?: string
+  role?: string
 }
 
 const emptyForm = {
@@ -202,17 +203,17 @@ export default function CreateUserPage() {
   const passwordStrength = getPasswordStrength(form.password)
 
   return (
-    <div className="w-full max-w-4xl mx-auto p-6 space-y-6">
+    <div className="w-full max-w-8xl mx-auto p-6 space-y-6">
       <div className="flex items-center gap-4">
         <Button variant="outline" size="sm" asChild>
-          <Link href="/admin/users">
+          <Link href="/users">
             <HugeiconsIcon icon={ArrowLeftIcon} strokeWidth={1.8} />
             Back to Users
           </Link>
         </Button>
         <div>
           <h1 className="text-3xl font-bold">Create New User</h1>
-          <p className="text-muted-foreground">Add a new user, receptionist, or doctor to the system</p>
+          <p className="text-muted-foreground">Add a new user, receptionist, lab technician, or doctor to the system</p>
         </div>
       </div>
 
@@ -239,6 +240,7 @@ export default function CreateUserPage() {
                   <SelectItem value="user">Regular User</SelectItem>
                   <SelectItem value="receptionist">Receptionist</SelectItem>
                   <SelectItem value="doctor">Doctor</SelectItem>
+                  <SelectItem value="lab_tech">Lab Technician</SelectItem>
                 </SelectContent>
               </Select>
               {errors.role && <p className="text-sm text-red-500">{errors.role}</p>}
@@ -293,7 +295,7 @@ export default function CreateUserPage() {
                   value={form.phone}
                   onChange={(e) => handleInputChange("phone", e.target.value)}
                   className={errors.phone ? "border-red-500" : ""}
-                  placeholder="+1 (555) 123-4567"
+                  placeholder="+255 ...."
                 />
                 {errors.phone && <p className="text-sm text-red-500">{errors.phone}</p>}
               </div>

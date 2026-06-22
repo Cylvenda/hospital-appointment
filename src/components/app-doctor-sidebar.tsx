@@ -12,7 +12,7 @@ import {
      SidebarRail,
 } from "@/components/ui/sidebar"
 import { HugeiconsIcon } from "@hugeicons/react"
-import { LayoutBottomIcon, RoboticIcon, Settings05Icon, DashboardCircleIcon, UserAccountIcon, CallDoneIcon, Bell, Cancel01Icon } from "@hugeicons/core-free-icons"
+import { Search01Icon, LayoutBottomIcon, RoboticIcon, Settings05Icon, DashboardCircleIcon, UserAccountIcon, CallDoneIcon, Bell, Cancel01Icon } from "@hugeicons/core-free-icons"
 import { Separator } from "./ui/separator"
 import { useAuthUserStore } from "@/store/auth/userAuth.store"
 
@@ -22,6 +22,13 @@ const navMain = [
           url: "/doctor-dashboard",
           icon: (
                <HugeiconsIcon color="var(--primary)" icon={DashboardCircleIcon} strokeWidth={2} />
+          ),
+     },
+     {
+          title: "Quick Search",
+          url: "/doctor-dashboard/search",
+          icon: (
+               <HugeiconsIcon color="var(--primary)" icon={Search01Icon} strokeWidth={2} />
           ),
      },
      {
