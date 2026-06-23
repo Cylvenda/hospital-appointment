@@ -12,6 +12,7 @@ import { useAuthUserStore } from "@/store/auth/userAuth.store"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { LogoutIcon } from "@hugeicons/core-free-icons"
 import { toast } from "react-toastify"
+import { useTranslation } from "@/lib/i18n"
 
 export function NavUser({
   user,
@@ -22,6 +23,7 @@ export function NavUser({
     avatar?: string
   }
 }) {
+  const { t } = useTranslation()
   const router = useRouter()
   const logout = useAuthUserStore((state) => state.logout)
   const initials =
@@ -38,7 +40,7 @@ export function NavUser({
       router.replace("/login")
       router.refresh()
     } catch {
-      toast.error("We couldn't log you out right now.")
+      toast.error(t("nav.logoutError"))
     }
   }
 
@@ -63,7 +65,7 @@ export function NavUser({
             onClick={() => void handleLogout()}
           >
             <HugeiconsIcon icon={LogoutIcon} strokeWidth={2} className="mr-2 size-4" />
-            Log out
+            {t("nav.logOut")}
           </Button>
         </div>
       </SidebarMenuItem>

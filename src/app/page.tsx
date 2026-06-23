@@ -2,9 +2,11 @@
 
 import Link from "next/link"
 import { ThemeToggle } from "@/components/theme-toggle"
+import { LanguageToggle } from "@/components/language-toggle"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { HugeiconsIcon } from "@hugeicons/react"
+import { useTranslation } from "@/lib/i18n"
 import {
   Calendar01Icon,
   CheckmarkCircle02Icon,
@@ -23,18 +25,18 @@ import {
 const patientBenefits = [
   {
     icon: UserAccountIcon,
-    title: "Clinical Pre-Registration",
-    description: "Build your complete verified patient identity with structured location, demographic, and next-of-kin entries to skip hospital queues.",
+    titleKey: "landing.benefit1Title",
+    descKey: "landing.benefit1Desc",
   },
   {
     icon: Calendar01Icon,
-    title: "Appointment Management",
-    description: "Choose specialized clinics, select three preferred dates, and detail symptoms within a single card booking console.",
+    titleKey: "landing.benefit2Title",
+    descKey: "landing.benefit2Desc",
   },
   {
     icon: HeartCheckIcon,
-    title: "Dynamic Slot Verification",
-    description: "Receive instant updates on receptionist scheduling slots, keeping your clinical visits organized and verified.",
+    titleKey: "landing.benefit3Title",
+    descKey: "landing.benefit3Desc",
   },
 ]
 
@@ -42,49 +44,50 @@ const howItWorks = [
   {
     step: 1,
     icon: UserAccountIcon,
-    title: "1. Digital Pre-Registration",
-    description: "Sign up and complete your comprehensive health profile, next of kin details, and Tanzanian region mapping.",
+    titleKey: "landing.step1Title",
+    descKey: "landing.step1Desc",
   },
   {
     step: 2,
     icon: MedicalFileIcon,
-    title: "2. Request Your Slot",
-    description: "Specify your clinic type, three preferred dates, and present your diagnostic symptoms in a bento scheduler.",
+    titleKey: "landing.step2Title",
+    descKey: "landing.step2Desc",
   },
   {
     step: 3,
     icon: CheckmarkCircle02Icon,
-    title: "3. Receptionist Verification",
-    description: "Our front desk verifies your pre-registration status and allocates your verified clinical consulting slot.",
+    titleKey: "landing.step3Title",
+    descKey: "landing.step3Desc",
   },
   {
     step: 4,
     icon: Hospital01Icon,
-    title: "4. Fast-Track Care",
-    description: "Proceed directly to diagnostics upon arrival. Zero manual paperwork, zero check-in delays.",
+    titleKey: "landing.step4Title",
+    descKey: "landing.step4Desc",
   },
 ]
 
 const faqs = [
   {
-    question: "Is this service free to use?",
-    answer: "Yes! Creating an account and booking appointments is completely free. You only pay for the hospital services you receive.",
+    questionKey: "landing.faq1Question",
+    answerKey: "landing.faq1Answer",
   },
   {
-    question: "How do I know my appointment is confirmed?",
-    answer: "You'll receive notifications and can check your dashboard anytime. When status changes to 'Accepted', you're all set!",
+    questionKey: "landing.faq2Question",
+    answerKey: "landing.faq2Answer",
   },
   {
-    question: "Can I cancel or reschedule?",
-    answer: "Absolutely. Life happens. You can cancel through your dashboard, and book a new appointment when you're ready.",
+    questionKey: "landing.faq3Question",
+    answerKey: "landing.faq3Answer",
   },
   {
-    question: "What if I need help using the system?",
-    answer: "Our support team is available during working hours. Call, email, or visit our help center — we're here for you.",
+    questionKey: "landing.faq4Question",
+    answerKey: "landing.faq4Answer",
   },
 ]
 
 export default function Page() {
+  const { t } = useTranslation()
   return (
     <div className="min-h-screen bg-background text-foreground">
       {/* Header */}
@@ -96,28 +99,29 @@ export default function Page() {
             </div>
             <div>
               <p className="text-sm font-semibold tracking-[0.15em] text-primary uppercase">DPAMS</p>
-              <p className="text-[10px] text-muted-foreground font-semibold">Pre-Registration & Appointments</p>
+              <p className="text-[10px] text-muted-foreground font-semibold">{t("landing.tagline")}</p>
             </div>
           </Link>
 
           <div className="flex items-center gap-2 sm:gap-3">
             <nav className="hidden items-center gap-6 text-sm text-muted-foreground lg:flex">
               <a href="#how-it-works" className="transition hover:text-primary">
-                How It Works
+                {t("landing.howItWorks")}
               </a>
               <a href="#faq" className="transition hover:text-primary">
-                FAQ
+                {t("landing.faq")}
               </a>
               <a href="#contact" className="transition hover:text-primary">
-                Contact
+                {t("landing.contact")}
               </a>
             </nav>
             <Button variant="ghost" asChild className="hidden sm:inline-flex">
-              <Link href="/login">Sign in</Link>
+              <Link href="/login">{t("landing.signIn")}</Link>
             </Button>
             <Button asChild className="rounded-md">
-              <Link href="/register">Get Started</Link>
+              <Link href="/register">{t("landing.getStarted")}</Link>
             </Button>
+            <LanguageToggle />
             <ThemeToggle />
           </div>
         </div>
@@ -133,20 +137,19 @@ export default function Page() {
 
 
                 <h1 className="mt-6 text-4xl font-bold tracking-tight text-balance sm:text-5xl lg:text-6xl">
-                  Digital pre-registration &{" "}
-                  <span className="text-primary">appointments</span>
+                  {t("landing.heroTitle")}{" "}
+                  <span className="text-primary">{t("landing.heroTitleHighlight")}</span>
                 </h1>
 
                 <p className="mt-6 text-lg leading-8 text-muted-foreground">
-                  Build your verified patient profile and manage your clinical appointments stress-free.
-                  A unified system designed to fast-track your hospital visits.
+                  {t("landing.heroDescription")}
                 </p>
 
                 <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center lg:justify-start">
                   <Button size="lg" asChild className="h-12 rounded-md px-8 text-base">
                     <Link href="/register">
                       <HugeiconsIcon icon={Calendar01Icon} className="mr-2" size={18} />
-                      Pre-Register & Book Now
+                      {t("landing.preRegisterBookNow")}
                     </Link>
                   </Button>
                   <Button
@@ -156,7 +159,7 @@ export default function Page() {
                     className="h-12 rounded-md px-8 text-base"
                   >
                     <Link href="/login">
-                      I have an account
+                      {t("landing.haveAccount")}
                     </Link>
                   </Button>
                 </div>
@@ -164,15 +167,15 @@ export default function Page() {
                 <div className="mt-8 flex items-center justify-center gap-6 text-sm text-muted-foreground lg:justify-start">
                   <div className="flex items-center gap-2">
                     <HugeiconsIcon icon={CheckmarkCircle02Icon} className="text-primary" size={16} />
-                    <span>Free to use</span>
+                    <span>{t("landing.freeToUse")}</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <HugeiconsIcon icon={CheckmarkCircle02Icon} className="text-primary" size={16} />
-                    <span>No hidden fees</span>
+                    <span>{t("landing.noHiddenFees")}</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <HugeiconsIcon icon={CheckmarkCircle02Icon} className="text-primary" size={16} />
-                    <span>24/7 access</span>
+                    <span>{t("landing.access247")}</span>
                   </div>
                 </div>
               </div>
@@ -184,8 +187,8 @@ export default function Page() {
                       <HugeiconsIcon icon={HeartCheckIcon} className="text-primary" size={24} />
                     </div>
                     <div>
-                      <p className="font-semibold">Welcome back, Patient</p>
-                      <p className="text-sm text-muted-foreground">Your health journey starts here</p>
+                      <p className="font-semibold">{t("landing.welcomeBack")}</p>
+                      <p className="text-sm text-muted-foreground">{t("landing.healthJourneyStarts")}</p>
                     </div>
                   </div>
 
@@ -196,8 +199,8 @@ export default function Page() {
                           <HugeiconsIcon icon={CheckmarkCircle02Icon} className="text-green-600" size={20} />
                         </div>
                         <div>
-                          <p className="font-medium">General Checkup</p>
-                          <p className="text-sm text-muted-foreground">Tomorrow, 9:00 AM — Confirmed</p>
+                          <p className="font-medium">{t("landing.generalCheckup")}</p>
+                          <p className="text-sm text-muted-foreground">{t("landing.tomorrow9am")}</p>
                         </div>
                       </div>
                     </div>
@@ -208,15 +211,15 @@ export default function Page() {
                           <HugeiconsIcon icon={Clock01Icon} className="text-amber-600" size={20} />
                         </div>
                         <div>
-                          <p className="font-medium">Dental Cleaning</p>
-                          <p className="text-sm text-muted-foreground">Dec 28, 2:00 PM — Pending</p>
+                          <p className="font-medium">{t("landing.dentalCleaning")}</p>
+                          <p className="text-sm text-muted-foreground">{t("landing.dec282pm")}</p>
                         </div>
                       </div>
                     </div>
                   </div>
 
                   <div className="mt-6 rounded-2xl bg-primary/10 p-4 text-center">
-                    <p className="text-sm font-medium text-primary">Ready to book your next visit?</p>
+                    <p className="text-sm font-medium text-primary">{t("landing.readyToBook")}</p>
                   </div>
                 </div>
               </div>
@@ -228,26 +231,26 @@ export default function Page() {
         <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
           <div className="text-center">
             <p className="text-sm font-semibold tracking-[0.15em] text-primary uppercase">
-              Dual-Purpose Platform
+              {t("landing.dualPurposePlatform")}
             </p>
             <h2 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">
-              Healthcare pre-registration and scheduling, unified
+              {t("landing.healthcareUnified")}
             </h2>
             <p className="mx-auto mt-4 max-w-2xl text-muted-foreground">
-              We leverage digital pre-registration and dynamic appointment tools to eliminate manual hospital intake bottlenecks entirely.
+              {t("landing.healthcareDescription")}
             </p>
           </div>
 
           <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {patientBenefits.map((benefit) => (
-              <Card key={benefit.title} className="group border-border/60 bg-card/50 backdrop-blur-sm transition-all hover:border-primary/30 hover:shadow-lg">
+              <Card key={benefit.titleKey} className="group border-border/60 bg-card/50 backdrop-blur-sm transition-all hover:border-primary/30 hover:shadow-lg">
                 <CardContent className="p-6">
                   <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 transition-colors group-hover:bg-primary/20">
                     <HugeiconsIcon icon={benefit.icon} className="text-primary" size={28} />
                   </div>
-                  <h3 className="mt-4 text-xl font-semibold">{benefit.title}</h3>
+                  <h3 className="mt-4 text-xl font-semibold">{t(benefit.titleKey)}</h3>
                   <p className="mt-2 text-muted-foreground leading-relaxed">
-                    {benefit.description}
+                    {t(benefit.descKey)}
                   </p>
                 </CardContent>
               </Card>
@@ -263,14 +266,13 @@ export default function Page() {
               {/* Left Side: Rich description of Pre-registration */}
               <div className="lg:col-span-7 space-y-6">
                 <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-xs font-bold uppercase tracking-wider">
-                  Clinical Pre-Registration
+                  {t("landing.preRegistrationFeature")}
                 </div>
                 <h2 className="text-3xl font-extrabold tracking-tight sm:text-4xl">
-                  Eliminate Hospital Waiting Times With <span className="text-emerald-500">Digital Pre-Registration</span>
+                  {t("landing.eliminateWaiting")} <span className="text-emerald-500">{t("landing.digitalPreRegistration")}</span>
                 </h2>
                 <p className="text-muted-foreground leading-relaxed text-lg">
-                  Hospital front desks spend up to 25 minutes collecting manual paperwork from new patients.
-                  Our pre-registration protocol lets you supply crucial details securely from home so doctors have your records before you step in.
+                  {t("landing.waitingDescription")}
                 </p>
 
                 <div className="grid gap-4 sm:grid-cols-2 mt-8">
@@ -279,8 +281,8 @@ export default function Page() {
                       <HugeiconsIcon icon={CheckmarkCircle02Icon} size={14} />
                     </div>
                     <div>
-                      <h4 className="font-semibold text-sm">Geographic Verification</h4>
-                      <p className="text-xs text-muted-foreground mt-1">Live Tanzanian administrative region and constituent district mapping.</p>
+                      <h4 className="font-semibold text-sm">{t("landing.geoVerification")}</h4>
+                      <p className="text-xs text-muted-foreground mt-1">{t("landing.geoVerificationDesc")}</p>
                     </div>
                   </div>
 
@@ -289,8 +291,8 @@ export default function Page() {
                       <HugeiconsIcon icon={CheckmarkCircle02Icon} size={14} />
                     </div>
                     <div>
-                      <h4 className="font-semibold text-sm">Emergency Next-of-Kin</h4>
-                      <p className="text-xs text-muted-foreground mt-1">Normalized table relations ensuring clinical security in critical moments.</p>
+                      <h4 className="font-semibold text-sm">{t("landing.emergencyNextOfKin")}</h4>
+                      <p className="text-xs text-muted-foreground mt-1">{t("landing.emergencyNextOfKinDesc")}</p>
                     </div>
                   </div>
 
@@ -299,8 +301,8 @@ export default function Page() {
                       <HugeiconsIcon icon={CheckmarkCircle02Icon} size={14} />
                     </div>
                     <div>
-                      <h4 className="font-semibold text-sm">Automated Completeness Check</h4>
-                      <p className="text-xs text-muted-foreground mt-1">Guarantees that essential healthcare entries are 100% complete before booking.</p>
+                      <h4 className="font-semibold text-sm">{t("landing.automatedCompleteness")}</h4>
+                      <p className="text-xs text-muted-foreground mt-1">{t("landing.automatedCompletenessDesc")}</p>
                     </div>
                   </div>
 
@@ -309,8 +311,8 @@ export default function Page() {
                       <HugeiconsIcon icon={CheckmarkCircle02Icon} size={14} />
                     </div>
                     <div>
-                      <h4 className="font-semibold text-sm">Instant Access Activation</h4>
-                      <p className="text-xs text-muted-foreground mt-1">Unlocks full digital appointment and scheduling features immediately.</p>
+                      <h4 className="font-semibold text-sm">{t("landing.instantAccess")}</h4>
+                      <p className="text-xs text-muted-foreground mt-1">{t("landing.instantAccessDesc")}</p>
                     </div>
                   </div>
                 </div>
@@ -326,36 +328,36 @@ export default function Page() {
                         <HugeiconsIcon icon={MedicalFileIcon} className="text-emerald-500" size={20} />
                       </div>
                       <div>
-                        <h4 className="font-bold text-sm">Patient Clinical Profile</h4>
+                        <h4 className="font-bold text-sm">{t("landing.patientClinicalProfile")}</h4>
                         <p className="text-xs text-muted-foreground text-[10px]">ID: #P-29831-26</p>
                       </div>
                     </div>
                     <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2.5 py-0.5 text-xs font-bold text-emerald-500 border border-emerald-500/20">
-                      Pre-Registered
+                      {t("landing.preRegistered")}
                     </span>
                   </div>
 
                   <div className="mt-6 space-y-4 text-sm">
                     <div className="flex justify-between border-b border-border pb-2">
-                      <span className="text-muted-foreground text-xs">Full Name</span>
+                      <span className="text-muted-foreground text-xs">{t("landing.fullName")}</span>
                       <span className="font-medium text-xs">Stanslaus Ndossa</span>
                     </div>
                     <div className="flex justify-between border-b border-border pb-2">
-                      <span className="text-muted-foreground text-xs">Geographic Region</span>
+                      <span className="text-muted-foreground text-xs">{t("landing.geographicRegion")}</span>
                       <span className="font-medium text-xs">Dar es Salaam (Kinondoni)</span>
                     </div>
                     <div className="flex justify-between border-b border-border pb-2">
-                      <span className="text-muted-foreground text-xs">Emergency Next of Kin</span>
+                      <span className="text-muted-foreground text-xs">{t("landing.emergencyNextOfKinLabel")}</span>
                       <span className="font-medium text-xs">Brayan Mlawa (Brother)</span>
                     </div>
                     <div className="flex justify-between border-b border-border pb-2">
-                      <span className="text-muted-foreground text-xs">Clinical Status</span>
-                      <span className="font-medium text-xs text-emerald-500">100% Verified & Valid</span>
+                      <span className="text-muted-foreground text-xs">{t("landing.clinicalStatus")}</span>
+                      <span className="font-medium text-xs text-emerald-500">{t("landing.verifiedValid")}</span>
                     </div>
 
                     <div className="pt-2">
                       <div className="flex items-center justify-between text-xs font-semibold text-emerald-500 bg-emerald-500/10 rounded-xl p-3 border border-emerald-500/20">
-                        <span>Unlocked Booking Portal</span>
+                        <span>{t("landing.unlockedBooking")}</span>
                         <HugeiconsIcon icon={CheckmarkCircle02Icon} size={16} />
                       </div>
                     </div>
@@ -372,19 +374,19 @@ export default function Page() {
           <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
             <div className="text-center">
               <p className="text-sm font-semibold tracking-[0.15em] text-primary uppercase">
-                Structured Steps
+                {t("landing.structuredSteps")}
               </p>
               <h2 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">
-                Pre-register and schedule in minutes
+                {t("landing.preRegisterSchedule")}
               </h2>
               <p className="mx-auto mt-4 max-w-2xl text-muted-foreground">
-                No complicated intake forms at the clinic. Complete your pre-registration and schedule appointments seamlessly.
+                {t("landing.noComplicatedForms")}
               </p>
             </div>
 
             <div className="mt-12 grid gap-8 md:grid-cols-2 lg:grid-cols-4">
               {howItWorks.map((item, index) => (
-                <div key={item.title} className="relative">
+                <div key={item.titleKey} className="relative">
                   {index < howItWorks.length - 1 && (
                     <div className="absolute top-8 left-full hidden h-0.5 w-full -translate-y-1/2 bg-gradient-to-r from-primary/30 to-transparent lg:block" />
                   )}
@@ -395,9 +397,9 @@ export default function Page() {
                     <div className="mx-auto mt-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
                       <HugeiconsIcon icon={item.icon} className="text-primary" size={24} />
                     </div>
-                    <h3 className="mt-4 text-lg font-semibold">{item.title}</h3>
+                    <h3 className="mt-4 text-lg font-semibold">{t(item.titleKey)}</h3>
                     <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
-                      {item.description}
+                      {t(item.descKey)}
                     </p>
                   </div>
                 </div>
@@ -407,7 +409,7 @@ export default function Page() {
             <div className="mt-12 text-center">
               <Button size="lg" asChild className="h-12 rounded-md px-8">
                 <Link href="/register">
-                  Start Your Journey
+                  {t("landing.startJourney")}
                   <HugeiconsIcon icon={SmartPhone01Icon} className="ml-2" size={18} />
                 </Link>
               </Button>
@@ -421,20 +423,19 @@ export default function Page() {
             <div className="grid gap-8 lg:grid-cols-2 lg:items-center">
               <div>
                 <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
-                  Your health information is safe with us
+                  {t("landing.yourInfoSafe")}
                 </h2>
                 <p className="mt-4 text-primary-foreground/80">
-                  We take your privacy seriously. Your medical information and personal data
-                  are protected with industry-standard security measures.
+                  {t("landing.privacyDescription")}
                 </p>
                 <div className="mt-6 flex flex-wrap gap-4">
                   <div className="flex items-center gap-2 rounded-full bg-primary-foreground/10 px-4 py-2 text-sm">
                     <HugeiconsIcon icon={Shield01Icon} size={16} />
-                    <span>End-to-end encryption</span>
+                    <span>{t("landing.endToEndEncryption")}</span>
                   </div>
                   <div className="flex items-center gap-2 rounded-full bg-primary-foreground/10 px-4 py-2 text-sm">
                     <HugeiconsIcon icon={CheckmarkCircle02Icon} size={16} />
-                    <span>PDPA compliant (Tanzania)</span>
+                    <span>{t("landing.pdpaCompliant")}</span>
                   </div>
                 </div>
               </div>
@@ -451,10 +452,10 @@ export default function Page() {
         <section id="faq" className="mx-auto max-w-4xl px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
           <div className="text-center">
             <p className="text-sm font-semibold tracking-[0.15em] text-primary uppercase">
-              Got Questions?
+              {t("landing.gotQuestions")}
             </p>
             <h2 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">
-              Frequently asked questions
+              {t("landing.frequentlyAsked")}
             </h2>
           </div>
 
@@ -462,8 +463,8 @@ export default function Page() {
             {faqs.map((faq, index) => (
               <Card key={index} className="border-border/60 overflow-hidden">
                 <CardContent className="p-6">
-                  <h3 className="font-semibold text-lg">{faq.question}</h3>
-                  <p className="mt-2 text-muted-foreground leading-relaxed">{faq.answer}</p>
+                  <h3 className="font-semibold text-lg">{t(faq.questionKey)}</h3>
+                  <p className="mt-2 text-muted-foreground leading-relaxed">{t(faq.answerKey)}</p>
                 </CardContent>
               </Card>
             ))}
@@ -476,14 +477,13 @@ export default function Page() {
             <div className="grid gap-12 lg:grid-cols-2">
               <div>
                 <p className="text-sm font-semibold tracking-[0.15em] text-primary uppercase">
-                  {" We're Here to Help"}
+                  {t("landing.weHereToHelp")}
                 </p>
                 <h2 className="mt-3 text-3xl font-bold tracking-tight">
-                  Need assistance? Reach out anytime.
+                  {t("landing.needAssistance")}
                 </h2>
                 <p className="mt-4 text-muted-foreground">
-                  Whether {"you're"} having trouble booking, need to check your appointment status,
-                  or just have a question — our friendly support team is ready to help.
+                  {t("landing.assistanceDescription")}
                 </p>
 
                 <div className="mt-8 space-y-4">
@@ -492,8 +492,8 @@ export default function Page() {
                       <HugeiconsIcon icon={AiPhone01Icon} className="text-primary" size={24} />
                     </div>
                     <div>
-                      <p className="text-sm text-muted-foreground">Call us</p>
-                      <p className="font-semibold">+255 700 000 000</p>
+                      <p className="text-sm text-muted-foreground">{t("landing.callUs")}</p>
+                      <p className="font-semibold">{t("landing.phoneNumber")}</p>
                     </div>
                   </div>
 
@@ -502,8 +502,8 @@ export default function Page() {
                       <HugeiconsIcon icon={Mail01Icon} className="text-primary" size={24} />
                     </div>
                     <div>
-                      <p className="text-sm text-muted-foreground">Email us</p>
-                      <p className="font-semibold">support@pamshealth.com</p>
+                      <p className="text-sm text-muted-foreground">{t("landing.emailUs")}</p>
+                      <p className="font-semibold">{t("landing.emailAddress")}</p>
                     </div>
                   </div>
 
@@ -512,8 +512,8 @@ export default function Page() {
                       <HugeiconsIcon icon={Clock01Icon} className="text-primary" size={24} />
                     </div>
                     <div>
-                      <p className="text-sm text-muted-foreground">Working hours</p>
-                      <p className="font-semibold">Mon — Sat, 8:00 AM — 6:00 PM</p>
+                      <p className="text-sm text-muted-foreground">{t("landing.workingHours")}</p>
+                      <p className="font-semibold">{t("landing.workingHoursValue")}</p>
                     </div>
                   </div>
                 </div>
@@ -522,16 +522,16 @@ export default function Page() {
               <div className="flex flex-col justify-center">
                 <Card className="border-border/60">
                   <CardContent className="p-8">
-                    <h3 className="text-xl font-semibold">Ready to get started?</h3>
+                    <h3 className="text-xl font-semibold">{t("landing.readyToGetStarted")}</h3>
                     <p className="mt-2 text-muted-foreground">
-                      Join thousands of patients who have simplified their healthcare journey.
+                      {t("landing.joinThousands")}
                     </p>
                     <div className="mt-6 flex flex-col gap-3">
                       <Button size="lg" asChild className="h-12 rounded-md">
-                        <Link href="/register">Create Free Account</Link>
+                        <Link href="/register">{t("landing.createFreeAccount")}</Link>
                       </Button>
                       <Button size="lg" variant="outline" asChild className="h-12 rounded-md">
-                        <Link href="/login">Sign In</Link>
+                        <Link href="/login">{t("auth.signIn")}</Link>
                       </Button>
                     </div>
                   </CardContent>
@@ -557,33 +557,32 @@ export default function Page() {
                 </div>
               </div>
               <p className="mt-4 max-w-sm text-sm text-muted-foreground leading-relaxed">
-                Making healthcare accessible and stress-free for every patient.
-                Complete pre-registration, book slots, and stay informed — all in one place.
+                {t("landing.footerDescription")}
               </p>
             </div>
 
             <div>
-              <p className="font-semibold">Quick Links</p>
+              <p className="font-semibold">{t("landing.quickLinks")}</p>
               <div className="mt-4 flex flex-col gap-2 text-sm text-muted-foreground">
-                <Link href="/register" className="transition hover:text-primary">Create Account</Link>
-                <Link href="/login" className="transition hover:text-primary">Sign In</Link>
-                <a href="#how-it-works" className="transition hover:text-primary">How It Works</a>
-                <a href="#faq" className="transition hover:text-primary">FAQ</a>
+                <Link href="/register" className="transition hover:text-primary">{t("landing.createAccount")}</Link>
+                <Link href="/login" className="transition hover:text-primary">{t("auth.signIn")}</Link>
+                <a href="#how-it-works" className="transition hover:text-primary">{t("landing.howItWorksLink")}</a>
+                <a href="#faq" className="transition hover:text-primary">{t("landing.faqLink")}</a>
               </div>
             </div>
 
             <div>
-              <p className="font-semibold">Contact</p>
+              <p className="font-semibold">{t("landing.contact")}</p>
               <div className="mt-4 flex flex-col gap-2 text-sm text-muted-foreground">
-                <p>+255 700 000 000</p>
-                <p>support@dpamshealth.com</p>
-                <p>Mon — Sat, 8AM — 6PM</p>
+                <p>{t("landing.phoneNumber")}</p>
+                <p>{t("landing.emailAddress")}</p>
+                <p>{t("landing.workingHoursValue")}</p>
               </div>
             </div>
           </div>
 
           <div className="mt-12 border-t border-border pt-8 text-center text-sm text-muted-foreground">
-            <p>© {new Date().getFullYear()} DPAMS. Made with care for patients everywhere.</p>
+            <p>© {new Date().getFullYear()} DPAMS. {t("landing.copyright")}</p>
           </div>
         </div>
       </footer>

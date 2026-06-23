@@ -12,10 +12,12 @@ import { useState } from "react"
 import { toast } from "react-toastify"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
+import { useTranslation } from "@/lib/i18n"
 
 type RegisterFormValues = z.infer<typeof RegisterFormSchema>
 
 const Register = () => {
+     const { t } = useTranslation()
      const [loading, setLoading] = useState(false)
      const router = useRouter()
 
@@ -34,7 +36,7 @@ const Register = () => {
                const res = await authUserService.userRegister(data)
 
                if (res.status === 201) {
-                    toast.success("Account created. Check your email to activate your account.")
+                    toast.success(t("auth.registrationSuccessfulCheckEmail"))
                     router.push("/login?activation=sent")
                }
 
@@ -47,7 +49,7 @@ const Register = () => {
                     errorMessage?.email?.[0] ||
                     errorMessage?.phone?.[0] ||
                     errorMessage?.password?.[0] ||
-                    "Registration failed. Please try again."
+                    t("auth.registrationFailedTryAgain")
 
                toast.error(msg)
           } finally {
@@ -61,8 +63,8 @@ const Register = () => {
                {/* FORM WRAPPER */}
                <div className="w-full ">
                     <FormInput
-                         title="Create Account"
-                         description="Patient appointments, scheduling, and healthcare services."
+                         title={t("auth.createAccount")}
+                         description={t("auth.patientAppointmentsDescription")}
                          className="border-0! shadow-none! ring-0! bg-transparent"
                     >
                          <form
@@ -74,8 +76,8 @@ const Register = () => {
                                    control={form.control}
                                    type="email"
                                    name="email"
-                                   placeholder="Enter email address"
-                                   label="Email"
+                                   placeholder={t("auth.enterEmailAddress")}
+                                   label={t("auth.email")}
                               />
 
                               {/* PHONE */}
@@ -83,16 +85,16 @@ const Register = () => {
                                    control={form.control}
                                    type="tel"
                                    name="phone"
-                                   placeholder="Enter phone number"
-                                   label="Phone"
+                                   placeholder={t("auth.enterPhoneNumber")}
+                                   label={t("auth.phone")}
                               />
 
                               {/* PASSWORD */}
                               <PasswordInput
                                    control={form.control}
-                                   label="Password"
+                                   label={t("auth.password")}
                                    name="password"
-                                   placeholder="Enter password"
+                                   placeholder={t("auth.enterPassword")}
                               />
 
                               {/* LOGIN LINK */}
@@ -101,7 +103,7 @@ const Register = () => {
                                         href="/login"
                                         className="text-sm text-primary hover:underline"
                                    >
-                                        Already have an account?
+                                        {t("auth.alreadyHaveAccount")}
                                    </Link>
                               </div>
 
@@ -111,7 +113,7 @@ const Register = () => {
                                    disabled={loading}
                                    className="w-full bg-chart-3 hover:opacity-90 transition rounded-md p-5"
                               >
-                                   {loading ? <Spinner /> : "Create Account"}
+                                   {loading ? <Spinner /> : t("auth.createAccount")}
                               </Button>
                          </form>
                     </FormInput>

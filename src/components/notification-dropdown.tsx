@@ -9,8 +9,10 @@ import { Bell } from "@hugeicons/core-free-icons"
 import { useNotificationStore } from "@/store/notifications/notification.store"
 import { useAuthUserStore } from "@/store/auth/userAuth.store"
 import { getNotificationsPath } from "@/lib/role-dashboard"
+import { useTranslation } from "@/lib/i18n"
 
 export function NotificationDropdown() {
+    const { t } = useTranslation()
     const { unreadCount, fetchNotifications } = useNotificationStore()
     const role = useAuthUserStore((state) => state.user?.role)
     const notificationsPath = getNotificationsPath(role)
@@ -27,7 +29,7 @@ export function NotificationDropdown() {
 
     return (
         <Button asChild size="icon-lg" variant="outline" className="relative rounded-full">
-            <Link href={notificationsPath} aria-label="Notifications">
+            <Link href={notificationsPath} aria-label={t("nav.notificationsLabel")}>
                 <HugeiconsIcon icon={Bell} />
                 {unreadCount > 0 && (
                     <Badge

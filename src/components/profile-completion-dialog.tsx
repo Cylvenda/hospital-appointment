@@ -16,12 +16,14 @@ import {
 } from "@/components/ui/dialog"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { Book02Icon, UserIcon } from "@hugeicons/core-free-icons"
+import { useTranslation } from "@/lib/i18n"
 
 function isMissingName(value?: string | null) {
   return !value || value.trim().length === 0
 }
 
 export function ProfileCompletionDialog() {
+  const { t } = useTranslation()
   const router = useRouter()
   const user = useAuthUserStore((state) => state.user)
   const updateProfile = useAuthUserStore((state) => state.updateProfile)
@@ -80,17 +82,17 @@ export function ProfileCompletionDialog() {
             </div>
             <DialogHeader className="text-center">
               <DialogTitle className="text-2xl font-black text-foreground">
-                Clinical Profile Setup
+                {t("profile.clinicalProfileSetup")}
               </DialogTitle>
               <DialogDescription className="text-sm text-muted-foreground mt-2 leading-relaxed max-w-sm mx-auto">
-                Please provide your clinical registration details so our care team can prepare for your visits and appointments.
+                {t("profile.clinicalProfileDescription")}
               </DialogDescription>
             </DialogHeader>
           </div>
 
           <div className="px-6 py-6 space-y-4">
             <div className="bg-muted/40 border border-border/60 rounded-2xl p-4 text-xs leading-relaxed text-muted-foreground">
-              Under current clinical guidelines, patients must complete their background, residence, and next-of-kin details before scheduling appointments.
+              {t("profile.clinicalGuidelines")}
             </div>
           </div>
 
@@ -100,7 +102,7 @@ export function ProfileCompletionDialog() {
               className="w-full sm:w-1/2 rounded-xl h-12 font-bold"
               onClick={handleClose}
             >
-              Remind Me Later
+              {t("profile.remindMeLater")}
             </Button>
             <Button
               className="w-full sm:w-1/2 rounded-xl h-12 font-bold shadow-md bg-emerald-600 hover:bg-emerald-500 text-white flex items-center justify-center gap-2"
@@ -110,7 +112,7 @@ export function ProfileCompletionDialog() {
               }}
             >
               <HugeiconsIcon icon={UserIcon} className="h-5 w-5" />
-              Complete Profile
+              {t("profile.completeProfile")}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -128,27 +130,27 @@ export function ProfileCompletionDialog() {
       >
         <div className="border-b border-border bg-primary/8 px-6 py-5">
           <DialogHeader>
-            <DialogTitle className="text-xl">Complete your profile</DialogTitle>
+            <DialogTitle className="text-xl">{t("profile.completeYourProfile")}</DialogTitle>
             <DialogDescription className="text-sm leading-6">
-              Before continuing, please enter your first name and last name. This is required for every account type.
+              {t("profile.profileDescription")}
             </DialogDescription>
           </DialogHeader>
         </div>
 
         <div className="space-y-5 px-6 py-6">
           <div className="rounded-3xl border border-border bg-muted/50 p-4 text-sm text-muted-foreground">
-            Signed in as <span className="font-medium text-foreground">{user.role}</span>. Your account needs full name details before you can continue using the system.
+            {t("profile.signedInAs")} <span className="font-medium text-foreground">{user.role}</span>. {t("profile.accountNeedsFullName")}
           </div>
 
           <div className="space-y-2">
             <label htmlFor="required-first-name" className="text-sm font-medium">
-              First name
+              {t("profile.firstName")}
             </label>
             <Input
               id="required-first-name"
               value={firstName}
               onChange={(event) => setFirstName(event.target.value)}
-              placeholder="Enter your first name"
+              placeholder={t("profile.enterFirstName")}
               autoComplete="given-name"
               disabled={saving}
               className="rounded-md"
@@ -157,13 +159,13 @@ export function ProfileCompletionDialog() {
 
           <div className="space-y-2">
             <label htmlFor="required-last-name" className="text-sm font-medium">
-              Last name
+              {t("profile.lastName")}
             </label>
             <Input
               id="required-last-name"
               value={lastName}
               onChange={(event) => setLastName(event.target.value)}
-              placeholder="Enter your last name"
+              placeholder={t("profile.enterLastName")}
               autoComplete="family-name"
               disabled={saving}
               className="rounded-md"
@@ -177,7 +179,7 @@ export function ProfileCompletionDialog() {
             className="rounded-md"
             onClick={handleClose}
           >
-            Cancel
+            {t("profile.cancel")}
           </Button>
           <Button
             className="w-full sm:w-auto rounded-md"
@@ -191,20 +193,20 @@ export function ProfileCompletionDialog() {
                 })
 
                 if (!updated) {
-                  toast.error("We could not save your profile right now.")
+                  toast.error(t("profile.profileSaveError"))
                   return
                 }
 
-                toast.success("Profile updated successfully.")
+                toast.success(t("profile.profileUpdated"))
                 handleClose()
               } catch {
-                toast.error("We could not save your profile right now.")
+                toast.error(t("profile.profileSaveError"))
               } finally {
                 setSaving(false)
               }
             }}
           >
-            {saving ? "Saving..." : "Save and continue"}
+            {saving ? t("profile.saving") : t("profile.saveAndContinue")}
           </Button>
         </DialogFooter>
       </DialogContent>

@@ -15,59 +15,60 @@ import { HugeiconsIcon } from "@hugeicons/react"
 import { LayoutBottomIcon, DashboardCircleIcon, UserAccountIcon, Bell, Settings05Icon, Medicine01Icon, File01Icon, TaskDone01Icon, Search01Icon } from "@hugeicons/core-free-icons"
 import { Separator } from "./ui/separator"
 import { useAuthUserStore } from "@/store/auth/userAuth.store"
+import { useTranslation } from "@/lib/i18n"
 
 const navMain = [
      {
-          title: "Dashboard",
+          titleKey: "nav.dashboard",
           url: "/lab-tech-dashboard",
           icon: (
                <HugeiconsIcon color="var(--primary)" icon={DashboardCircleIcon} strokeWidth={2} />
           ),
      },
      {
-          title: "Quick Search",
+          titleKey: "nav.quickSearch",
           url: "/lab-tech-dashboard/search",
           icon: (
                <HugeiconsIcon color="var(--primary)" icon={Search01Icon} strokeWidth={2} />
           ),
      },
      {
-          title: "Lab Requests",
+          titleKey: "nav.labRequests",
           url: "/lab-tech-dashboard/requests",
           icon: (
                <HugeiconsIcon color="var(--primary)" icon={Medicine01Icon} strokeWidth={2} />
           ),
      },
      {
-          title: "Lab Results",
+          titleKey: "nav.labResults",
           url: "/lab-tech-dashboard/results",
           icon: (
                <HugeiconsIcon color="var(--primary)" icon={File01Icon} strokeWidth={2} />
           ),
      },
      {
-          title: "Test Types",
+          titleKey: "nav.testTypes",
           url: "/lab-tech-dashboard/test-types",
           icon: (
                <HugeiconsIcon color="var(--primary)" icon={TaskDone01Icon} strokeWidth={2} />
           ),
      },
      {
-          title: "Profile",
+          titleKey: "nav.profile",
           url: "/lab-tech-dashboard/profile",
           icon: (
                <HugeiconsIcon color="var(--primary)" icon={UserAccountIcon} strokeWidth={2} />
           ),
      },
      {
-          title: "Notifications",
+          titleKey: "nav.notifications",
           url: "/lab-tech-dashboard/notifications",
           icon: (
                <HugeiconsIcon color="var(--primary)" icon={Bell} strokeWidth={2} />
           ),
      },
      {
-          title: "Settings",
+          titleKey: "nav.settings",
           url: "/lab-tech-dashboard/settings",
           icon: (
                <HugeiconsIcon color="var(--primary)" icon={Settings05Icon} strokeWidth={2} />
@@ -76,19 +77,20 @@ const navMain = [
 ]
 
 export function AppLabTechSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+     const { t } = useTranslation()
      const user = useAuthUserStore((state) => state.user)
      const displayName =
           `${user?.first_name ?? ""} ${user?.last_name ?? ""}`.trim() || "User"
      const roleLabel = user?.role
           ? user.role.charAt(0).toUpperCase() + user.role.slice(1).replace("_", " ")
-          : "Authenticated User"
+          : t("nav.authenticatedUser")
 
      return (
           <Sidebar collapsible="icon" {...props}>
                <SidebarHeader>
                     <TeamSwitcher
                          teams={{
-                              name: "Laboratory",
+                              name: t("nav.laboratoryHub"),
                               logo: <HugeiconsIcon icon={Medicine01Icon} strokeWidth={2} />,
                               role: roleLabel,
                          }}
@@ -103,7 +105,7 @@ export function AppLabTechSidebar({ ...props }: React.ComponentProps<typeof Side
                     <NavUser
                          user={{
                               name: displayName,
-                              email: user?.email || "No email",
+                              email: user?.email || t("nav.noEmail"),
                          }}
                     />
                </SidebarFooter>

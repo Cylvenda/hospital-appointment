@@ -6,6 +6,7 @@ import {
     SidebarTrigger,
 } from "@/components/ui/sidebar"
 import { ThemeToggle } from "@/components/theme-toggle"
+import { LanguageToggle } from "@/components/language-toggle"
 import { RoleAccessGuard } from "@/components/role-access-guard"
 import { NotificationDropdown } from "@/components/notification-dropdown"
 import { AppLabTechSidebar } from "@/components/app-lab-tech-sidebar"
@@ -28,6 +29,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                             <CurrentPageBreadcrumb />
                         </div>
                         <div className="flex items-center gap-2">
+                            <LanguageToggle />
                             <ThemeToggle />
                             <NotificationDropdown />
                         </div>
