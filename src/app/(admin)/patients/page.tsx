@@ -3,6 +3,7 @@
 import * as React from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { useTranslation } from "@/lib/i18n"
 import {
   Select,
   SelectContent,
@@ -51,9 +52,10 @@ import { Label } from "@/components/ui/label"
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
+  t: (key: string) => string
 }
 
-function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData, TValue>) {
+function DataTable<TData, TValue>({ columns, data, t }: DataTableProps<TData, TValue>) {
   // TanStack Table is intentionally used here for this interactive table surface.
   // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({
@@ -95,7 +97,7 @@ function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData, TValu
           ) : (
             <TableRow>
               <TableCell colSpan={columns.length} className="h-24 text-center">
-                No patients found.
+                {t("adminPatients.noPatientsFound")}
               </TableCell>
             </TableRow>
           )}
@@ -123,6 +125,7 @@ const emptyPatient: User = {
 type SheetMode = "create" | "view" | "edit" | null
 
 export default function PatientsPage() {
+  const { t } = useTranslation()
   const { users, fetchUsers, createUser, updateUser, deleteUser } = useAdminStore()
   const [patients, setPatients] = React.useState<User[]>([])
   const [search, setSearch] = React.useState("")
@@ -340,9 +343,9 @@ export default function PatientsPage() {
     <div className="w-full space-y-6">
       <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-center">
         <div className="space-y-1">
-          <h1 className="font-heading text-2xl font-semibold">Patients List</h1>
+          <h1 className="font-heading text-2xl font-semibold">{t("adminPatients.patientsList")}</h1>
           <p className="text-sm text-muted-foreground">
-            Review registered patients, account status, contact details, and actions.
+            {t("adminPatients.patientsListDesc")}
           </p>
         </div>
 
@@ -356,48 +359,48 @@ export default function PatientsPage() {
             <Input
               value={search}
               onChange={(event) => setSearch(event.target.value)}
-              placeholder="Search patient, email, phone..."
+              placeholder={t("adminPatients.searchPatientEmailPhone")}
               className="h-11 rounded-2xl border-2 border-sidebar-border pr-4 pl-11"
             />
           </div>
           <Button variant="outline" size="lg" className="rounded-md">
             <HugeiconsIcon icon={FilterIcon} strokeWidth={1.8} />
-            Filter
+            {t("adminPatients.filter")}
           </Button>
           <Button size="lg" className="rounded-md" onClick={handleCreate}>
             <HugeiconsIcon icon={PlusSignIcon} strokeWidth={1.8} />
-            Add Patient
+            {t("adminPatients.addPatient")}
           </Button>
         </div>
       </div>
 
       <div className="grid gap-4 md:grid-cols-3">
         <div className="rounded-4xl border border-sidebar-border bg-card p-5 shadow-sm">
-          <p className="text-sm text-muted-foreground">Total Patients</p>
+          <p className="text-sm text-muted-foreground">{t("adminPatients.totalPatients")}</p>
           <p className="mt-2 text-3xl font-semibold">{patients.length}</p>
         </div>
         <div className="rounded-4xl border border-sidebar-border bg-card p-5 shadow-sm">
-          <p className="text-sm text-muted-foreground">Active Accounts</p>
+          <p className="text-sm text-muted-foreground">{t("adminPatients.activeAccounts")}</p>
           <p className="mt-2 text-3xl font-semibold">{activePatients}</p>
         </div>
         <div className="rounded-4xl border border-sidebar-border bg-card p-5 shadow-sm">
           <p className="flex items-center gap-2 text-sm text-muted-foreground">
             <HugeiconsIcon icon={UserGroupIcon} strokeWidth={1.8} className="size-4" />
-            Search Results
+            {t("adminPatients.searchResults")}
           </p>
           <p className="mt-2 text-3xl font-semibold">{filteredPatients.length}</p>
         </div>
       </div>
 
-      <DataTable columns={columns} data={paginatedPatients} />
+      <DataTable columns={columns} data={paginatedPatients} t={t} />
 
       <div className="flex flex-col justify-between gap-3 rounded-4xl border border-sidebar-border bg-card p-4 shadow-sm sm:flex-row sm:items-center">
         <div className="space-y-1 text-sm text-muted-foreground">
           <p>
-            Showing {pageStart}-{pageEnd} of {filteredPatients.length} patients
+            {t("adminPatients.showing")} {pageStart}-{pageEnd} {t("adminPatients.of")} {filteredPatients.length} {t("adminPatients.patients")}
           </p>
           <p>
-            Page {currentPage} of {totalPages}
+            {t("adminPatients.page")} {currentPage} {t("adminPatients.of")} {totalPages}
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -408,7 +411,7 @@ export default function PatientsPage() {
             className="rounded-md"
           >
             <HugeiconsIcon icon={ArrowLeft01Icon} strokeWidth={1.8} />
-            Previous
+            {t("adminPatients.previous")}
           </Button>
           <Button
             variant="outline"
@@ -416,7 +419,7 @@ export default function PatientsPage() {
             disabled={currentPage === totalPages}
             className="rounded-md"
           >
-            Next
+            {t("adminPatients.next")}
             <HugeiconsIcon icon={ArrowRight01Icon} strokeWidth={1.8} />
           </Button>
         </div>
@@ -427,103 +430,103 @@ export default function PatientsPage() {
           <SheetHeader className="border-b border-sidebar-border">
             <SheetTitle>
               {sheetMode === "create"
-                ? "Add Patient"
+                ? t("adminPatients.addPatientTitle")
                 : sheetMode === "edit"
-                  ? "Edit Patient"
-                  : "Patient Details"}
+                  ? t("adminPatients.editPatient")
+                  : t("adminPatients.patientDetails")}
             </SheetTitle>
             <SheetDescription>
               {sheetMode === "view"
-                ? "Review the selected patient's profile information."
-                : "Fill in the patient details and save your changes."}
+                ? t("adminPatients.reviewPatientProfile")
+                : t("adminPatients.fillPatientDetails")}
             </SheetDescription>
           </SheetHeader>
 
           <div className="flex-1 space-y-5 overflow-y-auto p-6">
             <div className="space-y-2">
-              <label className="text-sm font-medium">Patient ID</label>
+              <label className="text-sm font-medium">{t("adminPatients.patientId")}</label>
               <Input value={formPatient.uuid} disabled />
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-2">
-                <label className="text-sm font-medium">First name</label>
+                <label className="text-sm font-medium">{t("adminPatients.firstName")}</label>
                 <Input
                   value={formPatient.first_name}
                   disabled={sheetMode === "view"}
                   onChange={(event) => updateFormField("first_name", event.target.value)}
-                  placeholder="First name"
+                  placeholder={t("adminPatients.firstName")}
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-medium">Last name</label>
+                <label className="text-sm font-medium">{t("adminPatients.lastName")}</label>
                 <Input
                   value={formPatient.last_name}
                   disabled={sheetMode === "view"}
                   onChange={(event) => updateFormField("last_name", event.target.value)}
-                  placeholder="Last name"
+                  placeholder={t("adminPatients.lastName")}
                 />
               </div>
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-medium">Email</label>
+              <label className="text-sm font-medium">{t("adminPatients.email")}</label>
               <Input
                 value={formPatient.email}
                 disabled={sheetMode === "view"}
                 onChange={(event) => updateFormField("email", event.target.value)}
-                placeholder="Email address"
+                placeholder={t("adminPatients.emailAddress")}
               />
             </div>
 
             {sheetMode === "create" && (
               <div className="space-y-2">
-                <Label htmlFor="password">Initial Password</Label>
+                <Label htmlFor="password">{t("adminPatients.initialPassword")}</Label>
                 <PasswordInput
                   id="password"
-                  placeholder="Minimum 8 characters"
+                  placeholder={t("adminPatients.minimum8Characters")}
                   className="rounded-xl h-11"
                   required
                   value={createPassword}
                   onChange={(event) => setCreatePassword(event.target.value)}
                 />
                 <p className="text-[10px] text-muted-foreground mt-1">
-                  The patient will be prompted to change this password on their first login.
+                  {t("adminPatients.patientPasswordChangeDesc")}
                 </p>
               </div>
             )}
 
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-2">
-                <label className="text-sm font-medium">Phone number</label>
+                <label className="text-sm font-medium">{t("adminPatients.phoneNumber")}</label>
                 <Input
                   value={formPatient.phone}
                   disabled={sheetMode === "view"}
                   onChange={(event) => updateFormField("phone", event.target.value)}
-                  placeholder="Phone number"
+                  placeholder={t("adminPatients.phoneNumber")}
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-medium">Username</label>
+                <label className="text-sm font-medium">{t("adminPatients.username")}</label>
                 <Input
                   value={formPatient.username}
                   disabled={sheetMode === "view"}
                   onChange={(event) => updateFormField("username", event.target.value)}
-                  placeholder="Username"
+                  placeholder={t("adminPatients.username")}
                 />
               </div>
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-2">
-                <label className="text-sm font-medium">Role</label>
+                <label className="text-sm font-medium">{t("adminPatients.role")}</label>
                 <Select
                   value={formPatient.role}
                   disabled={sheetMode === "view"}
                   onValueChange={(value) => updateFormField("role", value)}
                 >
                   <SelectTrigger className="w-full rounded-2xl border border-input bg-background">
-                    <SelectValue placeholder="Select role" />
+                    <SelectValue placeholder={t("adminPatients.selectRole")} />
                   </SelectTrigger>
                   <SelectContent>
                     {roleOptions.map((role) => (
@@ -535,7 +538,7 @@ export default function PatientsPage() {
                 </Select>
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-medium">Status</label>
+                <label className="text-sm font-medium">{t("adminPatients.status")}</label>
                 <select
                   value={formPatient.is_active ? "active" : "inactive"}
                   disabled={sheetMode === "view"}
@@ -544,8 +547,8 @@ export default function PatientsPage() {
                   }
                   className="flex h-9 w-full rounded-2xl border border-input bg-background px-3 py-2 text-sm outline-none"
                 >
-                  <option value="active">Active</option>
-                  <option value="inactive">Inactive</option>
+                  <option value="active">{t("adminPatients.active")}</option>
+                  <option value="inactive">{t("adminPatients.inactive")}</option>
                 </select>
               </div>
             </div>
@@ -553,14 +556,14 @@ export default function PatientsPage() {
 
           <SheetFooter className="border-t border-sidebar-border flex flex-row justify-between">
             <Button variant="outline" onClick={closeSheet}>
-              Close
+              {t("adminPatients.close")}
             </Button>
             {sheetMode !== "view" && (
               <Button
                 onClick={handleSavePatient}
                 disabled={sheetMode === "create" && !createPassword.trim()}
               >
-                {sheetMode === "create" ? "Create Patient" : "Save Changes"}
+                {sheetMode === "create" ? t("adminPatients.createPatient") : t("adminPatients.saveChanges")}
               </Button>
             )}
           </SheetFooter>
@@ -573,34 +576,34 @@ export default function PatientsPage() {
       >
         <SheetContent side="bottom" className="mx-auto my-auto w-full  rounded-t-4xl sm:max-w-xl">
           <SheetHeader className="border-b border-sidebar-border">
-            <SheetTitle>Delete Patient</SheetTitle>
+            <SheetTitle>{t("adminPatients.deletePatient")}</SheetTitle>
             <SheetDescription>
-              This action will remove the patient from the current list.
+              {t("adminPatients.deletePatientDesc")}
             </SheetDescription>
           </SheetHeader>
           <div className="space-y-4 p-6">
             <div className="rounded-3xl border border-rose-200 bg-rose-50/70 p-4 text-sm text-rose-700 dark:border-rose-500/20 dark:bg-rose-500/10 dark:text-rose-300">
               {deleteTarget ? (
                 <p>
-                  You are about to delete{" "}
+                  {t("adminPatients.aboutToDelete")}{" "}
                   <span className="font-semibold">
                     {deleteTarget.first_name} {deleteTarget.last_name}
                   </span>{" "}
-                  with ID <span className="font-mono">{deleteTarget.uuid}</span>.
+                  {t("adminPatients.withId")} <span className="font-mono">{deleteTarget.uuid}</span>.
                 </p>
               ) : null}Neema
             </div>
             <p className="text-sm text-muted-foreground">
-              You can close this popup if you want to keep the patient record.
+              {t("adminPatients.closePopupKeepRecord")}
             </p>
           </div>
           <SheetFooter className="border-t border-sidebar-border">
             <Button variant="outline" onClick={closeDeletePopup}>
-              Cancel
+              {t("adminPatients.cancel")}
             </Button>
             <Button variant="destructive" onClick={confirmDeletePatient}>
               <HugeiconsIcon icon={Delete02Icon} strokeWidth={1.8} />
-              Delete Patient
+              {t("adminPatients.deletePatientButton")}
             </Button>
           </SheetFooter>
         </SheetContent>

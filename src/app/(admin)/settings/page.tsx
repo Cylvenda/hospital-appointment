@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { useTranslation } from "@/lib/i18n"
 import {
   BellDotIcon,
   CalendarSetting01Icon,
@@ -16,6 +17,7 @@ import { useAdminStore } from "@/store/admin/admin.store"
 import { toast } from "react-toastify"
 
 export default function SettingsPage() {
+  const { t } = useTranslation()
   const { settings, fetchSettings, updateSettings } = useAdminStore()
   const [appointmentFee, setAppointmentFee] = useState("")
   const [saving, setSaving] = useState(false)
@@ -31,20 +33,20 @@ export default function SettingsPage() {
 
   const notificationSettings = [
     settings?.patient_confirmation_emails
-      ? "Patient confirmation emails enabled"
-      : "Patient confirmation emails disabled",
+      ? t("adminSettings.patientConfirmationEmailsEnabled")
+      : t("adminSettings.patientConfirmationEmailsDisabled"),
     settings?.secure_sessions
-      ? "Secure session cookies enabled"
-      : "Secure session cookies disabled",
-    `Default time slot is ${settings?.default_time_slot ?? "not configured"}`,
+      ? t("adminSettings.secureSessionCookiesEnabled")
+      : t("adminSettings.secureSessionCookiesDisabled"),
+    `${t("adminSettings.defaultTimeSlotIs")} ${settings?.default_time_slot ?? t("adminSettings.notConfigured")}`,
   ]
 
   return (
     <div className="w-full space-y-6 p-4 md:p-6">
       <div className="space-y-1">
-        <h1 className="font-heading text-2xl font-semibold">Settings</h1>
+        <h1 className="font-heading text-2xl font-semibold">{t("adminSettings.settings")}</h1>
         <p className="text-sm text-muted-foreground">
-          Configure clinic preferences, notifications, and operational defaults.
+          {t("adminSettings.settingsDesc")}
         </p>
       </div>
 
@@ -55,32 +57,32 @@ export default function SettingsPage() {
               <HugeiconsIcon icon={ComputerSettingsIcon} strokeWidth={1.8} />
             </div>
             <div>
-              <h2 className="font-semibold">Clinic Profile</h2>
+              <h2 className="font-semibold">{t("adminSettings.clinicProfile")}</h2>
               <p className="text-sm text-muted-foreground">
-                Main details used across appointments and notifications.
+                {t("adminSettings.clinicProfileDesc")}
               </p>
             </div>
           </div>
 
           <div className="mt-5 grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
-              <label className="text-sm font-medium">Clinic Name</label>
+              <label className="text-sm font-medium">{t("adminSettings.clinicName")}</label>
               <Input value={settings?.clinic_name ?? ""} readOnly />
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium">Support Email</label>
+              <label className="text-sm font-medium">{t("adminSettings.supportEmail")}</label>
               <Input value={settings?.support_email ?? ""} readOnly />
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium">Clinic Hours</label>
+              <label className="text-sm font-medium">{t("adminSettings.clinicHours")}</label>
               <Input value={settings?.clinic_hours ?? ""} readOnly />
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium">Default Time Slot</label>
+              <label className="text-sm font-medium">{t("adminSettings.defaultTimeSlot")}</label>
               <Input value={settings?.default_time_slot ?? ""} readOnly />
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium">Appointment Fee</label>
+              <label className="text-sm font-medium">{t("adminSettings.appointmentFee")}</label>
               <Input
                 type="number"
                 min="0"
@@ -99,16 +101,16 @@ export default function SettingsPage() {
                 setSaving(true)
                 try {
                   await updateSettings({ appointment_fee: appointmentFee })
-                  toast.success("Appointment fee updated.")
+                  toast.success(t("adminSettings.appointmentFeeUpdated"))
                 } catch {
-                  toast.error("Failed to update appointment fee.")
+                  toast.error(t("adminSettings.appointmentFeeUpdateFailed"))
                 } finally {
                   setSaving(false)
                 }
               }}
             >
               <HugeiconsIcon icon={Edit02Icon} strokeWidth={1.8} />
-              {saving ? "Saving..." : "Save Profile"}
+              {saving ? t("adminSettings.saving") : t("adminSettings.saveProfile")}
             </Button>
             <Button
               variant="outline"
@@ -116,7 +118,7 @@ export default function SettingsPage() {
               onClick={() => setAppointmentFee(settings?.appointment_fee ?? "")}
               disabled={saving}
             >
-              Reset
+              {t("adminSettings.reset")}
             </Button>
           </div>
         </div>
@@ -128,9 +130,9 @@ export default function SettingsPage() {
                 <HugeiconsIcon icon={BellDotIcon} strokeWidth={1.8} />
               </div>
               <div>
-                <h2 className="font-semibold">Notifications</h2>
+                <h2 className="font-semibold">{t("adminSettings.notifications")}</h2>
                 <p className="text-sm text-muted-foreground">
-                  Manage how the system alerts staff and patients.
+                  {t("adminSettings.notificationsDesc")}
                 </p>
               </div>
             </div>
@@ -150,19 +152,19 @@ export default function SettingsPage() {
           </div>
 
           <div className="rounded-4xl border border-sidebar-border bg-card p-5 shadow-sm">
-            <h2 className="font-semibold">Security & Scheduling</h2>
+            <h2 className="font-semibold">{t("adminSettings.securityAndScheduling")}</h2>
             <div className="mt-4 space-y-3 text-sm text-muted-foreground">
               <p className="flex items-center gap-2">
                 <HugeiconsIcon icon={Shield01Icon} strokeWidth={1.8} className="size-4" />
-                Two-step verification required for admin access
+                {t("adminSettings.twoStepVerification")}
               </p>
               <p className="flex items-center gap-2">
                 <HugeiconsIcon icon={CalendarSetting01Icon} strokeWidth={1.8} className="size-4" />
-                Auto-close missed appointments after 30 minutes
+                {t("adminSettings.autoCloseMissedAppointments")}
               </p>
               <p className="flex items-center gap-2">
                 <HugeiconsIcon icon={Mail01Icon} strokeWidth={1.8} className="size-4" />
-                Patient confirmation emails enabled
+                {t("adminSettings.patientConfirmationEmailsEnabledDesc")}
               </p>
             </div>
           </div>

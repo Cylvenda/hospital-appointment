@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { useTranslation } from "@/lib/i18n"
 import {
   FilterIcon,
   PlusSignIcon,
@@ -32,6 +33,7 @@ function roleClasses(role: string) {
 }
 
 export default function UsersPage() {
+  const { t } = useTranslation()
   const { users: userDirectory, fetchUsers } = useAdminStore()
   const [search, setSearch] = useState("")
 
@@ -64,9 +66,9 @@ export default function UsersPage() {
     <div className="w-full space-y-6 p-4 md:p-6">
       <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-center">
         <div className="space-y-1">
-          <h1 className="font-heading text-2xl font-semibold">Users</h1>
+          <h1 className="font-heading text-2xl font-semibold">{t("adminUsers.users")}</h1>
           <p className="text-sm text-muted-foreground">
-            Manage system users, roles, and access permissions.
+            {t("adminUsers.usersDesc")}
           </p>
         </div>
 
@@ -81,17 +83,17 @@ export default function UsersPage() {
               value={search}
               onChange={(event) => setSearch(event.target.value)}
               className="h-11 rounded-2xl border-2 border-sidebar-border pl-11"
-              placeholder="Search users or roles..."
+              placeholder={t("adminUsers.searchUsersOrRoles")}
             />
           </div>
           <Button variant="outline" size="lg" className="rounded-md">
             <HugeiconsIcon icon={FilterIcon} strokeWidth={1.8} />
-            Filter
+            {t("adminUsers.filter")}
           </Button>
           <Button size="lg" className="rounded-md" asChild>
             <Link href="/users/create">
               <HugeiconsIcon icon={PlusSignIcon} strokeWidth={1.8} />
-              Add User
+              {t("adminUsers.addUser")}
             </Link>
           </Button>
         </div>
@@ -99,17 +101,17 @@ export default function UsersPage() {
 
       <div className="grid gap-4 md:grid-cols-3">
         <div className="rounded-4xl border border-sidebar-border bg-card p-5 shadow-sm">
-          <p className="text-sm text-muted-foreground">Total Users</p>
+          <p className="text-sm text-muted-foreground">{t("adminUsers.totalUsers")}</p>
           <p className="mt-2 text-3xl font-semibold">{users.length}</p>
         </div>
         <div className="rounded-4xl border border-sidebar-border bg-card p-5 shadow-sm">
-          <p className="text-sm text-muted-foreground">Active Users</p>
+          <p className="text-sm text-muted-foreground">{t("adminUsers.activeUsers")}</p>
           <p className="mt-2 text-3xl font-semibold">
             {users.filter((user) => user.isActive).length}
           </p>
         </div>
         <div className="rounded-4xl border border-sidebar-border bg-card p-5 shadow-sm">
-          <p className="text-sm text-muted-foreground">Inactive Users</p>
+          <p className="text-sm text-muted-foreground">{t("adminUsers.inactiveUsers")}</p>
           <p className="mt-2 text-3xl font-semibold">
             {users.filter((user) => !user.isActive).length}
           </p>
@@ -139,7 +141,7 @@ export default function UsersPage() {
                 </span>
                 {!user.isActive && (
                   <span className="rounded-full bg-red-50 px-3 py-1 text-xs font-medium text-red-700 ring-1 ring-red-100">
-                    Inactive
+                    {t("adminUsers.inactive")}
                   </span>
                 )}
               </div>
@@ -148,18 +150,18 @@ export default function UsersPage() {
             <div className="mt-5 grid gap-3 text-sm text-muted-foreground sm:grid-cols-2">
               <p className="flex items-center gap-2">
                 <HugeiconsIcon icon={Mail01Icon} strokeWidth={1.8} className="size-4" />
-                {user.email || "No email"}
+                {user.email || t("adminUsers.noEmail")}
               </p>
               <p className="flex items-center gap-2">
                 <HugeiconsIcon icon={CallIcon} strokeWidth={1.8} className="size-4" />
-                {user.phone || "No phone"}
+                {user.phone || t("adminUsers.noPhone")}
               </p>
             </div>
 
             <div className="mt-5 flex flex-wrap gap-2">
-              <Button className="rounded-md">View Details</Button>
+              <Button className="rounded-md">{t("adminUsers.viewDetails")}</Button>
               <Button variant="outline" className="rounded-md">
-                Edit User
+                {t("adminUsers.editUser")}
               </Button>
             </div>
           </div>

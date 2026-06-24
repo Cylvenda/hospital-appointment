@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { useTranslation } from "@/lib/i18n"
 import {
   Sheet,
   SheetContent,
@@ -49,6 +50,7 @@ function statusClasses(status: string) {
 }
 
 export default function DoctorsPage() {
+  const { t } = useTranslation()
   const { doctors: doctorDirectory, fetchDoctors, createDoctor } = useAdminStore()
   const [search, setSearch] = useState("")
   const [sheetOpen, setSheetOpen] = useState(false)
@@ -71,14 +73,14 @@ export default function DoctorsPage() {
         .map((doctor) => ({
           id: doctor.uuid.slice(0, 8).toUpperCase(),
           name: doctor.name,
-          specialty: doctor.categories[0] || "General",
+          specialty: doctor.categories[0] || t("adminDoctors.general"),
           email: doctor.email,
           phone: doctor.phone,
-          shift: doctor.is_available ? "Available today" : "Unavailable",
-          nextClinic: "See schedule",
-          status: doctor.is_available ? "Available" : "Off Duty",
+          shift: doctor.is_available ? t("adminDoctors.availableToday") : t("adminDoctors.unavailable"),
+          nextClinic: t("adminDoctors.seeSchedule"),
+          status: doctor.is_available ? t("adminDoctors.available") : t("adminDoctors.offDuty"),
         })),
-    [doctorDirectory, search]
+    [doctorDirectory, search, t]
   )
 
   const isFormValid =
@@ -106,11 +108,11 @@ export default function DoctorsPage() {
         license_number: form.license_number.trim(),
         is_available: true,
       })
-      toast.success("Doctor added successfully.")
+      toast.success(t("adminDoctors.doctorAddedSuccess"))
       setForm(emptyDoctorForm)
       setSheetOpen(false)
     } catch {
-      toast.error("Failed to add doctor.")
+      toast.error(t("adminDoctors.doctorAddFailed"))
     } finally {
       setIsSubmitting(false)
     }
@@ -120,9 +122,9 @@ export default function DoctorsPage() {
     <div className="w-full space-y-6 p-4 md:p-6">
       <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-center">
         <div className="space-y-1">
-          <h1 className="font-heading text-2xl font-semibold">Doctors</h1>
+          <h1 className="font-heading text-2xl font-semibold">{t("adminDoctors.doctors")}</h1>
           <p className="text-sm text-muted-foreground">
-            Manage specialist availability, schedules, and contact information.
+            {t("adminDoctors.doctorsDesc")}
           </p>
         </div>
 
@@ -137,35 +139,35 @@ export default function DoctorsPage() {
               value={search}
               onChange={(event) => setSearch(event.target.value)}
               className="h-11 rounded-2xl border-2 border-sidebar-border pl-11"
-              placeholder="Search doctor or specialty..."
+              placeholder={t("adminDoctors.searchDoctorOrSpecialty")}
             />
           </div>
           <Button variant="outline" size="lg" className="rounded-md">
             <HugeiconsIcon icon={FilterIcon} strokeWidth={1.8} />
-            Filter
+            {t("adminDoctors.filter")}
           </Button>
           <Button size="lg" className="rounded-md" onClick={() => setSheetOpen(true)}>
             <HugeiconsIcon icon={PlusSignIcon} strokeWidth={1.8} />
-            Add Doctor
+            {t("adminDoctors.addDoctor")}
           </Button>
         </div>
       </div>
 
       <div className="grid gap-4 md:grid-cols-3">
         <div className="rounded-4xl border border-sidebar-border bg-card p-5 shadow-sm">
-          <p className="text-sm text-muted-foreground">Total Doctors</p>
+          <p className="text-sm text-muted-foreground">{t("adminDoctors.totalDoctors")}</p>
           <p className="mt-2 text-3xl font-semibold">{doctors.length}</p>
         </div>
         <div className="rounded-4xl border border-sidebar-border bg-card p-5 shadow-sm">
-          <p className="text-sm text-muted-foreground">Available Now</p>
+          <p className="text-sm text-muted-foreground">{t("adminDoctors.availableNow")}</p>
           <p className="mt-2 text-3xl font-semibold">
-            {doctors.filter((doctor) => doctor.status === "Available").length}
+            {doctors.filter((doctor) => doctor.status === t("adminDoctors.available")).length}
           </p>
         </div>
         <div className="rounded-4xl border border-sidebar-border bg-card p-5 shadow-sm">
-          <p className="text-sm text-muted-foreground">In Session</p>
+          <p className="text-sm text-muted-foreground">{t("adminDoctors.inSession")}</p>
           <p className="mt-2 text-3xl font-semibold">
-            {doctors.filter((doctor) => doctor.status === "In Session").length}
+            {doctors.filter((doctor) => doctor.status === t("adminDoctors.inSession")).length}
           </p>
         </div>
       </div>
@@ -203,18 +205,18 @@ export default function DoctorsPage() {
               </p>
               <p className="flex items-center gap-2">
                 <HugeiconsIcon icon={Watch01Icon} strokeWidth={1.8} className="size-4" />
-                Shift {doctor.shift}
+                {t("adminDoctors.shift")} {doctor.shift}
               </p>
               <p className="flex items-center gap-2">
                 <HugeiconsIcon icon={Calendar01Icon} strokeWidth={1.8} className="size-4" />
-                Next clinic {doctor.nextClinic}
+                {t("adminDoctors.nextClinic")} {doctor.nextClinic}
               </p>
             </div>
 
             <div className="mt-5 flex flex-wrap gap-2">
-              <Button className="rounded-md">View Profile</Button>
+              <Button className="rounded-md">{t("adminDoctors.viewProfile")}</Button>
               <Button variant="outline" className="rounded-md" disabled>
-                Update Schedule
+                {t("adminDoctors.updateSchedule")}
               </Button>
             </div>
           </div>
@@ -224,14 +226,14 @@ export default function DoctorsPage() {
       <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
         <SheetContent side="right" className="w-full sm:max-w-2xl">
           <SheetHeader className="border-b border-sidebar-border">
-            <SheetTitle>Add Doctor</SheetTitle>
-            <SheetDescription>Create a doctor record in the database.</SheetDescription>
+            <SheetTitle>{t("adminDoctors.addDoctorTitle")}</SheetTitle>
+            <SheetDescription>{t("adminDoctors.createDoctorRecord")}</SheetDescription>
           </SheetHeader>
 
           <div className="space-y-4 p-6">
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-2">
-                <label className="text-sm font-medium">First Name</label>
+                <label className="text-sm font-medium">{t("adminDoctors.firstName")}</label>
                 <Input
                   value={form.first_name}
                   onChange={(event) =>
@@ -240,7 +242,7 @@ export default function DoctorsPage() {
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-medium">Last Name</label>
+                <label className="text-sm font-medium">{t("adminDoctors.lastName")}</label>
                 <Input
                   value={form.last_name}
                   onChange={(event) =>
@@ -252,7 +254,7 @@ export default function DoctorsPage() {
 
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-2">
-                <label className="text-sm font-medium">Email</label>
+                <label className="text-sm font-medium">{t("adminDoctors.email")}</label>
                 <Input
                   value={form.email}
                   onChange={(event) =>
@@ -261,7 +263,7 @@ export default function DoctorsPage() {
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-medium">Phone</label>
+                <label className="text-sm font-medium">{t("adminDoctors.phone")}</label>
                 <Input
                   value={form.phone}
                   onChange={(event) =>
@@ -271,10 +273,10 @@ export default function DoctorsPage() {
               </div>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">Initial Password</Label>
+              <Label htmlFor="password">{t("adminDoctors.initialPassword")}</Label>
               <PasswordInput
                 id="password"
-                placeholder="Minimum 8 characters"
+                placeholder={t("adminDoctors.minimum8Characters")}
                 className="rounded-xl h-11"
                 required
                 value={form.password}
@@ -283,12 +285,12 @@ export default function DoctorsPage() {
                 }
               />
               <p className="text-[10px] text-muted-foreground mt-1">
-                The doctor will be prompted to change this password on their first login.
+                {t("adminDoctors.doctorPasswordChangeDesc")}
               </p>
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-medium">License Number</label>
+              <label className="text-sm font-medium">{t("adminDoctors.licenseNumber")}</label>
               <Input
                 value={form.license_number}
                 onChange={(event) =>
@@ -300,10 +302,10 @@ export default function DoctorsPage() {
 
           <SheetFooter className="border-t border-sidebar-border">
             <Button variant="outline" onClick={() => setSheetOpen(false)}>
-              Cancel
+              {t("adminDoctors.cancel")}
             </Button>
             <Button onClick={handleCreateDoctor} disabled={!isFormValid || isSubmitting}>
-              {isSubmitting ? "Saving..." : "Save Doctor"}
+              {isSubmitting ? t("adminDoctors.saving") : t("adminDoctors.saveDoctor")}
             </Button>
           </SheetFooter>
         </SheetContent>

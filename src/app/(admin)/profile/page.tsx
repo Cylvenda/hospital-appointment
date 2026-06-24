@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { useTranslation } from "@/lib/i18n"
 import {
   Briefcase01Icon,
   CallIcon,
@@ -17,6 +18,7 @@ import { useAuthUserStore } from "@/store/auth/userAuth.store"
 import { toast } from "react-toastify"
 
 export default function ProfilePage() {
+  const { t } = useTranslation()
   const user = useAuthUserStore((state) => state.user)
   const updateProfile = useAuthUserStore((state) => state.updateProfile)
   const [draft, setDraft] = useState<{
@@ -26,9 +28,9 @@ export default function ProfilePage() {
     phone?: string
   }>({})
   const roleLabel = useMemo(() => {
-    if (!user?.role) return "User"
+    if (!user?.role) return t("adminProfile.user")
     return user.role.charAt(0).toUpperCase() + user.role.slice(1)
-  }, [user?.role])
+  }, [user?.role, t])
 
   async function handleSave() {
     const updated = await updateProfile({
@@ -40,18 +42,18 @@ export default function ProfilePage() {
 
     if (updated) {
       setDraft({})
-      toast.success("Profile updated successfully.")
+      toast.success(t("adminProfile.profileUpdatedSuccess"))
     } else {
-      toast.error("Failed to update profile.")
+      toast.error(t("adminProfile.profileUpdateFailed"))
     }
   }
 
   return (
     <div className="w-full space-y-6 p-4 md:p-6">
       <div className="space-y-1">
-        <h1 className="font-heading text-2xl font-semibold">Profile</h1>
+        <h1 className="font-heading text-2xl font-semibold">{t("adminProfile.profile")}</h1>
         <p className="text-sm text-muted-foreground">
-          Review and update your admin profile, contact details, and permissions summary.
+          {t("adminProfile.profileDesc")}
         </p>
       </div>
 
@@ -61,22 +63,22 @@ export default function ProfilePage() {
             <div className="flex h-24 w-24 items-center justify-center rounded-4xl bg-primary/10 text-primary">
               <HugeiconsIcon icon={UserAccountIcon} strokeWidth={1.8} className="size-10" />
             </div>
-            <h2 className="mt-4 text-xl font-semibold">{`${user?.first_name ?? ""} ${user?.last_name ?? ""}`.trim() || "Unnamed User"}</h2>
+            <h2 className="mt-4 text-xl font-semibold">{`${user?.first_name ?? ""} ${user?.last_name ?? ""}`.trim() || t("adminProfile.unnamedUser")}</h2>
             <p className="text-sm text-muted-foreground">{roleLabel}</p>
           </div>
 
           <div className="mt-6 space-y-4 text-sm text-muted-foreground">
             <p className="flex items-center gap-2">
               <HugeiconsIcon icon={Mail01Icon} strokeWidth={1.8} className="size-4" />
-              {user?.email || "No email available"}
+              {user?.email || t("adminProfile.noEmailAvailable")}
             </p>
             <p className="flex items-center gap-2">
               <HugeiconsIcon icon={CallIcon} strokeWidth={1.8} className="size-4" />
-              {user?.phone || "No phone available"}
+              {user?.phone || t("adminProfile.noPhoneAvailable")}
             </p>
             <p className="flex items-center gap-2">
               <HugeiconsIcon icon={Location01Icon} strokeWidth={1.8} className="size-4" />
-              User account
+              {t("adminProfile.userAccount")}
             </p>
             <p className="flex items-center gap-2">
               <HugeiconsIcon icon={Briefcase01Icon} strokeWidth={1.8} className="size-4" />
@@ -87,10 +89,10 @@ export default function ProfilePage() {
           <div className="mt-6 rounded-3xl bg-muted/60 p-4">
             <p className="flex items-center gap-2 text-sm font-medium">
               <HugeiconsIcon icon={Shield01Icon} strokeWidth={1.8} className="size-4 text-primary" />
-              Access Level
+              {t("adminProfile.accessLevel")}
             </p>
             <p className="mt-2 text-sm text-muted-foreground">
-              Full access to appointments, users, doctors, reception desks, and clinic configuration.
+              {t("adminProfile.accessLevelDesc")}
             </p>
           </div>
         </div>
@@ -98,20 +100,20 @@ export default function ProfilePage() {
         <div className="rounded-4xl border border-sidebar-border bg-card p-6 shadow-sm">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="font-semibold">Update Profile</h2>
+              <h2 className="font-semibold">{t("adminProfile.updateProfile")}</h2>
               <p className="text-sm text-muted-foreground">
-                Keep your admin information current for notifications and audit logs.
+                {t("adminProfile.updateProfileDesc")}
               </p>
             </div>
             <Button className="rounded-md" onClick={() => void handleSave()}>
               <HugeiconsIcon icon={Edit02Icon} strokeWidth={1.8} />
-              Save Changes
+              {t("adminProfile.saveChanges")}
             </Button>
           </div>
 
           <div className="mt-6 grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
-              <label className="text-sm font-medium">First Name</label>
+              <label className="text-sm font-medium">{t("adminProfile.firstName")}</label>
               <Input
                 value={draft.first_name ?? user?.first_name ?? ""}
                 onChange={(event) =>
@@ -120,7 +122,7 @@ export default function ProfilePage() {
               />
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium">Last Name</label>
+              <label className="text-sm font-medium">{t("adminProfile.lastName")}</label>
               <Input
                 value={draft.last_name ?? user?.last_name ?? ""}
                 onChange={(event) =>
@@ -129,7 +131,7 @@ export default function ProfilePage() {
               />
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium">Email</label>
+              <label className="text-sm font-medium">{t("adminProfile.email")}</label>
               <Input
                 value={draft.email ?? user?.email ?? ""}
                 onChange={(event) =>
@@ -138,7 +140,7 @@ export default function ProfilePage() {
               />
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium">Phone Number</label>
+              <label className="text-sm font-medium">{t("adminProfile.phoneNumber")}</label>
               <Input
                 value={draft.phone ?? user?.phone ?? ""}
                 onChange={(event) =>
@@ -147,11 +149,11 @@ export default function ProfilePage() {
               />
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium">Department</label>
-              <Input value="Platform Access" readOnly />
+              <label className="text-sm font-medium">{t("adminProfile.department")}</label>
+              <Input value={t("adminProfile.platformAccess")} readOnly />
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium">Role</label>
+              <label className="text-sm font-medium">{t("adminProfile.role")}</label>
               <Input value={roleLabel} disabled />
             </div>
           </div>
