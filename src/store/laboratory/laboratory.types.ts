@@ -17,6 +17,7 @@ export interface LabRequestItemApi {
 
 export interface LabRequestApi {
     uuid: string;
+    appointment_uuid: string;
     consultation_uuid: string;
     doctor_uuid: string;
     doctor_name: string;
@@ -36,7 +37,7 @@ export interface LabResultApi {
     remarks: string;
     verified_by_uuid: string;
     verified_by_name: string;
-    verified_at: string;
+    verified_at: string | null;
     created_at: string;
     updated_at: string;
 }
@@ -61,6 +62,7 @@ export interface LabRequestItem {
 
 export interface LabRequest {
     id: string;
+    appointmentId: string;
     consultationId: string;
     doctorId: string;
     doctorName: string;
@@ -80,7 +82,7 @@ export interface LabResult {
     remarks: string;
     verifiedById: string;
     verifiedByName: string;
-    verifiedAt: string;
+    verifiedAt: string | null;
     createdAt: string;
     updatedAt: string;
 }

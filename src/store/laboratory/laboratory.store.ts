@@ -56,6 +56,7 @@ function mapLabRequestItem(apiItem: LabRequestItemApi): LabRequestItem {
 function mapLabRequest(apiReq: LabRequestApi): LabRequest {
     return {
         id: apiReq.uuid,
+        appointmentId: apiReq.appointment_uuid,
         consultationId: apiReq.consultation_uuid,
         doctorId: apiReq.doctor_uuid,
         doctorName: apiReq.doctor_name,

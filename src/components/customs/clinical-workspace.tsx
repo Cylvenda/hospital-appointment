@@ -20,6 +20,7 @@ import {
 } from "@hugeicons/core-free-icons"
 import type { Appointment } from "@/store/appointments/appointment.types"
 import { clinicalService, type ConsultationApi, type DiagnosisApi, type LabRequestApi, type LabTestApi, type PrescriptionApi } from "@/api/services/clinical.service"
+import { getAppointmentQueueForRole } from "@/lib/appointment-queues"
 
 type Props = {
      appointment: Appointment
@@ -42,6 +43,19 @@ type ConsultationForm = {
 }
 
 type ConsultationFormErrors = Partial<Record<keyof ConsultationForm, string>>
+
+type LabResultSummary = {
+     uuid: string
+     request_item_uuid: string
+     test_name: string
+     result: string
+     remarks: string
+     verified_by_uuid: string
+     verified_by_name: string
+     verified_at: string | null
+     created_at: string
+     updated_at: string
+}
 
 const emptyDiagnosis: DiagnosisForm = {
      disease_name: "",
@@ -70,6 +84,7 @@ export function ClinicalWorkspace({ appointment }: Props) {
      const [diagnoses, setDiagnoses] = useState<DiagnosisApi[]>([])
      const [prescriptions, setPrescriptions] = useState<PrescriptionApi[]>([])
      const [labRequests, setLabRequests] = useState<LabRequestApi[]>([])
+     const [labResults, setLabResults] = useState<LabResultSummary[]>([])
      const [labTests, setLabTests] = useState<LabTestApi[]>([])
      const [loading, setLoading] = useState(true)
      const [actionState, setActionState] = useState<ActionState>("idle")
@@ -79,11 +94,26 @@ export function ClinicalWorkspace({ appointment }: Props) {
      const [consultationErrors, setConsultationErrors] = useState<ConsultationFormErrors>({})
      const [prescriptionNotes, setPrescriptionNotes] = useState("")
      const [prescriptionItem, setPrescriptionItem] = useState(emptyPrescriptionItem)
+     const [selectedLabTestUuids, setSelectedLabTestUuids] = useState<string[]>([])
      const [selectedLabTestUuid, setSelectedLabTestUuid] = useState("")
-     const consultation = useMemo(
+    const consultation = useMemo(
           () => consultations.find((entry) => entry.appointment_uuid === appointment.id) ?? null,
           [appointment.id, consultations]
      )
+    const isVisitOpen = getAppointmentQueueForRole(appointment, "doctor") === "in-consultation"
+
+     const formatVerificationTime = (value: string | null) => {
+          if (!value) {
+               return "Pending verification"
+          }
+
+          const parsed = new Date(value)
+          if (Number.isNaN(parsed.getTime())) {
+               return "Pending verification"
+          }
+
+          return parsed.toLocaleString()
+     }
 
      useEffect(() => {
           if (!consultation) {
@@ -113,6 +143,23 @@ export function ClinicalWorkspace({ appointment }: Props) {
           () => labRequests.filter((request) => request.consultation_uuid === consultation?.uuid),
           [consultation?.uuid, labRequests]
      )
+
+     const labResultsByItemId = useMemo(() => {
+          return labResults.reduce<Record<string, LabResultSummary>>((acc, result) => {
+               acc[result.request_item_uuid] = result
+               return acc
+          }, {})
+     }, [labResults])
+
+     const consultationLabRequestsWithResults = useMemo(() => {
+          return consultationLabRequests.map((request) => ({
+               ...request,
+               items: request.items.map((item) => ({
+                    ...item,
+                    result: labResultsByItemId[item.uuid] ?? null,
+               })),
+          }))
+     }, [consultationLabRequests, labResultsByItemId])
 
      const consultationBaseline = useMemo(
           () => ({
@@ -150,22 +197,6 @@ export function ClinicalWorkspace({ appointment }: Props) {
     }, [consultation])
 
      const syncConsultation = async () => {
-          const validationErrors: ConsultationFormErrors = {}
-          if (
-               !consultationForm.chief_complaint.trim() &&
-               !consultationForm.history_of_present_illness.trim() &&
-               !consultationForm.physical_examination.trim() &&
-               !consultationForm.provisional_diagnosis.trim()
-          ) {
-               validationErrors.chief_complaint = "Add at least one consultation note before saving."
-          }
-
-          if (Object.keys(validationErrors).length > 0) {
-               setConsultationErrors(validationErrors)
-               toast.error("Please complete the consultation note before saving.")
-               throw new Error("Consultation note validation failed.")
-          }
-
           setConsultationErrors({})
           const payload = {
                appointment_uuid: appointment.id,
@@ -194,12 +225,13 @@ export function ClinicalWorkspace({ appointment }: Props) {
      const loadClinicalData = async () => {
           setLoading(true)
           try {
-               const [consultationsResponse, diagnosesResponse, prescriptionsResponse, labRequestsResponse, labTestsResponse] =
+               const [consultationsResponse, diagnosesResponse, prescriptionsResponse, labRequestsResponse, labResultsResponse, labTestsResponse] =
                     await Promise.all([
                          clinicalService.listConsultations(),
                          clinicalService.listDiagnoses(),
                          clinicalService.listPrescriptions(),
                          clinicalService.listLabRequests(),
+                         clinicalService.listLabResults(),
                          clinicalService.listLabTests(),
                     ])
 
@@ -207,6 +239,7 @@ export function ClinicalWorkspace({ appointment }: Props) {
                setDiagnoses(diagnosesResponse.data)
                setPrescriptions(prescriptionsResponse.data)
                setLabRequests(labRequestsResponse.data)
+               setLabResults(labResultsResponse.data)
                setLabTests(labTestsResponse.data)
           } catch (error) {
                console.error(error)
@@ -300,18 +333,34 @@ export function ClinicalWorkspace({ appointment }: Props) {
      }
 
      const handleCreateLabRequest = async () => {
-          if (!selectedLabTestUuid) {
-               toast.error("Please select a lab test.")
+          if (selectedLabTestUuids.length === 0) {
+               toast.error("Please select at least one lab test.")
                return
           }
 
           await runAction(async () => {
                const consultationRecord = await syncConsultation()
                await clinicalService.createLabRequest(consultationRecord.uuid, {
-                    items: [{ test_type_uuid: selectedLabTestUuid }],
+                    items: selectedLabTestUuids.map((test_type_uuid) => ({ test_type_uuid })),
                })
+               setSelectedLabTestUuids([])
                setSelectedLabTestUuid("")
           }, "Lab request created.")
+     }
+
+     const handleAddLabTest = () => {
+          if (!selectedLabTestUuid) return
+
+          setSelectedLabTestUuids((current) =>
+               current.includes(selectedLabTestUuid)
+                    ? current
+                    : [...current, selectedLabTestUuid]
+          )
+          setSelectedLabTestUuid("")
+     }
+
+     const handleRemoveLabTest = (uuid: string) => {
+          setSelectedLabTestUuids((current) => current.filter((item) => item !== uuid))
      }
 
      return (
@@ -320,11 +369,11 @@ export function ClinicalWorkspace({ appointment }: Props) {
                     <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
                          <div className="space-y-2">
                               <CardTitle className="flex items-center gap-2 text-2xl font-black tracking-tight">
-                                   <HugeiconsIcon icon={MedicalFileIcon} className="h-6 w-6 text-primary" />
-                                   Consultation Workspace
+                                                  <HugeiconsIcon icon={MedicalFileIcon} className="h-6 w-6 text-primary" />
+                                   Visit Workspace
                               </CardTitle>
                               <CardDescription className="max-w-3xl text-sm">
-                                   Use this panel to move a patient from appointment to consultation, diagnosis, prescription, and lab request without leaving the page.
+                                   Use this panel to open the visit, document findings, add diagnoses, issue prescriptions, and request labs without leaving the page.
                               </CardDescription>
                          </div>
 
@@ -352,12 +401,12 @@ export function ClinicalWorkspace({ appointment }: Props) {
                                    <div>
                                         <p className="text-xs font-black uppercase tracking-[0.22em] text-muted-foreground">Consultation Status</p>
                                         <p className="mt-2 text-lg font-bold">
-                                             {consultation ? `Consultation ${consultation.status.replace("_", " ")}` : "No consultation created yet"}
+                                             {consultation ? `Visit ${consultation.status.replace("_", " ")}` : "No visit created yet"}
                                         </p>
                                         <p className="text-sm text-muted-foreground">
                                              {consultation
-                                                  ? `Started at ${new Date(consultation.started_at).toLocaleString()}`
-                                                  : "Create the consultation record before adding diagnoses, prescriptions, or lab requests."}
+                                                  ? `Opened at ${new Date(consultation.started_at).toLocaleString()}`
+                                                  : "Open the visit before adding diagnoses, prescriptions, or lab requests."}
                                         </p>
                                    </div>
 
@@ -373,10 +422,10 @@ export function ClinicalWorkspace({ appointment }: Props) {
                                              }
                                         >
                                              {consultationDraftStatus === "saved"
-                                                  ? "Draft saved"
+                                                  ? "Visit note saved"
                                                   : consultationDraftStatus === "unsaved"
-                                                       ? "Unsaved changes"
-                                                       : "Draft empty"}
+                                                       ? "Unsaved visit note"
+                                                       : "No visit note yet"}
                                         </Badge>
                                         {lastSavedLabel && (
                                              <p className="self-center text-xs font-medium text-muted-foreground">
@@ -384,20 +433,22 @@ export function ClinicalWorkspace({ appointment }: Props) {
                                              </p>
                                         )}
                                         {!consultation ? (
-                                             <Button onClick={handleCreateConsultation} disabled={actionState === "loading"} className="rounded-2xl">
+                                                  <Button onClick={handleCreateConsultation} disabled={actionState === "loading"} className="rounded-2xl">
                                                   <HugeiconsIcon icon={PlusSignIcon} className="mr-2 h-4 w-4" />
-                                                  Create Consultation
-                                             </Button>
+                                                  Open Visit
+                                              </Button>
                                         ) : (
                                              <>
                                                   <Button variant="outline" onClick={handleStart} disabled={actionState === "loading"} className="rounded-2xl">
                                                        <HugeiconsIcon icon={RefreshIcon} className="mr-2 h-4 w-4" />
-                                                       Start Consultation
+                                                       Refresh Visit
                                                   </Button>
-                                                  <Button onClick={handleComplete} disabled={actionState === "loading"} className="rounded-2xl bg-emerald-600 hover:bg-emerald-700">
-                                                       <HugeiconsIcon icon={CheckCircle} className="mr-2 h-4 w-4" />
-                                                       Complete Consultation
-                                                  </Button>
+                                                  {isVisitOpen && (
+                                                       <Button onClick={handleComplete} disabled={actionState === "loading"} className="rounded-2xl bg-emerald-600 hover:bg-emerald-700">
+                                                            <HugeiconsIcon icon={CheckCircle} className="mr-2 h-4 w-4" />
+                                                            Close Visit
+                                                       </Button>
+                                                  )}
                                              </>
                                         )}
                                    </div>
@@ -406,10 +457,10 @@ export function ClinicalWorkspace({ appointment }: Props) {
                               <div className="rounded-2xl border border-border/60 bg-card p-5 shadow-sm">
                                    <div className="flex items-center gap-2">
                                         <HugeiconsIcon icon={MedicalFileIcon} className="h-5 w-5 text-primary" />
-                                        <h3 className="text-base font-bold">Consultation Note</h3>
+                                   <h3 className="text-base font-bold">Visit Note</h3>
                                    </div>
                                    <p className="mt-1 text-sm text-muted-foreground">
-                                        Save the core consultation note independently, then use the other actions to add diagnoses, prescriptions, and lab requests.
+                                        Save the core visit note independently, then use the other actions to add diagnoses, prescriptions, and lab requests.
                                    </p>
                                              <div className="mt-4 grid gap-4 xl:grid-cols-2">
                                         <div className="space-y-4">
@@ -470,11 +521,11 @@ export function ClinicalWorkspace({ appointment }: Props) {
                                         </div>
                                    </div>
                                    <div className="mt-4 flex flex-wrap items-center gap-3">
-                                        <Button onClick={handleCreateConsultation} disabled={actionState === "loading"} className="rounded-2xl">
-                                             Save Consultation Note
+                                             <Button onClick={handleCreateConsultation} disabled={actionState === "loading"} className="rounded-2xl">
+                                             Save Visit Note
                                         </Button>
                                         <p className="text-xs text-muted-foreground">
-                                             This will create the consultation if needed, or update the existing note.
+                                             This will open the visit if needed, or update the existing note.
                                         </p>
                                    </div>
                               </div>
@@ -484,7 +535,7 @@ export function ClinicalWorkspace({ appointment }: Props) {
                                         <div className="rounded-2xl border border-border/60 bg-card p-5 shadow-sm">
                                              <div className="flex items-center gap-2">
                                                   <HugeiconsIcon icon={StethoscopeIcon} className="h-5 w-5 text-primary" />
-                                                  <h3 className="text-base font-bold">Add Diagnosis</h3>
+                                                  <h3 className="text-base font-bold">Record Diagnosis</h3>
                                              </div>
                                              <div className="mt-4 grid gap-3">
                                                   <Input
@@ -516,7 +567,7 @@ export function ClinicalWorkspace({ appointment }: Props) {
                                                        ))}
                                                   </div>
                                                   <Button onClick={handleAddDiagnosis} disabled={actionState === "loading"} className="rounded-2xl">
-                                                       Add Diagnosis
+                                                       Record Diagnosis
                                                   </Button>
                                              </div>
                                         </div>
@@ -524,7 +575,7 @@ export function ClinicalWorkspace({ appointment }: Props) {
                                         <div className="rounded-2xl border border-border/60 bg-card p-5 shadow-sm">
                                              <div className="flex items-center gap-2">
                                                   <HugeiconsIcon icon={FileEditIcon} className="h-5 w-5 text-primary" />
-                                                  <h3 className="text-base font-bold">Create Prescription</h3>
+                                                  <h3 className="text-base font-bold">Write Prescription</h3>
                                              </div>
                                              <div className="mt-4 grid gap-3">
                                                   <Textarea
@@ -562,33 +613,66 @@ export function ClinicalWorkspace({ appointment }: Props) {
                                                        />
                                                   </div>
                                                   <Button onClick={handleCreatePrescription} disabled={actionState === "loading"} className="rounded-2xl">
-                                                       Create Prescription
+                                                       Write Prescription
                                                   </Button>
                                              </div>
                                         </div>
                                    </div>
 
                                    <div className="space-y-6">
-                                        <div className="rounded-2xl border border-border/60 bg-card p-5 shadow-sm">
+                                       <div className="rounded-2xl border border-border/60 bg-card p-5 shadow-sm">
                                              <div className="flex items-center gap-2">
                                                   <HugeiconsIcon icon={Clock03Icon} className="h-5 w-5 text-primary" />
-                                                  <h3 className="text-base font-bold">Request Lab Test</h3>
+                                                  <h3 className="text-base font-bold">Request Lab Tests</h3>
                                              </div>
-                                             <div className="mt-4 grid gap-3">
-                                                  <select
-                                                       className="h-10 rounded-2xl border border-input bg-background px-3 text-sm outline-none"
-                                                       value={selectedLabTestUuid}
-                                                       onChange={(e) => setSelectedLabTestUuid(e.target.value)}
-                                                  >
-                                                       <option value="">Select a test</option>
-                                                       {labTests.map((test) => (
-                                                            <option key={test.uuid} value={test.uuid}>
-                                                                 {test.name}
-                                                            </option>
-                                                       ))}
-                                                  </select>
-                                                  <Button onClick={handleCreateLabRequest} disabled={actionState === "loading"} className="rounded-2xl">
-                                                       Request Lab Test
+                                             <div className="mt-4 space-y-4">
+                                                  <div className="grid gap-3 sm:grid-cols-[1fr_auto]">
+                                                       <select
+                                                            className="h-10 rounded-2xl border border-input bg-background px-3 text-sm outline-none"
+                                                            value={selectedLabTestUuid}
+                                                            onChange={(e) => setSelectedLabTestUuid(e.target.value)}
+                                                       >
+                                                            <option value="">Select a test</option>
+                                                            {labTests.map((test) => (
+                                                                 <option key={test.uuid} value={test.uuid}>
+                                                                      {test.name}
+                                                                 </option>
+                                                            ))}
+                                                       </select>
+                                                       <Button
+                                                            type="button"
+                                                            variant="outline"
+                                                            onClick={handleAddLabTest}
+                                                            disabled={!selectedLabTestUuid}
+                                                            className="rounded-2xl"
+                                                       >
+                                                       Add to request
+                                                       </Button>
+                                                  </div>
+
+                                                  <div className="flex flex-wrap gap-2">
+                                                       {selectedLabTestUuids.length === 0 ? (
+                                                            <p className="text-sm text-muted-foreground">No tests selected yet.</p>
+                                                       ) : (
+                                                            selectedLabTestUuids.map((uuid) => {
+                                                                 const test = labTests.find((entry) => entry.uuid === uuid)
+                                                                 return (
+                                                                      <button
+                                                                           key={uuid}
+                                                                           type="button"
+                                                                           onClick={() => handleRemoveLabTest(uuid)}
+                                                                           className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-xs font-semibold text-primary transition hover:bg-primary/10"
+                                                                      >
+                                                                           {test?.name || "Selected test"}
+                                                                           <span className="text-primary/60">×</span>
+                                                                      </button>
+                                                                 )
+                                                            })
+                                                       )}
+                                                  </div>
+
+                                                  <Button onClick={handleCreateLabRequest} disabled={actionState === "loading" || selectedLabTestUuids.length === 0} className="rounded-2xl">
+                                                       Send Lab Request
                                                   </Button>
                                              </div>
                                         </div>
@@ -612,7 +696,7 @@ export function ClinicalWorkspace({ appointment }: Props) {
 
                                    <div className="rounded-2xl border border-border/60 bg-card p-5 shadow-sm">
                                         <h3 className="text-base font-bold">Orders & Workflow</h3>
-                                        <div className="mt-4 space-y-4">
+                                        <div className="mt-4 space-y-5">
                                              <div>
                                                   <p className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground">Prescriptions</p>
                                                   <p className="text-sm text-muted-foreground">{consultationPrescriptions.length} prescription(s)</p>
@@ -620,6 +704,76 @@ export function ClinicalWorkspace({ appointment }: Props) {
                                              <div>
                                                   <p className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground">Lab Requests</p>
                                                   <p className="text-sm text-muted-foreground">{consultationLabRequests.length} request(s)</p>
+                                             </div>
+
+                                             <div className="space-y-3 border-t border-border/60 pt-4">
+                                                  <div>
+                                                       <p className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground">Lab Replies</p>
+                                                       <p className="text-sm text-muted-foreground">
+                                                            Grouped by appointment, with each requested test and its answer below.
+                                                       </p>
+                                                  </div>
+
+                                                  {consultationLabRequestsWithResults.length === 0 ? (
+                                                       <div className="rounded-2xl border border-dashed border-border/60 bg-muted/20 p-4">
+                                                            <p className="text-sm text-muted-foreground">No lab requests have been created for this appointment yet.</p>
+                                                       </div>
+                                                  ) : (
+                                                       <div className="space-y-3">
+                                                            {consultationLabRequestsWithResults.map((request) => (
+                                                                 <div key={request.uuid} className="rounded-2xl border border-border/60 bg-muted/10 p-4">
+                                                                      <div className="flex flex-wrap items-center justify-between gap-3">
+                                                                           <div>
+                                                                                <p className="text-sm font-bold text-foreground">
+                                                                                     Appointment {request.appointment_uuid.slice(0, 8)}
+                                                                                </p>
+                                                                                <p className="text-xs text-muted-foreground">
+                                                                                     Request {request.uuid.slice(0, 8)} • {request.items.length} test(s)
+                                                                                </p>
+                                                                           </div>
+                                                                           <Badge variant="outline" className="rounded-full">
+                                                                                {request.status.replace("_", " ")}
+                                                                           </Badge>
+                                                                      </div>
+
+                                                                      <div className="mt-4 space-y-3">
+                                                                           {request.items.map((item) => {
+                                                                                const reply = item.result
+                                                                                return (
+                                                                                     <div key={item.uuid} className="rounded-2xl border border-border/60 bg-card p-3">
+                                                                                          <div className="flex flex-wrap items-center justify-between gap-2">
+                                                                                               <p className="font-semibold">{item.testTypeName}</p>
+                                                                                               {reply ? (
+                                                                                                    <Badge className="rounded-full bg-emerald-500 text-white">Answered</Badge>
+                                                                                               ) : (
+                                                                                                    <Badge variant="outline" className="rounded-full">Waiting</Badge>
+                                                                                               )}
+                                                                                          </div>
+                                                                                          {reply ? (
+                                                                                               <div className="mt-3 grid gap-2">
+                                                                                                    <div className="rounded-xl bg-muted/20 p-3">
+                                                                                                         <p className="text-[10px] font-black uppercase tracking-[0.22em] text-muted-foreground">Result</p>
+                                                                                                         <p className="mt-1 font-semibold">{reply.result}</p>
+                                                                                                    </div>
+                                                                                                    <div className="rounded-xl bg-muted/20 p-3">
+                                                                                                         <p className="text-[10px] font-black uppercase tracking-[0.22em] text-muted-foreground">Lab Remarks</p>
+                                                                                                         <p className="mt-1 text-sm text-muted-foreground">{reply.remarks || "No remarks added."}</p>
+                                                                                                    </div>
+                                                                                                    <p className="text-[11px] text-muted-foreground">
+                                                                                                         Verified by {reply.verified_by_name} on {formatVerificationTime(reply.verified_at)}
+                                                                                                    </p>
+                                                                                               </div>
+                                                                                          ) : (
+                                                                                               <p className="mt-3 text-sm text-muted-foreground">No reply has been recorded for this test yet.</p>
+                                                                                          )}
+                                                                                     </div>
+                                                                                )
+                                                                           })}
+                                                                      </div>
+                                                                 </div>
+                                                            ))}
+                                                       </div>
+                                                  )}
                                              </div>
                                         </div>
                                    </div>

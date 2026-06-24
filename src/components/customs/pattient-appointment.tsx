@@ -23,7 +23,7 @@ import { hasAppointmentStatus } from "@/lib/appointment-queues"
 
 type Props = {
      appointment: Appointment
-     onCancel?: (appointmentId: string) => void | Promise<void>
+     onCancel?: (appointmentId: string, reason?: string) => void | Promise<void>
      hideViewDetails?: boolean
 }
 
@@ -260,8 +260,7 @@ export default function AppointmentDisplay({
                                         onConfirm={async (reason) => {
                                              setLoading(true)
                                              try {
-                                                  await onCancel?.(appointment.id)
-                                                  console.log("Reason:", reason)
+                                                  await onCancel?.(appointment.id, reason)
                                              } finally {
                                                   setLoading(false)
                                              }

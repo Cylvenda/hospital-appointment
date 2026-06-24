@@ -16,6 +16,7 @@ import { LayoutBottomIcon, Settings05Icon, DashboardCircleIcon, Doctor01Icon, Pe
 import { Separator } from "./ui/separator"
 import { useAuthUserStore } from "@/store/auth/userAuth.store"
 import { useTranslation } from "@/lib/i18n"
+import { formatRoleLabel } from "@/lib/format-role"
 
 const navMain = [
   {
@@ -138,7 +139,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const displayName =
     `${user?.first_name ?? ""} ${user?.last_name ?? ""}`.trim() || "User"
   const roleLabel = user?.role
-    ? user.role.charAt(0).toUpperCase() + user.role.slice(1)
+    ? user.role === "admin"
+      ? "ICT Officer"
+      : formatRoleLabel(user.role)
     : t("nav.authenticatedUser")
 
   return (

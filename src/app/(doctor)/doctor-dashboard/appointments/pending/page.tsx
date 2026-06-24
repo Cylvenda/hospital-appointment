@@ -63,7 +63,7 @@ export default function DoctorPendingAppointmentsPage() {
   }
 
   return (
-    <div className="w-full max-w-7xl space-y-6 p-4 md:p-6">
+    <div className="w-full max-w-8xl space-y-6 p-4 md:p-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-black tracking-tight italic sm:text-3xl">Assigned Patients</h1>

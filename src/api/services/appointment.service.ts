@@ -130,12 +130,13 @@ export const appointmentService = {
           }
      },
 
-     async cancelAppointment(appointmentId: string): Promise<ApiResponse<AppointmentApi>> {
-          const response = await api.patch<AppointmentApi>(
-               `${API_ENDPOINTS.APPOINTMENTS}${appointmentId}/`,
-               {
-                    status: "cancelled",
-               }
+     async cancelAppointment(
+          appointmentId: string,
+          reason?: string
+     ): Promise<ApiResponse<AppointmentApi>> {
+          const response = await api.post<AppointmentApi>(
+               `${API_ENDPOINTS.APPOINTMENTS}${appointmentId}/cancel/`,
+               reason ? { reason } : undefined
           )
 
           return {

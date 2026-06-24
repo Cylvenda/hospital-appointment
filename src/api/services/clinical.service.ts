@@ -65,6 +65,7 @@ export type LabTestApi = {
 
 export type LabRequestApi = {
      uuid: string
+     appointment_uuid: string
      consultation_uuid: string
      doctor_uuid: string | null
      doctor_name: string | null
@@ -236,6 +237,33 @@ export const clinicalService = {
 
      async listLabRequests(): Promise<ApiResponse<LabRequestApi[]>> {
           const response = await api.get<LabRequestApi[]>(API_ENDPOINTS.LAB_REQUESTS)
+          return { status: response.status, data: response.data }
+     },
+
+     async listLabResults(): Promise<ApiResponse<Array<{
+          uuid: string
+          request_item_uuid: string
+          test_name: string
+          result: string
+          remarks: string
+          verified_by_uuid: string
+          verified_by_name: string
+          verified_at: string | null
+          created_at: string
+          updated_at: string
+     }>>> {
+          const response = await api.get<Array<{
+               uuid: string
+               request_item_uuid: string
+               test_name: string
+               result: string
+               remarks: string
+               verified_by_uuid: string
+               verified_by_name: string
+               verified_at: string | null
+               created_at: string
+               updated_at: string
+          }>>(API_ENDPOINTS.LAB_RESULTS)
           return { status: response.status, data: response.data }
      },
 

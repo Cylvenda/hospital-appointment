@@ -43,7 +43,7 @@ type AppointmentStore = {
           description: string
      }) => Promise<void>
      assignAppointment: (payload: AssignPayload) => Promise<void>
-     cancelAppointment: (appointmentId: string) => Promise<void>
+     cancelAppointment: (appointmentId: string, reason?: string) => Promise<void>
      updateAppointment: (appointmentId: string, payload: { status?: string;[key: string]: unknown }) => Promise<void>
      PayingAppointment: (appointmentId: string, phone: string) => Promise<void>
 }
@@ -322,9 +322,15 @@ export const useAppointmentStore = create<AppointmentStore>((set) => ({
           }
      },
 
-     cancelAppointment: async (appointmentId: string) => {
+     cancelAppointment: async (appointmentId: string, reason?: string) => {
           try {
-               const response = await appointmentService.cancelAppointment(appointmentId)
+               const { user } = useAuthUserStore.getState()
+               const response =
+                    user?.role === "patient"
+                         ? await appointmentService.cancelAppointment(appointmentId, reason)
+                         : await appointmentService.updateAppointment(appointmentId, {
+                                status: "cancelled",
+                           })
 
                set((state) => ({
                     appointments: state.appointments.map((appointment) =>
@@ -333,7 +339,6 @@ export const useAppointmentStore = create<AppointmentStore>((set) => ({
                               : appointment
                     ),
                }))
-
                await useAppointmentStore.getState().initialize()
 
           } catch (error: unknown) {
