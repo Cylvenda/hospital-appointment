@@ -182,7 +182,7 @@ export default function LabTechDashboardPage() {
                                          </Button>
                                    </div>
                               </CardHeader>
-                              <CardContent className="p-0 flex-1 overflow-y-auto max-h-[500px]">
+                              <CardContent className="p-0 flex-1 overflow-y-auto max-h-125">
                                    {loading && requests.length === 0 ? (
                                         <div className="p-12 text-center flex flex-col items-center gap-3">
                                              <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin" />
@@ -194,7 +194,7 @@ export default function LabTechDashboardPage() {
                                                    <HugeiconsIcon icon={CheckCircle} className="w-8 h-8" />
                                               </div>
                                               <p className="text-muted-foreground font-medium text-lg">{t("labTech.allCaughtUp")}</p>
-                                              <p className="text-sm text-muted-foreground/60 max-w-[200px]">{t("labTech.noPendingRequests")}</p>
+                                              <p className="text-sm text-muted-foreground/60 max-w-50">{t("labTech.noPendingRequests")}</p>
                                          </div>
                                    ) : (
                                         <div className="divide-y divide-muted/40">
@@ -205,7 +205,7 @@ export default function LabTechDashboardPage() {
                                                             initial={{ opacity: 0, x: -20 }}
                                                             animate={{ opacity: 1, x: 0 }}
                                                             transition={{ delay: idx * 0.05 }}
-                                                            className="p-5 flex items-center justify-between hover:bg-primary/[0.02] transition-colors group"
+                                                            className="p-5 flex items-center justify-between hover:bg-primary/2 transition-colors group"
                                                        >
                                                             <div className="flex items-center gap-4">
                                                                  <div className="relative">

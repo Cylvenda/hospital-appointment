@@ -147,7 +147,7 @@ export default function AssignAppointment({
 
   return (
     <Card className="overflow-hidden rounded-2xl border-border/70 shadow-sm">
-      <div className="h-1 bg-gradient-to-r from-primary via-blue-500 to-emerald-500" />
+      <div className="h-1 bg-linear-to-r from-primary via-blue-500 to-emerald-500" />
       <CardHeader className="border-b bg-muted/15">
         <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
           <div className="flex items-start gap-3">

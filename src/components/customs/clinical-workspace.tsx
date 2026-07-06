@@ -500,7 +500,7 @@ export function ClinicalWorkspace({ appointment }: Props) {
 
   return (
     <Card className="rounded-3xl border border-border/60 shadow-lg overflow-hidden">
-      <CardHeader className="bg-gradient-to-r from-primary/10 via-transparent to-transparent border-b border-border/50">
+      <CardHeader className="bg-linear-to-r from-primary/10 via-transparent to-transparent border-b border-border/50">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
           <div className="space-y-2">
             <CardTitle className="flex items-center gap-2 text-2xl font-black tracking-tight">
@@ -808,7 +808,7 @@ export function ClinicalWorkspace({ appointment }: Props) {
                   </div>
                 </div>
 
-                <div className="overflow-hidden rounded-3xl border border-primary/15 bg-gradient-to-br from-primary/[0.06] via-card to-card shadow-sm">
+                <div className="overflow-hidden rounded-3xl border border-primary/15 bg-linear-to-br from-primary/6 via-card to-card shadow-sm">
                   <div className="border-b border-border/60 bg-card/70 p-5">
                     <div className="flex items-center gap-2">
                       <HugeiconsIcon
