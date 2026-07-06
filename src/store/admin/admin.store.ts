@@ -5,6 +5,7 @@ import type {
      AdminIllnessCategory,
      AdminIllnessCategoryWritePayload,
      AdminDoctorWritePayload,
+     AdminDoctorUpdatePayload,
      AdminOverview,
      AdminSettings,
      AdminSettingsUpdatePayload,
@@ -30,6 +31,10 @@ type AdminStore = {
      updateUser: (uuid: string, payload: Partial<AdminUserWritePayload>) => Promise<AdminUser>
      deleteUser: (uuid: string) => Promise<void>
      createDoctor: (payload: AdminDoctorWritePayload) => Promise<AdminDoctor>
+     updateDoctor: (
+          uuid: string,
+          payload: AdminDoctorUpdatePayload
+     ) => Promise<AdminDoctor>
      createIllnessCategory: (
           payload: AdminIllnessCategoryWritePayload
      ) => Promise<AdminIllnessCategory>
@@ -149,6 +154,16 @@ export const useAdminStore = create<AdminStore>((set) => ({
      createDoctor: async (payload) => {
           const response = await AdminService.createDoctor(payload)
           set((state) => ({ doctors: [response.data, ...state.doctors] }))
+          return response.data
+     },
+
+     updateDoctor: async (uuid, payload) => {
+          const response = await AdminService.updateDoctor(uuid, payload)
+          set((state) => ({
+               doctors: state.doctors.map((doctor) =>
+                    doctor.uuid === uuid ? response.data : doctor
+               ),
+          }))
           return response.data
      },
 

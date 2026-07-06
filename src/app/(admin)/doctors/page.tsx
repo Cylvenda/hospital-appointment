@@ -27,6 +27,9 @@ import { toast } from "react-toastify"
 import { useAdminStore } from "@/store/admin/admin.store"
 import { PasswordInput } from "@/components/password-input"
 import { Label } from "@/components/ui/label"
+import { DoctorScheduleManager } from "@/components/doctor-schedule-manager"
+import { DoctorProfileManager } from "@/components/doctor-profile-manager"
+import { cn } from "@/lib/utils"
 
 const emptyDoctorForm = {
   first_name: "",
@@ -35,6 +38,7 @@ const emptyDoctorForm = {
   phone: "",
   password: "",
   license_number: "",
+  category_uuids: [] as string[],
 }
 
 function statusClasses(status: string) {
@@ -51,7 +55,13 @@ function statusClasses(status: string) {
 
 export default function DoctorsPage() {
   const { t } = useTranslation()
-  const { doctors: doctorDirectory, fetchDoctors, createDoctor } = useAdminStore()
+  const {
+    doctors: doctorDirectory,
+    illnessCategories,
+    fetchDoctors,
+    fetchIllnessCategories,
+    createDoctor,
+  } = useAdminStore()
   const [search, setSearch] = useState("")
   const [sheetOpen, setSheetOpen] = useState(false)
   const [form, setForm] = useState(emptyDoctorForm)
@@ -59,7 +69,8 @@ export default function DoctorsPage() {
 
   useEffect(() => {
     void fetchDoctors()
-  }, [fetchDoctors])
+    void fetchIllnessCategories()
+  }, [fetchDoctors, fetchIllnessCategories])
 
   const doctors = useMemo(
     () =>
@@ -71,6 +82,7 @@ export default function DoctorsPage() {
             .includes(search.trim().toLowerCase())
         )
         .map((doctor) => ({
+          uuid: doctor.uuid,
           id: doctor.uuid.slice(0, 8).toUpperCase(),
           name: doctor.name,
           specialty: doctor.categories[0] || t("adminDoctors.general"),
@@ -107,6 +119,7 @@ export default function DoctorsPage() {
         password: form.password,
         license_number: form.license_number.trim(),
         is_available: true,
+        category_uuids: form.category_uuids,
       })
       toast.success(t("adminDoctors.doctorAddedSuccess"))
       setForm(emptyDoctorForm)
@@ -214,10 +227,18 @@ export default function DoctorsPage() {
             </div>
 
             <div className="mt-5 flex flex-wrap gap-2">
-              <Button className="rounded-md">{t("adminDoctors.viewProfile")}</Button>
-              <Button variant="outline" className="rounded-md" disabled>
-                {t("adminDoctors.updateSchedule")}
-              </Button>
+              {(() => {
+                const record = doctorDirectory.find(
+                  (item) => item.uuid === doctor.uuid
+                )
+                return record ? <DoctorProfileManager doctor={record} /> : null
+              })()}
+              {(() => {
+                const record = doctorDirectory.find(
+                  (item) => item.uuid === doctor.uuid
+                )
+                return record ? <DoctorScheduleManager doctor={record} /> : null
+              })()}
             </div>
           </div>
         ))}
@@ -297,6 +318,42 @@ export default function DoctorsPage() {
                   setForm((current) => ({ ...current, license_number: event.target.value }))
                 }
               />
+            </div>
+
+            <div className="space-y-2">
+              <Label>Departments</Label>
+              <p className="text-xs text-muted-foreground">
+                Select every department where this doctor can work.
+              </p>
+              <div className="grid gap-2 sm:grid-cols-2">
+                {illnessCategories.map((category) => {
+                  const selected = form.category_uuids.includes(category.uuid)
+                  return (
+                    <button
+                      key={category.uuid}
+                      type="button"
+                      onClick={() =>
+                        setForm((current) => ({
+                          ...current,
+                          category_uuids: selected
+                            ? current.category_uuids.filter(
+                                (uuid) => uuid !== category.uuid
+                              )
+                            : [...current.category_uuids, category.uuid],
+                        }))
+                      }
+                      className={cn(
+                        "rounded-xl border p-3 text-left text-sm",
+                        selected
+                          ? "border-primary bg-primary/10 text-primary"
+                          : "border-border"
+                      )}
+                    >
+                      {category.name}
+                    </button>
+                  )
+                })}
+              </div>
             </div>
           </div>
 

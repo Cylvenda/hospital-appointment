@@ -30,11 +30,16 @@ export type AdminDoctor = {
      uuid: string
      user_uuid: string
      name: string
+     first_name: string
+     last_name: string
      email: string
      phone: string
      license_number: string
      is_available: boolean
+     consultation_duration: number
+     max_appointments_per_day: number | null
      categories: string[]
+     category_uuids: string[]
 }
 
 export type AdminIllnessCategory = {
@@ -75,6 +80,20 @@ export type AdminDoctorWritePayload = {
      password: string
      license_number: string
      is_available: boolean
+     consultation_duration?: number
+     max_appointments_per_day?: number | null
+     category_uuids?: string[]
+}
+
+export type AdminDoctorUpdatePayload = {
+     first_name?: string
+     last_name?: string
+     email?: string
+     phone?: string
+     license_number?: string
+     is_available?: boolean
+     consultation_duration?: number
+     max_appointments_per_day?: number | null
      category_uuids?: string[]
 }
 

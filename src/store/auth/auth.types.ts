@@ -29,10 +29,9 @@ export type PatientProfile = {
      marital_status?: string
      occupation?: string
      veo_name?: string
-     region_uuid?: string
-     district_uuid?: string
-     region_name?: string
-     district_name?: string
+     region?: string
+     district?: string
+     ward?: string
      residence?: string
      blood_group?: string
      insurance_provider?: string
@@ -55,6 +54,16 @@ export type User = {
      is_admin: boolean
      is_staff: boolean
      patient_profile?: PatientProfile
+}
+
+type NullablePartial<T> = {
+     [K in keyof T]?: T[K] | null
+}
+
+export type UserUpdatePayload = NullablePartial<Omit<User, "patient_profile">> & {
+     patient_profile?: NullablePartial<Omit<PatientProfile, "next_of_kin">> & {
+          next_of_kin?: NullablePartial<NextOfKin>
+     }
 }
 
 export type AccountActivation = {

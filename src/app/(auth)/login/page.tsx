@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button"
 import { FormInput, FieldInput, PasswordInput } from "@/components/customs/form"
 import Link from "next/link"
 import { useAuthUserStore } from "@/store/auth/userAuth.store"
-import { useState } from "react"
+import { Suspense, useState } from "react"
 import { authUserService } from "@/api/services/auth.service"
 import { useRouter, useSearchParams } from "next/navigation"
 import { toast } from "react-toastify"
@@ -20,7 +20,7 @@ import { useTranslation } from "@/lib/i18n"
 
 type LoginFormValues = z.infer<typeof LoginFormSchema>
 
-export default function LoginPage() {
+function LoginForm() {
      const { t } = useTranslation()
      const router = useRouter()
      const searchParams = useSearchParams()
@@ -123,5 +123,13 @@ export default function LoginPage() {
                     </form>
                </FormInput>
           </div>
+     )
+}
+
+export default function LoginPage() {
+     return (
+          <Suspense fallback={<div className="min-h-96 animate-pulse rounded-2xl bg-muted/30" />}>
+               <LoginForm />
+          </Suspense>
      )
 }

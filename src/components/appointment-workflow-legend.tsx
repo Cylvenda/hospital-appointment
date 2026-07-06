@@ -15,6 +15,7 @@ import { cn } from "@/lib/utils"
 import { getAppointmentWorkflowSteps } from "@/lib/appointment-workflow"
 import { getRoleQueueEntries } from "@/lib/appointment-queues"
 import type { AppointmentRole } from "@/lib/appointment-queues"
+import { useTranslation } from "@/lib/i18n"
 
 type Props = {
   className?: string
@@ -30,6 +31,7 @@ const toneClasses = {
 } as const
 
 export function AppointmentWorkflowLegend({ className, role = "receptionist" }: Props) {
+  const { t } = useTranslation()
   const queueEntries = getRoleQueueEntries(role).slice(0, 4)
   const workflowSteps = getAppointmentWorkflowSteps(role)
 
@@ -39,18 +41,18 @@ export function AppointmentWorkflowLegend({ className, role = "receptionist" }: 
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div className="space-y-1">
             <p className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground">
-              Appointment Workflow
+              {t("workflowLegend.eyebrow")}
             </p>
             <h3 className="text-xl font-black tracking-tight">
-              One canonical record, role-specific queues
+              {t("workflowLegend.title")}
             </h3>
             <p className="max-w-2xl text-sm text-muted-foreground">
-              Patients create one appointment record, and each team sees the slice of work that matters to them.
+              {t("workflowLegend.description")}
             </p>
           </div>
 
           <div className="flex flex-wrap gap-2">
-            {queueEntries.map(({ queue, label }) => {
+            {queueEntries.map(({ queue }) => {
               return (
                 <Badge
                   key={queue}
@@ -64,7 +66,7 @@ export function AppointmentWorkflowLegend({ className, role = "receptionist" }: 
                         : toneClasses.emerald
                   )}
                 >
-                  {label}
+                  {t(`workflowLegend.queue.${queue}`)}
                 </Badge>
               )
             })}
@@ -85,7 +87,7 @@ export function AppointmentWorkflowLegend({ className, role = "receptionist" }: 
                   </div>
                   <div>
                     <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">
-                      Step {index + 1}
+                      {t("booking.stepLabel", { step: index + 1 })}
                     </p>
                     <h4 className="text-sm font-bold">{step.title}</h4>
                   </div>
@@ -103,12 +105,12 @@ export function AppointmentWorkflowLegend({ className, role = "receptionist" }: 
             <HugeiconsIcon icon={ArrowRight02Icon} className="h-4 w-4 text-primary" />
             <span>
               {role === "doctor"
-                ? "Clinicians see only the workflow needed to review and complete a visit."
-                : "Each role sees the part of the workflow that matches their responsibilities."}
+                ? t("workflowLegend.doctorFooter")
+                : t("workflowLegend.staffFooter")}
             </span>
           </div>
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-            Same appointment, different operational views
+            {t("workflowLegend.footerTagline")}
           </p>
         </div>
       </CardContent>

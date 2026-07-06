@@ -4,8 +4,10 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { motion } from "framer-motion"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { UserAccountIcon } from "@hugeicons/core-free-icons"
+import { useTranslation } from "@/lib/i18n"
 
 export default function ProfilePage() {
+  const { t } = useTranslation()
   return (
     <motion.div
       className="mx-auto w-full max-w-6xl space-y-8 p-4 md:p-8"
@@ -15,11 +17,11 @@ export default function ProfilePage() {
       <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-foreground flex items-center gap-2">
-            <HugeiconsIcon icon={UserAccountIcon} className="w-8 h-8 text-primary" />
-            My Profile
+             <HugeiconsIcon icon={UserAccountIcon} className="w-8 h-8 text-primary" />
+             {t("labTech.myProfile")}
           </h1>
           <p className="text-muted-foreground mt-1">
-            Manage your account details and preferences.
+             {t("labTech.manageAccountDetails")}
           </p>
         </div>
       </div>
@@ -27,14 +29,14 @@ export default function ProfilePage() {
       <Card className="shadow-sm border-muted/40">
         <CardHeader className="bg-muted/10 pb-4 border-b border-muted/20">
           <CardTitle className="text-lg font-semibold flex items-center gap-2 text-primary">
-            Account Information
+            {t("labTech.accountInformation")}
           </CardTitle>
           <CardDescription>
-            Update your credentials
+            {t("labTech.updateCredentials")}
           </CardDescription>
         </CardHeader>
         <CardContent className="p-12 text-center text-muted-foreground">
-          <p>Profile Editor Coming Soon</p>
+          <p>{t("labTech.profileEditorComingSoon")}</p>
         </CardContent>
       </Card>
     </motion.div>

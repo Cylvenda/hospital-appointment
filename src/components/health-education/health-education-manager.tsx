@@ -32,8 +32,14 @@ import { useHealthEducationStore } from "@/store/health-education/health-educati
 import { healthEducationService } from "@/api/services/health-education.service"
 import type { EducationalContent, ContentCategory } from "@/store/health-education/health-education.types"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { useTranslation } from "@/lib/i18n"
+
+function errorMessage(error: unknown, fallback: string) {
+    return error instanceof Error && error.message ? error.message : fallback
+}
 
 export function HealthEducationManager() {
+    const { t } = useTranslation()
     const { contents, categories, loading, fetchContents, fetchCategories, createContent, updateContent, deleteContent, createCategory, updateCategory, deleteCategory } = useHealthEducationStore()
     
     const [isAddOpen, setIsAddOpen] = useState(false)
@@ -97,8 +103,8 @@ export function HealthEducationManager() {
             setStatus(fullContent.status)
             setFile(null)
             setIsEditOpen(true)
-        } catch (error) {
-            toast.error("Failed to fetch full content details")
+        } catch {
+            toast.error(t("healthEducation.fetchContentDetailsError"))
         } finally {
             setIsSubmitting(false)
         }
@@ -111,18 +117,18 @@ export function HealthEducationManager() {
 
     const handleCreateCategory = async () => {
         if (!categoryName) {
-            toast.error("Category name is required")
+            toast.error(t("healthEducation.categoryNameRequired"))
             return
         }
 
         setIsSubmitting(true)
         try {
             await createCategory({ name: categoryName, description: categoryDescription })
-            toast.success("Category created successfully")
+            toast.success(t("healthEducation.categoryCreated"))
             setIsCategoryOpen(false)
             resetCategoryForm()
-        } catch (error: any) {
-            toast.error(error || "Failed to create category")
+        } catch (error: unknown) {
+            toast.error(errorMessage(error, t("healthEducation.categoryCreateError")))
         } finally {
             setIsSubmitting(false)
         }
@@ -134,11 +140,11 @@ export function HealthEducationManager() {
         setIsSubmitting(true)
         try {
             await updateCategory(selectedCategory.slug, { name: categoryName, description: categoryDescription })
-            toast.success("Category updated successfully")
+            toast.success(t("healthEducation.categoryUpdated"))
             setIsEditCategoryOpen(false)
             resetCategoryForm()
-        } catch (error: any) {
-            toast.error(error || "Failed to update category")
+        } catch (error: unknown) {
+            toast.error(errorMessage(error, t("healthEducation.categoryUpdateError")))
         } finally {
             setIsSubmitting(false)
         }
@@ -150,11 +156,11 @@ export function HealthEducationManager() {
         setIsSubmitting(true)
         try {
             await deleteCategory(selectedCategory.slug)
-            toast.success("Category deleted successfully")
+            toast.success(t("healthEducation.categoryDeleted"))
             setIsDeleteCategoryOpen(false)
             resetCategoryForm()
-        } catch (error: any) {
-            toast.error(error || "Failed to delete category")
+        } catch (error: unknown) {
+            toast.error(errorMessage(error, t("healthEducation.categoryDeleteError")))
         } finally {
             setIsSubmitting(false)
         }
@@ -162,7 +168,7 @@ export function HealthEducationManager() {
 
     const handleCreate = async () => {
         if (!title || !categoryId) {
-            toast.error("Title and Category are required")
+            toast.error(t("healthEducation.titleCategoryRequired"))
             return
         }
 
@@ -180,11 +186,11 @@ export function HealthEducationManager() {
             }
 
             await createContent(formData)
-            toast.success("Content created successfully")
+            toast.success(t("healthEducation.contentCreated"))
             setIsAddOpen(false)
             resetForm()
-        } catch (error: any) {
-            toast.error(error || "Failed to create content")
+        } catch (error: unknown) {
+            toast.error(errorMessage(error, t("healthEducation.contentCreateError")))
         } finally {
             setIsSubmitting(false)
         }
@@ -207,11 +213,11 @@ export function HealthEducationManager() {
             }
 
             await updateContent(selectedContent.slug, formData)
-            toast.success("Content updated successfully")
+            toast.success(t("healthEducation.contentUpdated"))
             setIsEditOpen(false)
             resetForm()
-        } catch (error: any) {
-            toast.error(error || "Failed to update content")
+        } catch (error: unknown) {
+            toast.error(errorMessage(error, t("healthEducation.contentUpdateError")))
         } finally {
             setIsSubmitting(false)
         }
@@ -223,11 +229,11 @@ export function HealthEducationManager() {
         setIsSubmitting(true)
         try {
             await deleteContent(selectedContent.slug)
-            toast.success("Content deleted successfully")
+            toast.success(t("healthEducation.contentDeleted"))
             setIsDeleteOpen(false)
             resetForm()
-        } catch (error: any) {
-            toast.error(error || "Failed to delete content")
+        } catch (error: unknown) {
+            toast.error(errorMessage(error, t("healthEducation.contentDeleteError")))
         } finally {
             setIsSubmitting(false)
         }
@@ -243,28 +249,28 @@ export function HealthEducationManager() {
                 <div>
                     <h1 className="text-3xl font-bold tracking-tight text-foreground flex items-center gap-2">
                         <HugeiconsIcon icon={Book01Icon} className="w-8 h-8 text-primary" />
-                        Manage Health Education
+                        {t("healthEducation.title")}
                     </h1>
                     <p className="text-muted-foreground mt-1">
-                        Publish and edit articles, videos, and FAQs for patients.
+                        {t("healthEducation.subtitle")}
                     </p>
                 </div>
                 <div className="flex items-center gap-3">
                     <Button variant="outline" onClick={() => { resetCategoryForm(); setIsCategoryOpen(true); }} className="gap-2">
                         <HugeiconsIcon icon={Add01Icon} className="w-4 h-4" />
-                        New Category
+                        {t("healthEducation.newCategory")}
                     </Button>
                     <Button onClick={() => { resetForm(); setIsAddOpen(true); }} className="gap-2">
                         <HugeiconsIcon icon={Add01Icon} className="w-4 h-4" />
-                        Publish Content
+                        {t("healthEducation.publishContent")}
                     </Button>
                 </div>
             </div>
 
             <Tabs defaultValue="contents" className="w-full">
                 <TabsList className="mb-4">
-                    <TabsTrigger value="contents">Contents</TabsTrigger>
-                    <TabsTrigger value="categories">Categories</TabsTrigger>
+                    <TabsTrigger value="contents">{t("healthEducation.contentsTab")}</TabsTrigger>
+                    <TabsTrigger value="categories">{t("healthEducation.categoriesTab")}</TabsTrigger>
                 </TabsList>
                 
                 <TabsContent value="contents" className="mt-0">
@@ -272,24 +278,24 @@ export function HealthEducationManager() {
                 <Table>
                     <TableHeader className="bg-muted/50">
                         <TableRow>
-                            <TableHead>Title</TableHead>
-                            <TableHead>Category</TableHead>
-                            <TableHead>Type</TableHead>
-                            <TableHead>Status</TableHead>
-                            <TableHead className="text-right">Actions</TableHead>
+                            <TableHead>{t("healthEducation.table.title")}</TableHead>
+                            <TableHead>{t("healthEducation.table.category")}</TableHead>
+                            <TableHead>{t("healthEducation.table.type")}</TableHead>
+                            <TableHead>{t("common.status")}</TableHead>
+                            <TableHead className="text-right">{t("common.actions")}</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
                         {loading && contents.length === 0 ? (
                             <TableRow>
                                 <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
-                                    Loading contents...
+                                    {t("healthEducation.loadingContents")}
                                 </TableCell>
                             </TableRow>
                         ) : contents.length === 0 ? (
                             <TableRow>
                                 <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
-                                    No contents found. Add a new one to get started.
+                                    {t("healthEducation.noContents")}
                                 </TableCell>
                             </TableRow>
                         ) : (
@@ -299,10 +305,10 @@ export function HealthEducationManager() {
                                     <TableCell>
                                         <Badge variant="outline">{item.category.name}</Badge>
                                     </TableCell>
-                                    <TableCell>{item.contentType}</TableCell>
+                                    <TableCell>{t(`healthEducation.contentTypes.${item.contentType}`)}</TableCell>
                                     <TableCell>
                                         <Badge variant={item.status === "PUBLISHED" ? "default" : item.status === "DRAFT" ? "secondary" : "destructive"}>
-                                            {item.status}
+                                            {t(`healthEducation.statuses.${item.status}`)}
                                         </Badge>
                                     </TableCell>
                                     <TableCell className="text-right">
@@ -333,33 +339,33 @@ export function HealthEducationManager() {
                         <Table>
                             <TableHeader className="bg-muted/50">
                                 <TableRow>
-                                    <TableHead>Category Name</TableHead>
-                                    <TableHead>Description</TableHead>
-                                    <TableHead>Status</TableHead>
-                                    <TableHead className="text-right">Actions</TableHead>
+                                    <TableHead>{t("healthEducation.categoryName")}</TableHead>
+                                    <TableHead>{t("common.description")}</TableHead>
+                                    <TableHead>{t("common.status")}</TableHead>
+                                    <TableHead className="text-right">{t("common.actions")}</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
                                 {loading && categories.length === 0 ? (
                                     <TableRow>
                                         <TableCell colSpan={4} className="text-center py-8 text-muted-foreground">
-                                            Loading categories...
+                                            {t("healthEducation.loadingCategories")}
                                         </TableCell>
                                     </TableRow>
                                 ) : categories.length === 0 ? (
                                     <TableRow>
                                         <TableCell colSpan={4} className="text-center py-8 text-muted-foreground">
-                                            No categories found. Add a new one to get started.
+                                            {t("healthEducation.noCategories")}
                                         </TableCell>
                                     </TableRow>
                                 ) : (
                                     categories.map((item) => (
                                         <TableRow key={item.id}>
                                             <TableCell className="font-semibold">{item.name}</TableCell>
-                                            <TableCell className="text-muted-foreground truncate max-w-[300px]">{item.description || "N/A"}</TableCell>
+                                            <TableCell className="text-muted-foreground truncate max-w-[300px]">{item.description || t("healthEducation.na")}</TableCell>
                                             <TableCell>
                                                 <Badge variant={item.isActive ? "default" : "secondary"}>
-                                                    {item.isActive ? "Active" : "Inactive"}
+                                                    {item.isActive ? t("search.active") : t("search.inactive")}
                                                 </Badge>
                                             </TableCell>
                                             <TableCell className="text-right">
@@ -393,20 +399,20 @@ export function HealthEducationManager() {
             <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
                 <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
                     <DialogHeader>
-                        <DialogTitle>Publish New Content</DialogTitle>
-                        <DialogDescription>Create an article, video link, or FAQ for patients.</DialogDescription>
+                        <DialogTitle>{t("healthEducation.publishNewContent")}</DialogTitle>
+                        <DialogDescription>{t("healthEducation.publishNewContentDescription")}</DialogDescription>
                     </DialogHeader>
                     <div className="grid gap-4 py-4">
                         <div className="space-y-2">
-                            <label className="text-sm font-semibold">Title</label>
-                            <Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="e.g. How to manage Hypertension" />
+                            <label className="text-sm font-semibold">{t("healthEducation.table.title")}</label>
+                            <Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder={t("healthEducation.titlePlaceholder")} />
                         </div>
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-2">
-                                <label className="text-sm font-semibold">Category</label>
+                                <label className="text-sm font-semibold">{t("healthEducation.table.category")}</label>
                                 <Select value={categoryId} onValueChange={setCategoryId}>
                                     <SelectTrigger>
-                                        <SelectValue placeholder="Select a category" />
+                                        <SelectValue placeholder={t("healthEducation.selectCategory")} />
                                     </SelectTrigger>
                                     <SelectContent>
                                         {categories.map((cat) => (
@@ -416,50 +422,50 @@ export function HealthEducationManager() {
                                 </Select>
                             </div>
                             <div className="space-y-2">
-                                <label className="text-sm font-semibold">Content Type</label>
+                                <label className="text-sm font-semibold">{t("healthEducation.table.type")}</label>
                                 <Select value={contentType} onValueChange={setContentType}>
                                     <SelectTrigger>
                                         <SelectValue />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="ARTICLE">Article</SelectItem>
-                                        <SelectItem value="VIDEO">Video</SelectItem>
-                                        <SelectItem value="INFOGRAPHIC">Infographic</SelectItem>
-                                        <SelectItem value="FAQ">FAQ</SelectItem>
+                                        <SelectItem value="ARTICLE">{t("healthEducation.contentTypes.ARTICLE")}</SelectItem>
+                                        <SelectItem value="VIDEO">{t("healthEducation.contentTypes.VIDEO")}</SelectItem>
+                                        <SelectItem value="INFOGRAPHIC">{t("healthEducation.contentTypes.INFOGRAPHIC")}</SelectItem>
+                                        <SelectItem value="FAQ">{t("healthEducation.contentTypes.FAQ")}</SelectItem>
                                     </SelectContent>
                                 </Select>
                             </div>
                         </div>
                         <div className="space-y-2">
-                            <label className="text-sm font-semibold">Status</label>
+                            <label className="text-sm font-semibold">{t("common.status")}</label>
                             <Select value={status} onValueChange={setStatus}>
                                 <SelectTrigger>
                                     <SelectValue />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="DRAFT">Draft</SelectItem>
-                                    <SelectItem value="PUBLISHED">Published</SelectItem>
-                                    <SelectItem value="ARCHIVED">Archived</SelectItem>
+                                    <SelectItem value="DRAFT">{t("healthEducation.statuses.DRAFT")}</SelectItem>
+                                    <SelectItem value="PUBLISHED">{t("healthEducation.statuses.PUBLISHED")}</SelectItem>
+                                    <SelectItem value="ARCHIVED">{t("healthEducation.statuses.ARCHIVED")}</SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>
                         <div className="space-y-2">
-                            <label className="text-sm font-semibold">Summary</label>
-                            <Textarea value={summary} onChange={(e) => setSummary(e.target.value)} placeholder="Brief summary for cards..." />
+                            <label className="text-sm font-semibold">{t("healthEducation.summary")}</label>
+                            <Textarea value={summary} onChange={(e) => setSummary(e.target.value)} placeholder={t("healthEducation.summaryPlaceholder")} />
                         </div>
                         <div className="space-y-2">
-                            <label className="text-sm font-semibold">Full Content (HTML allowed)</label>
-                            <Textarea value={content} onChange={(e) => setContentText(e.target.value)} className="min-h-[200px]" placeholder="<p>Article content goes here...</p>" />
+                            <label className="text-sm font-semibold">{t("healthEducation.fullContent")}</label>
+                            <Textarea value={content} onChange={(e) => setContentText(e.target.value)} className="min-h-[200px]" placeholder={t("healthEducation.contentPlaceholder")} />
                         </div>
                         <div className="space-y-2">
-                            <label className="text-sm font-semibold">Featured Image</label>
+                            <label className="text-sm font-semibold">{t("healthEducation.featuredImage")}</label>
                             <Input type="file" onChange={(e) => setFile(e.target.files?.[0] || null)} accept="image/jpeg, image/png, image/webp" />
-                            <p className="text-xs text-muted-foreground mt-1">Required format: JPG, PNG, WEBP. Max size: 5MB.</p>
+                            <p className="text-xs text-muted-foreground mt-1">{t("healthEducation.imageHelp")}</p>
                         </div>
                     </div>
                     <DialogFooter>
-                        <Button variant="outline" onClick={() => setIsAddOpen(false)} disabled={isSubmitting}>Cancel</Button>
-                        <Button onClick={handleCreate} disabled={isSubmitting}>{isSubmitting ? "Saving..." : "Publish"}</Button>
+                        <Button variant="outline" onClick={() => setIsAddOpen(false)} disabled={isSubmitting}>{t("common.cancel")}</Button>
+                        <Button onClick={handleCreate} disabled={isSubmitting}>{isSubmitting ? t("profile.saving") : t("healthEducation.publish")}</Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
@@ -468,20 +474,20 @@ export function HealthEducationManager() {
             <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
                 <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
                     <DialogHeader>
-                        <DialogTitle>Edit Content</DialogTitle>
-                        <DialogDescription>Update the details of the health education content.</DialogDescription>
+                        <DialogTitle>{t("healthEducation.editContent")}</DialogTitle>
+                        <DialogDescription>{t("healthEducation.editContentDescription")}</DialogDescription>
                     </DialogHeader>
                     <div className="grid gap-4 py-4">
                         <div className="space-y-2">
-                            <label className="text-sm font-semibold">Title</label>
-                            <Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="e.g. How to manage Hypertension" />
+                            <label className="text-sm font-semibold">{t("healthEducation.table.title")}</label>
+                            <Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder={t("healthEducation.titlePlaceholder")} />
                         </div>
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-2">
-                                <label className="text-sm font-semibold">Category</label>
+                                <label className="text-sm font-semibold">{t("healthEducation.table.category")}</label>
                                 <Select value={categoryId} onValueChange={setCategoryId}>
                                     <SelectTrigger>
-                                        <SelectValue placeholder="Select a category" />
+                                        <SelectValue placeholder={t("healthEducation.selectCategory")} />
                                     </SelectTrigger>
                                     <SelectContent>
                                         {categories.map((cat) => (
@@ -491,50 +497,50 @@ export function HealthEducationManager() {
                                 </Select>
                             </div>
                             <div className="space-y-2">
-                                <label className="text-sm font-semibold">Content Type</label>
+                                <label className="text-sm font-semibold">{t("healthEducation.table.type")}</label>
                                 <Select value={contentType} onValueChange={setContentType}>
                                     <SelectTrigger>
                                         <SelectValue />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="ARTICLE">Article</SelectItem>
-                                        <SelectItem value="VIDEO">Video</SelectItem>
-                                        <SelectItem value="INFOGRAPHIC">Infographic</SelectItem>
-                                        <SelectItem value="FAQ">FAQ</SelectItem>
+                                        <SelectItem value="ARTICLE">{t("healthEducation.contentTypes.ARTICLE")}</SelectItem>
+                                        <SelectItem value="VIDEO">{t("healthEducation.contentTypes.VIDEO")}</SelectItem>
+                                        <SelectItem value="INFOGRAPHIC">{t("healthEducation.contentTypes.INFOGRAPHIC")}</SelectItem>
+                                        <SelectItem value="FAQ">{t("healthEducation.contentTypes.FAQ")}</SelectItem>
                                     </SelectContent>
                                 </Select>
                             </div>
                         </div>
                         <div className="space-y-2">
-                            <label className="text-sm font-semibold">Status</label>
+                            <label className="text-sm font-semibold">{t("common.status")}</label>
                             <Select value={status} onValueChange={setStatus}>
                                 <SelectTrigger>
                                     <SelectValue />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="DRAFT">Draft</SelectItem>
-                                    <SelectItem value="PUBLISHED">Published</SelectItem>
-                                    <SelectItem value="ARCHIVED">Archived</SelectItem>
+                                    <SelectItem value="DRAFT">{t("healthEducation.statuses.DRAFT")}</SelectItem>
+                                    <SelectItem value="PUBLISHED">{t("healthEducation.statuses.PUBLISHED")}</SelectItem>
+                                    <SelectItem value="ARCHIVED">{t("healthEducation.statuses.ARCHIVED")}</SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>
                         <div className="space-y-2">
-                            <label className="text-sm font-semibold">Summary</label>
-                            <Textarea value={summary} onChange={(e) => setSummary(e.target.value)} placeholder="Brief summary for cards..." />
+                            <label className="text-sm font-semibold">{t("healthEducation.summary")}</label>
+                            <Textarea value={summary} onChange={(e) => setSummary(e.target.value)} placeholder={t("healthEducation.summaryPlaceholder")} />
                         </div>
                         <div className="space-y-2">
-                            <label className="text-sm font-semibold">Full Content (HTML allowed)</label>
-                            <Textarea value={content} onChange={(e) => setContentText(e.target.value)} className="min-h-[200px]" placeholder="<p>Article content goes here...</p>" />
+                            <label className="text-sm font-semibold">{t("healthEducation.fullContent")}</label>
+                            <Textarea value={content} onChange={(e) => setContentText(e.target.value)} className="min-h-[200px]" placeholder={t("healthEducation.contentPlaceholder")} />
                         </div>
                         <div className="space-y-2">
-                            <label className="text-sm font-semibold">Replace Featured Image</label>
+                            <label className="text-sm font-semibold">{t("healthEducation.replaceFeaturedImage")}</label>
                             <Input type="file" onChange={(e) => setFile(e.target.files?.[0] || null)} accept="image/jpeg, image/png, image/webp" />
-                            <p className="text-xs text-muted-foreground mt-1">Required format: JPG, PNG, WEBP. Max size: 5MB.</p>
+                            <p className="text-xs text-muted-foreground mt-1">{t("healthEducation.imageHelp")}</p>
                         </div>
                     </div>
                     <DialogFooter>
-                        <Button variant="outline" onClick={() => setIsEditOpen(false)} disabled={isSubmitting}>Cancel</Button>
-                        <Button onClick={handleUpdate} disabled={isSubmitting}>{isSubmitting ? "Saving..." : "Update"}</Button>
+                        <Button variant="outline" onClick={() => setIsEditOpen(false)} disabled={isSubmitting}>{t("common.cancel")}</Button>
+                        <Button onClick={handleUpdate} disabled={isSubmitting}>{isSubmitting ? t("profile.saving") : t("common.update")}</Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
@@ -543,14 +549,16 @@ export function HealthEducationManager() {
             <Dialog open={isDeleteOpen} onOpenChange={setIsDeleteOpen}>
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>Delete Content</DialogTitle>
+                        <DialogTitle>{t("healthEducation.deleteContent")}</DialogTitle>
                         <DialogDescription>
-                            Are you sure you want to delete <strong>{selectedContent?.title}</strong>? This action cannot be undone.
+                            {t("healthEducation.deleteContentDescription", {
+                              title: selectedContent?.title || "",
+                            })}
                         </DialogDescription>
                     </DialogHeader>
                     <DialogFooter className="mt-4">
-                        <Button variant="outline" onClick={() => setIsDeleteOpen(false)} disabled={isSubmitting}>Cancel</Button>
-                        <Button variant="destructive" onClick={handleDelete} disabled={isSubmitting}>{isSubmitting ? "Deleting..." : "Delete"}</Button>
+                        <Button variant="outline" onClick={() => setIsDeleteOpen(false)} disabled={isSubmitting}>{t("common.cancel")}</Button>
+                        <Button variant="destructive" onClick={handleDelete} disabled={isSubmitting}>{isSubmitting ? t("healthEducation.deleting") : t("common.delete")}</Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
@@ -559,24 +567,24 @@ export function HealthEducationManager() {
             <Dialog open={isCategoryOpen} onOpenChange={setIsCategoryOpen}>
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>New Category</DialogTitle>
+                        <DialogTitle>{t("healthEducation.newCategory")}</DialogTitle>
                         <DialogDescription>
-                            Create a new category for health education content.
+                            {t("healthEducation.newCategoryDescription")}
                         </DialogDescription>
                     </DialogHeader>
                     <div className="grid gap-4 py-4">
                         <div className="space-y-2">
-                            <label className="text-sm font-semibold">Category Name</label>
-                            <Input value={categoryName} onChange={(e) => setCategoryName(e.target.value)} placeholder="e.g. Mental Health" />
+                            <label className="text-sm font-semibold">{t("healthEducation.categoryName")}</label>
+                            <Input value={categoryName} onChange={(e) => setCategoryName(e.target.value)} placeholder={t("healthEducation.categoryNamePlaceholder")} />
                         </div>
                         <div className="space-y-2">
-                            <label className="text-sm font-semibold">Description</label>
-                            <Textarea value={categoryDescription} onChange={(e) => setCategoryDescription(e.target.value)} placeholder="Brief description of this category..." />
+                            <label className="text-sm font-semibold">{t("common.description")}</label>
+                            <Textarea value={categoryDescription} onChange={(e) => setCategoryDescription(e.target.value)} placeholder={t("healthEducation.categoryDescriptionPlaceholder")} />
                         </div>
                     </div>
                     <DialogFooter className="mt-4">
-                        <Button variant="outline" onClick={() => setIsCategoryOpen(false)} disabled={isSubmitting}>Cancel</Button>
-                        <Button onClick={handleCreateCategory} disabled={isSubmitting}>{isSubmitting ? "Creating..." : "Create Category"}</Button>
+                        <Button variant="outline" onClick={() => setIsCategoryOpen(false)} disabled={isSubmitting}>{t("common.cancel")}</Button>
+                        <Button onClick={handleCreateCategory} disabled={isSubmitting}>{isSubmitting ? t("healthEducation.creating") : t("healthEducation.createCategory")}</Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
@@ -585,24 +593,24 @@ export function HealthEducationManager() {
             <Dialog open={isEditCategoryOpen} onOpenChange={setIsEditCategoryOpen}>
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>Edit Category</DialogTitle>
+                        <DialogTitle>{t("healthEducation.editCategory")}</DialogTitle>
                         <DialogDescription>
-                            Update the details of the health education category.
+                            {t("healthEducation.editCategoryDescription")}
                         </DialogDescription>
                     </DialogHeader>
                     <div className="grid gap-4 py-4">
                         <div className="space-y-2">
-                            <label className="text-sm font-semibold">Category Name</label>
-                            <Input value={categoryName} onChange={(e) => setCategoryName(e.target.value)} placeholder="e.g. Mental Health" />
+                            <label className="text-sm font-semibold">{t("healthEducation.categoryName")}</label>
+                            <Input value={categoryName} onChange={(e) => setCategoryName(e.target.value)} placeholder={t("healthEducation.categoryNamePlaceholder")} />
                         </div>
                         <div className="space-y-2">
-                            <label className="text-sm font-semibold">Description</label>
-                            <Textarea value={categoryDescription} onChange={(e) => setCategoryDescription(e.target.value)} placeholder="Brief description of this category..." />
+                            <label className="text-sm font-semibold">{t("common.description")}</label>
+                            <Textarea value={categoryDescription} onChange={(e) => setCategoryDescription(e.target.value)} placeholder={t("healthEducation.categoryDescriptionPlaceholder")} />
                         </div>
                     </div>
                     <DialogFooter className="mt-4">
-                        <Button variant="outline" onClick={() => setIsEditCategoryOpen(false)} disabled={isSubmitting}>Cancel</Button>
-                        <Button onClick={handleUpdateCategory} disabled={isSubmitting}>{isSubmitting ? "Saving..." : "Update Category"}</Button>
+                        <Button variant="outline" onClick={() => setIsEditCategoryOpen(false)} disabled={isSubmitting}>{t("common.cancel")}</Button>
+                        <Button onClick={handleUpdateCategory} disabled={isSubmitting}>{isSubmitting ? t("profile.saving") : t("healthEducation.updateCategory")}</Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
@@ -611,14 +619,16 @@ export function HealthEducationManager() {
             <Dialog open={isDeleteCategoryOpen} onOpenChange={setIsDeleteCategoryOpen}>
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>Delete Category</DialogTitle>
+                        <DialogTitle>{t("healthEducation.deleteCategory")}</DialogTitle>
                         <DialogDescription>
-                            Are you sure you want to delete <strong>{selectedCategory?.name}</strong>? This will remove the category. Content under this category may become uncategorized. This action cannot be undone.
+                            {t("healthEducation.deleteCategoryDescription", {
+                              name: selectedCategory?.name || "",
+                            })}
                         </DialogDescription>
                     </DialogHeader>
                     <DialogFooter className="mt-4">
-                        <Button variant="outline" onClick={() => setIsDeleteCategoryOpen(false)} disabled={isSubmitting}>Cancel</Button>
-                        <Button variant="destructive" onClick={handleDeleteCategory} disabled={isSubmitting}>{isSubmitting ? "Deleting..." : "Delete Category"}</Button>
+                        <Button variant="outline" onClick={() => setIsDeleteCategoryOpen(false)} disabled={isSubmitting}>{t("common.cancel")}</Button>
+                        <Button variant="destructive" onClick={handleDeleteCategory} disabled={isSubmitting}>{isSubmitting ? t("healthEducation.deleting") : t("healthEducation.deleteCategory")}</Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>

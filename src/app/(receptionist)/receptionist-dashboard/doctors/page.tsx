@@ -2,19 +2,19 @@
 
 import { useEffect } from "react"
 import { motion } from "framer-motion"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { useAdminStore } from "@/store/admin/admin.store"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { 
-     Doctor01Icon, 
      Cancel01Icon, 
      RefreshIcon,
      UserCircleIcon,
-     ArrowRight01Icon,
      UserAccountIcon
 } from "@hugeicons/core-free-icons"
 import { cn } from "@/lib/utils"
+import { DoctorScheduleManager } from "@/components/doctor-schedule-manager"
+import { DoctorProfileManager } from "@/components/doctor-profile-manager"
 
 export default function ReceptionistDoctorsPage() {
   const { doctors, fetchDoctors, loading, error } = useAdminStore()
@@ -131,13 +131,10 @@ export default function ReceptionistDoctorsPage() {
                                           </div>
                                      </div>
 
-                                     <Button 
-                                          variant="ghost" 
-                                          className="w-full h-12 rounded-2xl bg-primary/5 text-primary hover:bg-primary hover:text-white transition-all font-bold group/btn"
-                                     >
-                                          View Schedule 
-                                          <HugeiconsIcon icon={ArrowRight01Icon} className="ml-2 w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
-                                     </Button>
+                                     <div className="flex gap-2">
+                                          <DoctorProfileManager doctor={doctor} />
+                                          <DoctorScheduleManager doctor={doctor} />
+                                     </div>
                                 </CardContent>
                            </Card>
                       </motion.div>

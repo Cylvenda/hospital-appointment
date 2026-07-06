@@ -12,7 +12,15 @@ import {
      SidebarRail,
 } from "@/components/ui/sidebar"
 import { HugeiconsIcon } from "@hugeicons/react"
-import { LayoutBottomIcon, RoboticIcon, Settings05Icon, DashboardCircleIcon, Doctor01Icon, UserAccountIcon, CallDoneIcon, CheckCheck, AllahFreeIcons, Bell, StethoscopeIcon, Book01Icon, Search01Icon } from "@hugeicons/core-free-icons"
+import { LayoutBottomIcon, Settings05Icon, DashboardCircleIcon, Doctor01Icon, UserAccountIcon, Bell, StethoscopeIcon, Book01Icon, Search01Icon } from "@hugeicons/core-free-icons"
+import {
+     Ban,
+     ChartNoAxesCombined,
+     CalendarClock,
+     CircleCheckBig,
+     ClipboardList,
+     CreditCard,
+} from "lucide-react"
 import { Separator } from "./ui/separator"
 import { useAuthUserStore } from "@/store/auth/userAuth.store"
 import { useTranslation } from "@/lib/i18n"
@@ -20,6 +28,7 @@ import { useTranslation } from "@/lib/i18n"
 const navMain = [
      {
           titleKey: "nav.dashboard",
+          sectionKey: "nav.workspace",
           url: "/receptionist-dashboard",
           icon: (
                <HugeiconsIcon color="var(--primary)" icon={DashboardCircleIcon} strokeWidth={2} />
@@ -27,48 +36,51 @@ const navMain = [
      },
      {
           titleKey: "nav.quickSearch",
+          sectionKey: "nav.workspace",
           url: "/receptionist-dashboard/search",
           icon: (
                <HugeiconsIcon color="var(--primary)" icon={Search01Icon} strokeWidth={2} />
           ),
      },
      {
-          titleKey: "nav.newRequests",
-          url: "/receptionist-dashboard/appointments/pending",
-          icon: (
-               <HugeiconsIcon color="var(--primary)" icon={RoboticIcon} strokeWidth={2} />
-          ),
+          titleKey: "nav.analyticsReports",
+          sectionKey: "nav.workspace",
+          url: "/receptionist-dashboard/analytics",
+          icon: <ChartNoAxesCombined className="size-5 text-primary" />,
      },
      {
-          titleKey: "nav.assignments",
-          url: "/receptionist-dashboard/appointments/assignments",
-          icon: (
-               <HugeiconsIcon color="var(--primary)" icon={CheckCheck} strokeWidth={2} />
-          ),
-     },
-     {
-          titleKey: "nav.completedQueue",
-          url: "/receptionist-dashboard/appointments/completed",
-          icon: (
-               <HugeiconsIcon color="var(--primary)" icon={CallDoneIcon} strokeWidth={2} />
-          ),
-     },
-     {
-          titleKey: "nav.cancelledQueue",
-          url: "/receptionist-dashboard/appointments/cancelled",
-          icon: (
-               <HugeiconsIcon color="var(--primary)" icon={CallDoneIcon} strokeWidth={2} />
-          ),
-     },
-     {
-          titleKey: "nav.allAppointments",
+          titleKey: "nav.appointmentRegister",
+          sectionKey: "nav.appointmentFlow",
           url: "/receptionist-dashboard/appointments/all",
-          icon: (
-               <HugeiconsIcon color="var(--primary)" icon={AllahFreeIcons} strokeWidth={2} />
-          ),
+          icon: <ClipboardList className="size-5 text-primary" />,
+     },
+     {
+          titleKey: "nav.awaitingPayment",
+          sectionKey: "nav.appointmentFlow",
+          url: "/receptionist-dashboard/appointments/pending",
+          icon: <CreditCard className="size-5 text-primary" />,
+     },
+     {
+          titleKey: "nav.todaysArrivalsQueue",
+          sectionKey: "nav.appointmentFlow",
+          url: "/receptionist-dashboard/appointments/assignments",
+          icon: <CalendarClock className="size-5 text-primary" />,
+     },
+     {
+          titleKey: "nav.completedVisits",
+          sectionKey: "nav.appointmentFlow",
+          url: "/receptionist-dashboard/appointments/completed",
+          icon: <CircleCheckBig className="size-5 text-primary" />,
+     },
+     {
+          titleKey: "nav.cancelledMissed",
+          sectionKey: "nav.appointmentFlow",
+          url: "/receptionist-dashboard/appointments/cancelled",
+          icon: <Ban className="size-5 text-primary" />,
      },
      {
           titleKey: "nav.doctors",
+          sectionKey: "nav.management",
           url: "/receptionist-dashboard/doctors",
           icon: (
                <HugeiconsIcon color="var(--primary)" icon={Doctor01Icon} strokeWidth={2} />
@@ -76,6 +88,7 @@ const navMain = [
      },
      {
           titleKey: "nav.illnessCategories",
+          sectionKey: "nav.management",
           url: "/receptionist-dashboard/illness-categories",
           icon: (
                <HugeiconsIcon color="var(--primary)" icon={StethoscopeIcon} strokeWidth={2} />
@@ -83,27 +96,31 @@ const navMain = [
      },
      {
           titleKey: "nav.healthEducation",
+          sectionKey: "nav.management",
           url: "/receptionist-dashboard/health-education",
           icon: (
                <HugeiconsIcon color="var(--primary)" icon={Book01Icon} strokeWidth={2} />
           ),
      },
      {
-          titleKey: "nav.profile",
-          url: "/receptionist-dashboard/profile",
-          icon: (
-               <HugeiconsIcon color="var(--primary)" icon={UserAccountIcon} strokeWidth={2} />
-          ),
-     },
-     {
           titleKey: "nav.notifications",
+          sectionKey: "nav.account",
           url: "/receptionist-dashboard/notifications",
           icon: (
                <HugeiconsIcon color="var(--primary)" icon={Bell} strokeWidth={2} />
           ),
      },
      {
+          titleKey: "nav.profile",
+          sectionKey: "nav.account",
+          url: "/receptionist-dashboard/profile",
+          icon: (
+               <HugeiconsIcon color="var(--primary)" icon={UserAccountIcon} strokeWidth={2} />
+          ),
+     },
+     {
           titleKey: "nav.settings",
+          sectionKey: "nav.account",
           url: "/receptionist-dashboard/settings",
           icon: (
                <HugeiconsIcon color="var(--primary)" icon={Settings05Icon} strokeWidth={2} />

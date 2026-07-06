@@ -11,9 +11,6 @@ export const API_ENDPOINTS = {
      USER_TOKEN_REFRESH: "me/auth/csrf/",
      USER_TOKEN_VERIFY: "me/auth/refresh/",
      USER_LOGOUT: "me/auth/logout/",
-     REGIONS: "regions/",
-     DISTRICTS: "districts/",
-
      // User activation and password management
      USER_ACCOUNT_ACTIVATION: "auth/users/activation/",
      USER_RESEND_ACTIVATION_EMAIL: "auth/users/resend_activation/",
@@ -27,6 +24,8 @@ export const API_ENDPOINTS = {
      APPOINTMENTS: "appointments/",
      APPOINTMENT_DOCTORS: "appointments/doctors/",
      APPOINTMENT_PAYING: "appointments/{uuid}/pay/",
+     DOCTOR_SCHEDULES: "doctor-schedules/",
+     DOCTOR_UNAVAILABLE_DATES: "doctor-unavailable-dates/",
      ILLNESS_CATEGORIES: "illness_category/",
 
       // Admin

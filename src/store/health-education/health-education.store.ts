@@ -1,5 +1,5 @@
 import { create } from "zustand"
-import type { AxiosError } from "axios"
+import axios from "axios"
 import { healthEducationService } from "@/api/services/health-education.service"
 import type {
     ContentCategory,
@@ -77,13 +77,18 @@ export function mapBookmark(apiObj: ContentBookmarkApi): ContentBookmark {
 }
 
 function getApiErrorMessage(error: unknown, fallback: string) {
-    const axiosError = error as AxiosError<any>
-    if (axiosError.response?.data) {
-        const data = axiosError.response.data
-        if (typeof data.detail === "string" && data.detail.trim()) {
+    if (axios.isAxiosError<unknown>(error) && error.response?.data) {
+        const data = error.response.data
+        if (
+            typeof data === "object" &&
+            data !== null &&
+            "detail" in data &&
+            typeof data.detail === "string" &&
+            data.detail.trim()
+        ) {
             return data.detail
         }
-        if (typeof data === "object") {
+        if (typeof data === "object" && data !== null) {
             // DRF Validation Errors look like { "featured_image": ["Upload a valid image..."] }
             const values = Object.values(data).flat()
             if (values.length > 0 && typeof values[0] === "string") {

@@ -1,6 +1,6 @@
 // src/store/auth/userAuth.store.ts
 import { create } from "zustand"
-import type { User } from "./auth.types"
+import type { User, UserUpdatePayload } from "./auth.types"
 import { userServices } from "@/api/services/user.service"
 import { authUserService } from "@/api/services/auth.service"
 
@@ -16,7 +16,7 @@ type AuthState = {
      resendRefreshToken: () => Promise<boolean>
      logout: () => Promise<void>
      initAuth: () => Promise<boolean>
-     updateProfile: (payload: Partial<User>) => Promise<User | null>
+     updateProfile: (payload: UserUpdatePayload) => Promise<User | null>
      exportMyReport: (format: "pdf" | "docx") => Promise<void>
 }
 

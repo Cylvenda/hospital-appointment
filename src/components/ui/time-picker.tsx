@@ -50,20 +50,11 @@ export function TimePicker({
     }
   }
 
-  const { hour: initHour, minute: initMinute, period: initPeriod } = parse24h(value)
-  const [selectedHour, setSelectedHour] = useState(initHour)
-  const [selectedMinute, setSelectedMinute] = useState(initMinute)
-  const [selectedPeriod, setSelectedPeriod] = useState(initPeriod)
-
-  // Sync state if value changes externally
-  useEffect(() => {
-    if (value) {
-      const { hour, minute, period } = parse24h(value)
-      setSelectedHour(hour)
-      setSelectedMinute(minute)
-      setSelectedPeriod(period)
-    }
-  }, [value])
+  const {
+    hour: selectedHour,
+    minute: selectedMinute,
+    period: selectedPeriod,
+  } = parse24h(value)
 
   // Close when clicking outside
   useEffect(() => {
@@ -86,17 +77,14 @@ export function TimePicker({
   }
 
   const selectHour = (h: string) => {
-    setSelectedHour(h)
     handleTimeChange(h, selectedMinute, selectedPeriod)
   }
 
   const selectMinute = (m: string) => {
-    setSelectedMinute(m)
     handleTimeChange(selectedHour, m, selectedPeriod)
   }
 
   const selectPeriod = (p: string) => {
-    setSelectedPeriod(p)
     handleTimeChange(selectedHour, selectedMinute, p)
   }
 

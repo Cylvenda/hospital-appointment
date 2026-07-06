@@ -20,12 +20,14 @@ import { cn } from "@/lib/utils"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { Calendar01Icon, Clock01Icon, UserIcon, CheckCircle, Cancel01Icon, HourglassIcon, PlusSignIcon, RefreshIcon } from "@hugeicons/core-free-icons"
 import { toast } from "react-toastify"
+import { useTranslation } from "@/lib/i18n"
 
 export default function PatientDashboardPage() {
+     const { t } = useTranslation()
      const router = useRouter()
      const { user, checkAuth } = useAuthUserStore()
      const { appointments, loading, fetchAppointments } = useAppointmentStore()
-     const patientId = user?.patient_profile?.patient_id ?? "Pending assignment"
+     const patientId = user?.patient_profile?.patient_id ?? t("search.notAssigned")
 
      useEffect(() => {
           void (async () => {
@@ -82,14 +84,16 @@ export default function PatientDashboardPage() {
                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between bg-gradient-to-r from-primary/10 via-transparent to-transparent p-6 rounded-3xl border border-primary/10">
                     <div>
                          <h1 className="text-3xl font-bold tracking-tight">
-                              Good day{user?.first_name ? `, ${user.first_name}` : ""}!
+                              {t("patientHome.greeting", {
+                                   name: user?.first_name ? `, ${user.first_name}` : "",
+                              })}
                          </h1>
                          <p className="text-muted-foreground mt-1">
-                              Here&apos;s an overview of your healthcare journey.
+                              {t("patientHome.subtitle")}
                          </p>
                          <div className="mt-4 inline-flex items-center gap-2 rounded-2xl border border-border/70 bg-card px-4 py-2 text-sm shadow-sm">
                               <span className="text-xs font-black uppercase tracking-[0.22em] text-muted-foreground">
-                                   Patient ID
+                                   {t("patients.patientId")}
                               </span>
                               <span className="font-semibold text-foreground">{patientId}</span>
                          </div>
@@ -100,7 +104,7 @@ export default function PatientDashboardPage() {
                               className="rounded-2xl px-6 shadow-lg shadow-primary/20 transition-all hover:scale-105 active:scale-95" 
                               onClick={() => {
                                    if (!user?.patient_profile?.is_profile_complete) {
-                                        toast.warning("Clinical Profile Incomplete: Please complete your registration details to activate scheduling options.")
+                                        toast.warning(t("booking.profileIncompleteToast"))
                                         router.push("/patient-dashboard/profile")
                                    } else {
                                         router.push("/patient-dashboard/appointments")
@@ -108,7 +112,7 @@ export default function PatientDashboardPage() {
                               }}
                          >
                               <HugeiconsIcon icon={PlusSignIcon} className="mr-2 h-4 w-4" />
-                              Book Appointment
+                              {t("booking.title")}
                          </Button>
 
                          <Button
@@ -118,7 +122,7 @@ export default function PatientDashboardPage() {
                               disabled={loading}
                          >
                               <HugeiconsIcon icon={RefreshIcon} className={cn("mr-2 h-4 w-4", loading && "animate-spin")} />
-                              Refresh
+                              {t("workflowDashboard.refresh")}
                          </Button>
                     </div>
                </div>
@@ -133,7 +137,7 @@ export default function PatientDashboardPage() {
                          <div className="grid gap-4 sm:grid-cols-4">
                               {[
                                    {
-                                        label: "Pending",
+                                        label: t("appointments.pending"),
                                         value: stats.pending,
                                         icon: HourglassIcon,
                                         color: "text-amber-500",
@@ -141,7 +145,7 @@ export default function PatientDashboardPage() {
                                         border: "border-amber-100",
                                    },
                                    {
-                                        label: "Upcoming",
+                                        label: t("appointments.upcoming"),
                                         value: stats.approved,
                                         icon: Calendar01Icon,
                                         color: "text-emerald-500",
@@ -149,7 +153,7 @@ export default function PatientDashboardPage() {
                                         border: "border-emerald-100",
                                    },
                                    {
-                                        label: "Completed",
+                                        label: t("appointments.completed"),
                                         value: stats.completed,
                                         icon: CheckCircle,
                                         color: "text-blue-500",
@@ -157,7 +161,7 @@ export default function PatientDashboardPage() {
                                         border: "border-blue-100",
                                    },
                                    {
-                                        label: "Cancelled",
+                                        label: t("appointments.cancelled"),
                                         value: stats.cancelled,
                                         icon: Cancel01Icon,
                                         color: "text-rose-500",
@@ -182,8 +186,8 @@ export default function PatientDashboardPage() {
                               <CardHeader className="bg-primary/5 rounded-none py-4 border-b border-primary/10">
                                    <div className="flex items-center justify-between">
                                         <div>
-                                             <CardTitle className="text-xl">Your Next Visit</CardTitle>
-                                             <CardDescription>Stay prepared for your upcoming appointment.</CardDescription>
+                                             <CardTitle className="text-xl">{t("patientHome.nextVisit")}</CardTitle>
+                                             <CardDescription>{t("patientHome.nextVisitDescription")}</CardDescription>
                                         </div>
                                         <div className="bg-primary/10 p-2 rounded-full">
                                              <HugeiconsIcon icon={Calendar01Icon} className="w-6 h-6 text-primary" />
@@ -199,8 +203,8 @@ export default function PatientDashboardPage() {
                                                             <HugeiconsIcon icon={UserIcon} className="w-6 h-6 text-primary" />
                                                        </div>
                                                        <div>
-                                                            <p className="text-sm text-muted-foreground font-medium">Practitioner</p>
-                                                            <p className="text-lg font-semibold">{nextAppointment.doctor || "TBD"}</p>
+                                                            <p className="text-sm text-muted-foreground font-medium">{t("patientHome.practitioner")}</p>
+                                                            <p className="text-lg font-semibold">{nextAppointment.doctor || t("patientHome.tbd")}</p>
                                                        </div>
                                                   </div>
                                                  <div className="grid grid-cols-2 gap-6">
@@ -227,10 +231,12 @@ export default function PatientDashboardPage() {
                                                   </div>
                                                   <p className="text-sm font-medium text-primary">{nextAppointment.illnessCategory}</p>
                                                   <p className="text-xs font-medium text-muted-foreground">
-                                                       Appointment ID: {nextAppointment.appointmentId ?? "Pending"}
+                                                       {t("patientCard.appointmentId", {
+                                                            id: nextAppointment.appointmentId ?? t("appointments.pending"),
+                                                       })}
                                                   </p>
                                                   <Button variant="outline" className="mt-2 rounded-md" onClick={() => router.push(`/patient-dashboard/appointments/${nextAppointment.id}`)}>
-                                                       View Details
+                                                       {t("doctorCard.viewDetails")}
                                                   </Button>
                                              </div>
                                         </div>
@@ -240,18 +246,18 @@ export default function PatientDashboardPage() {
                                                   <HugeiconsIcon icon={Calendar01Icon} className="w-8 h-8 text-muted-foreground" />
                                              </div>
                                              <div>
-                                                  <p className="font-medium text-muted-foreground">No upcoming appointments scheduled.</p>
-                                                  <p className="text-sm text-muted-foreground/60">Regular check-ups are key to staying healthy!</p>
+                                                  <p className="font-medium text-muted-foreground">{t("patientHome.noUpcoming")}</p>
+                                                  <p className="text-sm text-muted-foreground/60">{t("patientHome.noUpcomingHelp")}</p>
                                              </div>
                                              <Button onClick={() => {
                                                   if (!user?.patient_profile?.is_profile_complete) {
-                                                       toast.warning("Clinical Profile Incomplete: Please complete your registration details to activate scheduling options.")
+                                                       toast.warning(t("booking.profileIncompleteToast"))
                                                        router.push("/patient-dashboard/profile")
                                                   } else {
                                                        router.push("/patient-dashboard/appointments")
                                                   }
                                              }}>
-                                                  Schedule Now
+                                                  {t("patientHome.scheduleNow")}
                                              </Button>
                                         </div>
                                    )}
@@ -263,15 +269,15 @@ export default function PatientDashboardPage() {
                     <div className="space-y-8">
                          <Card className="rounded-3xl shadow-sm border-muted/60 h-full">
                               <CardHeader>
-                                   <CardTitle className="text-lg">Recent Activity</CardTitle>
-                                   <CardDescription>Your latest visit history.</CardDescription>
+                                   <CardTitle className="text-lg">{t("patientHome.recentActivity")}</CardTitle>
+                                   <CardDescription>{t("patientHome.recentActivityDescription")}</CardDescription>
                               </CardHeader>
                               <CardContent className="px-2">
                                    <div className="space-y-1">
                                         {recentHistory.length > 0 ? (
                                              recentHistory.map((appt) => {
                                                   const statusMeta = getAppointmentStatusMeta(appt.status, appt.paymentStatus, "patient")
-                                                  const isCompleted = statusMeta.label === "Completed"
+                                                  const isCompleted = appt.status === "completed"
 
                                                   return (
                                                        <div
@@ -292,7 +298,9 @@ export default function PatientDashboardPage() {
                                                                  <p className="text-sm font-semibold truncate">{appt.illnessCategory}</p>
                                                                  <p className="text-xs text-muted-foreground">{appt.date}</p>
                                                                  <p className="text-[11px] text-muted-foreground">
-                                                                      Appointment ID: {appt.appointmentId ?? "Pending"}
+                                                                      {t("patientCard.appointmentId", {
+                                                                           id: appt.appointmentId ?? t("appointments.pending"),
+                                                                      })}
                                                                  </p>
                                                             </div>
                                                             <span className={cn(
@@ -310,14 +318,14 @@ export default function PatientDashboardPage() {
                                              })
                                         ) : (
                                              <div className="py-10 text-center text-sm text-muted-foreground px-4">
-                                                  No recent history to display.
+                                                  {t("patientHome.noRecentHistory")}
                                              </div>
                                         )}
                                    </div>
                                    {appointments.length > 0 && (
                                         <div className="mt-4 p-4">
                                              <Button variant="ghost" className="w-full rounded-md text-sm" onClick={() => router.push("/patient-dashboard/appointments/all")}>
-                                                  View All History
+                                                  {t("nav.allHistory")}
                                              </Button>
                                         </div>
                                    )}
@@ -328,9 +336,9 @@ export default function PatientDashboardPage() {
                          <Card className="rounded-3xl bg-primary text-primary-foreground overflow-hidden relative border-none">
                               <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16 blur-2xl" />
                               <CardContent className="p-6 relative z-10">
-                                   <h4 className="font-bold text-lg mb-2">Health Tip of the Day</h4>
+                                   <h4 className="font-bold text-lg mb-2">{t("patientHome.healthTipTitle")}</h4>
                                    <p className="text-sm text-primary-foreground/90 leading-relaxed">
-                                        Drinking enough water throughout the day can improve your energy levels and focus. Aim for at least 8 glasses!
+                                        {t("patientHome.healthTipBody")}
                                    </p>
                                    <div className="mt-4 flex justify-end">
                                         <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">

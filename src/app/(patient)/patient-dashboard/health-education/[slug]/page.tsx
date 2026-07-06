@@ -9,12 +9,12 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 import { healthEducationService } from "@/api/services/health-education.service"
-import type { EducationalContentApi } from "@/store/health-education/health-education.types"
 import { mapContent } from "@/store/health-education/health-education.store"
 import type { EducationalContent } from "@/store/health-education/health-education.types"
 import { useHealthEducationStore } from "@/store/health-education/health-education.store"
 import { toast } from "react-toastify"
 import { formatPublishedDate } from "@/lib/format-published-date"
+import Image from "next/image"
 
 export default function ArticleDetailPage() {
     const params = useParams()
@@ -33,7 +33,7 @@ export default function ArticleDetailPage() {
             try {
                 const response = await healthEducationService.getContentBySlug(slug)
                 setArticle(mapContent(response.data))
-            } catch (err: any) {
+            } catch {
                 setError("Failed to load article. It may have been removed.")
             } finally {
                 setLoading(false)
@@ -49,7 +49,7 @@ export default function ArticleDetailPage() {
         try {
             await toggleBookmark(slug)
             toast.success(isBookmarked ? "Removed from bookmarks" : "Saved to bookmarks")
-        } catch (err) {
+        } catch {
             toast.error("Failed to update bookmark")
         }
     }
@@ -58,7 +58,7 @@ export default function ArticleDetailPage() {
         try {
             const res = await healthEducationService.toggleReaction(slug, type)
             toast.success(res.data.status === "reaction updated" ? `Marked as ${type.toLowerCase()}` : "Reaction removed")
-        } catch (err) {
+        } catch {
             toast.error("Failed to record reaction")
         }
     }
@@ -129,11 +129,13 @@ export default function ArticleDetailPage() {
                 </header>
 
                 {article.featuredImage && (
-                    <div className="w-full aspect-video rounded-3xl overflow-hidden bg-muted/20 border border-muted/40 shadow-sm">
-                        <img 
+                    <div className="relative w-full aspect-video rounded-3xl overflow-hidden bg-muted/20 border border-muted/40 shadow-sm">
+                        <Image
                             src={article.featuredImage} 
                             alt={article.title} 
-                            className="w-full h-full object-cover"
+                            fill
+                            unoptimized
+                            className="object-cover"
                         />
                     </div>
                 )}

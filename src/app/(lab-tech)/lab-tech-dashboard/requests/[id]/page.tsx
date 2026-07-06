@@ -13,8 +13,10 @@ import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { ArrowLeft01Icon, Tick01Icon, Medicine01Icon, Alert01Icon, UserCircleIcon, Calendar03Icon, Doctor01Icon, File01Icon } from "@hugeicons/core-free-icons"
+import { useTranslation } from "@/lib/i18n"
 
 export default function LabRequestDetailsPage({ params }: { params: Promise<{ id: string }> }) {
+     const { t } = useTranslation()
      const router = useRouter()
      const resolvedParams = use(params)
      const requestId = resolvedParams.id
@@ -51,7 +53,7 @@ export default function LabRequestDetailsPage({ params }: { params: Promise<{ id
           return (
                <div className="flex flex-col items-center justify-center min-h-[400px]">
                     <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mb-4" />
-                    <p className="text-muted-foreground font-medium">Loading request details...</p>
+                     <p className="text-muted-foreground font-medium">{t("labTech.loadingRequestsDetail")}</p>
                </div>
           )
      }
@@ -60,11 +62,11 @@ export default function LabRequestDetailsPage({ params }: { params: Promise<{ id
           return (
                <div className="flex flex-col items-center justify-center min-h-[400px]">
                     <HugeiconsIcon icon={Alert01Icon} className="w-16 h-16 text-muted-foreground mb-4" />
-                    <h2 className="text-2xl font-bold text-foreground">Request Not Found</h2>
-                    <p className="text-muted-foreground mb-6">This lab request may have been deleted or does not exist.</p>
-                    <Button onClick={() => router.push("/lab-tech-dashboard/requests")}>
-                         Return to Requests
-                    </Button>
+                     <h2 className="text-2xl font-bold text-foreground">{t("labTech.requestNotFound")}</h2>
+                     <p className="text-muted-foreground mb-6">{t("labTech.requestDeleted")}</p>
+                     <Button onClick={() => router.push("/lab-tech-dashboard/requests")}>
+                          {t("labTech.returnToRequests")}
+                     </Button>
                </div>
           )
      }
@@ -137,31 +139,31 @@ export default function LabRequestDetailsPage({ params }: { params: Promise<{ id
                     className="text-muted-foreground hover:text-foreground pl-0 mb-2"
                     onClick={() => router.back()}
                >
-                    <HugeiconsIcon icon={ArrowLeft01Icon} className="mr-2 w-4 h-4" />
-                    Back to Queue
-               </Button>
+                     <HugeiconsIcon icon={ArrowLeft01Icon} className="mr-2 w-4 h-4" />
+                     {t("labTech.backToQueue")}
+                </Button>
 
                <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
                     <div>
                          <h1 className="text-3xl font-bold tracking-tight text-foreground flex items-center gap-2">
-                              <HugeiconsIcon icon={Medicine01Icon} className="w-8 h-8 text-primary" />
-                              Lab Request Details
-                         </h1>
-                         <p className="text-muted-foreground mt-1">
-                              Process and verify test results for this patient.
-                         </p>
+                               <HugeiconsIcon icon={Medicine01Icon} className="w-8 h-8 text-primary" />
+                               {t("labTech.labRequestDetails")}
+                          </h1>
+                          <p className="text-muted-foreground mt-1">
+                               {t("labTech.processVerify")}
+                          </p>
                     </div>
                     <div className="flex items-center gap-3">
                          {request.status === "completed" && (
                               <div className="flex gap-2 mr-4 border-r border-muted/40 pr-4">
-                                   <Button size="sm" variant="outline" onClick={() => exportReport(request.id, "pdf")} disabled={loading}>
-                                        <HugeiconsIcon icon={File01Icon} className="w-4 h-4 mr-2" />
-                                        PDF
-                                   </Button>
-                                   <Button size="sm" variant="outline" onClick={() => exportReport(request.id, "docx")} disabled={loading}>
-                                        <HugeiconsIcon icon={File01Icon} className="w-4 h-4 mr-2" />
-                                        DOCX
-                                   </Button>
+                                    <Button size="sm" variant="outline" onClick={() => exportReport(request.id, "pdf")} disabled={loading}>
+                                         <HugeiconsIcon icon={File01Icon} className="w-4 h-4 mr-2" />
+                                         {t("labTech.pdfReport")}
+                                    </Button>
+                                    <Button size="sm" variant="outline" onClick={() => exportReport(request.id, "docx")} disabled={loading}>
+                                         <HugeiconsIcon icon={File01Icon} className="w-4 h-4 mr-2" />
+                                         {t("labTech.docxReport")}
+                                    </Button>
                               </div>
                          )}
                          {getStatusBadge(request.status)}
@@ -172,17 +174,17 @@ export default function LabRequestDetailsPage({ params }: { params: Promise<{ id
                     {/* Patient Info Card */}
                     <Card className="shadow-sm border-muted/40">
                          <CardHeader className="bg-muted/10 pb-4 border-b border-muted/20">
-                              <CardTitle className="text-sm font-semibold flex items-center gap-2 text-primary">
-                                   <HugeiconsIcon icon={UserCircleIcon} className="w-4 h-4" /> Patient Information
-                              </CardTitle>
+                               <CardTitle className="text-sm font-semibold flex items-center gap-2 text-primary">
+                                    <HugeiconsIcon icon={UserCircleIcon} className="w-4 h-4" /> {t("labTech.patientInformation")}
+                               </CardTitle>
                          </CardHeader>
                          <CardContent className="pt-4 space-y-4">
                               <div>
-                                   <p className="text-xs text-muted-foreground uppercase tracking-wider font-bold mb-1">Patient Name</p>
+                                    <p className="text-xs text-muted-foreground uppercase tracking-wider font-bold mb-1">{t("labTech.patientName")}</p>
                                    <p className="font-medium">{request.patientName}</p>
                               </div>
                               <div>
-                                   <p className="text-xs text-muted-foreground uppercase tracking-wider font-bold mb-1">Request Date</p>
+                                    <p className="text-xs text-muted-foreground uppercase tracking-wider font-bold mb-1">{t("labTech.requestDate")}</p>
                                    <p className="font-medium flex items-center gap-2">
                                         <HugeiconsIcon icon={Calendar03Icon} className="w-4 h-4 text-muted-foreground" />
                                         {new Date(request.requestedAt).toLocaleString()}
@@ -194,13 +196,13 @@ export default function LabRequestDetailsPage({ params }: { params: Promise<{ id
                     {/* Doctor Info Card */}
                     <Card className="shadow-sm border-muted/40">
                          <CardHeader className="bg-muted/10 pb-4 border-b border-muted/20">
-                              <CardTitle className="text-sm font-semibold flex items-center gap-2 text-primary">
-                                   <HugeiconsIcon icon={Doctor01Icon} className="w-4 h-4" /> Requester Information
-                              </CardTitle>
+                               <CardTitle className="text-sm font-semibold flex items-center gap-2 text-primary">
+                                    <HugeiconsIcon icon={Doctor01Icon} className="w-4 h-4" /> {t("labTech.requesterInformation")}
+                               </CardTitle>
                          </CardHeader>
                          <CardContent className="pt-4 space-y-4">
                               <div>
-                                   <p className="text-xs text-muted-foreground uppercase tracking-wider font-bold mb-1">Doctor Name</p>
+                                    <p className="text-xs text-muted-foreground uppercase tracking-wider font-bold mb-1">{t("labTech.doctorNameLabel")}</p>
                                    <p className="font-medium">{request.doctorName}</p>
                               </div>
                          </CardContent>
@@ -212,8 +214,8 @@ export default function LabRequestDetailsPage({ params }: { params: Promise<{ id
                     <CardHeader className="bg-primary/5 pb-4 border-b border-primary/10">
                          <div className="flex items-center justify-between">
                               <div>
-                                   <CardTitle className="text-lg text-primary">Required Tests</CardTitle>
-                                   <CardDescription>Input the results and remarks for each requested test below.</CardDescription>
+                                    <CardTitle className="text-lg text-primary">{t("labTech.requiredTests")}</CardTitle>
+                                    <CardDescription>{t("labTech.inputResultsRemarks")}</CardDescription>
                               </div>
                               {request.status === "pending" && (
                                    <Button 
@@ -222,7 +224,7 @@ export default function LabRequestDetailsPage({ params }: { params: Promise<{ id
                                         onClick={handleMarkInProgress}
                                         disabled={submitting}
                                    >
-                                        Mark In Progress
+                                         {t("labTech.markInProgress")}
                                    </Button>
                               )}
                          </div>
@@ -239,18 +241,18 @@ export default function LabRequestDetailsPage({ params }: { params: Promise<{ id
                                    
                                    <div className="grid gap-4 md:grid-cols-2 pl-8">
                                         <div className="space-y-2">
-                                             <label className="text-sm font-bold text-foreground">Result Value <span className="text-destructive">*</span></label>
-                                             <Input 
-                                                  placeholder="e.g. 5.4 mmol/L, Positive, Negative" 
+                                              <label className="text-sm font-bold text-foreground">{t("labTech.resultValueRequired")} <span className="text-destructive">*</span></label>
+                                              <Input 
+                                                   placeholder={t("labTech.exampleResult")} 
                                                   value={resultsData[item.id]?.result || ""}
                                                   onChange={(e) => handleResultChange(item.id, 'result', e.target.value)}
                                                   disabled={request.status === "completed"}
                                              />
                                         </div>
                                         <div className="space-y-2">
-                                             <label className="text-sm font-bold text-foreground">Remarks / Observations</label>
-                                             <Textarea 
-                                                  placeholder="Add any technical remarks or interpretations..." 
+                                              <label className="text-sm font-bold text-foreground">{t("labTech.remarksObservations")}</label>
+                                              <Textarea 
+                                                   placeholder={t("labTech.technicalRemarks")} 
                                                   className="resize-none h-10"
                                                   value={resultsData[item.id]?.remarks || ""}
                                                   onChange={(e) => handleResultChange(item.id, 'remarks', e.target.value)}
@@ -262,7 +264,7 @@ export default function LabRequestDetailsPage({ params }: { params: Promise<{ id
                          ))}
                          {request.items.length === 0 && (
                               <div className="p-12 text-center text-muted-foreground">
-                                   <p>No specific test items were attached to this request.</p>
+                                    <p>{t("labTech.noTestItems")}</p>
                               </div>
                          )}
                     </CardContent>
@@ -276,7 +278,7 @@ export default function LabRequestDetailsPage({ params }: { params: Promise<{ id
                                    className="gap-2"
                               >
                                    <HugeiconsIcon icon={Tick01Icon} className="w-5 h-5" />
-                                   {submitting ? "Submitting..." : "Submit & Complete Request"}
+                                    {submitting ? t("labTech.submitting") : t("labTech.submitComplete")}
                               </Button>
                          </div>
                     )}

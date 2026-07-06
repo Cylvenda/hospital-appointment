@@ -156,6 +156,14 @@ export const clinicalService = {
           return { status: response.status, data: response.data }
      },
 
+     async exportConsultationRecord(uuid: string, format: "pdf" | "docx"): Promise<Blob> {
+          const response = await api.get(
+               `${API_ENDPOINTS.CONSULTATIONS}${uuid}/export/?file_format=${format}`,
+               { responseType: "blob" }
+          )
+          return response.data
+     },
+
      async addDiagnosis(
           consultationUuid: string,
           payload: { disease_name: string; icd10_code?: string; description?: string; type?: "provisional" | "final" }

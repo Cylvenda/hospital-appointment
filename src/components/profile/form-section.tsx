@@ -2,13 +2,14 @@
 
 import { ReactNode } from "react"
 import { HugeiconsIcon } from "@hugeicons/react"
+import type { IconSvgElement } from "@hugeicons/react"
 import { Separator } from "@/components/ui/separator"
 import { cn } from "@/lib/utils"
 
 interface FormSectionProps {
   title: string
   subtitle?: string
-  icon: any
+  icon: IconSvgElement
   children: ReactNode
   className?: string
 }

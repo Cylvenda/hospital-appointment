@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect } from "react"
 import { useParams, useRouter } from "next/navigation"
 import { useAppointmentStore } from "@/store/appointments/appointment.store"
 import { Button } from "@/components/ui/button"
@@ -14,17 +14,13 @@ export default function AdminSingleAppointmentPage() {
   const id = params.id as string
 
   const { appointments, doctors, assignAppointment, cancelAppointment, initialized, initialize } = useAppointmentStore()
-  const [loading, setLoading] = useState(true)
-
   useEffect(() => {
     if (!initialized) {
       void initialize()
-    } else {
-      setLoading(false)
     }
   }, [initialize, initialized])
 
-  if (loading) {
+  if (!initialized) {
     return (
       <div className="w-full flex h-64 items-center justify-center rounded-4xl border border-dashed border-border bg-card">
         <p className="text-sm text-muted-foreground animate-pulse">Loading appointment details...</p>
@@ -38,7 +34,7 @@ export default function AdminSingleAppointmentPage() {
     return (
       <div className="flex w-full flex-col items-center gap-4 rounded-4xl border border-dashed border-border bg-card p-10 text-center">
         <p className="text-sm text-muted-foreground">
-          Appointment not found or you don't have permission to view it.
+          Appointment not found or you do not have permission to view it.
         </p>
         <Button onClick={() => router.push("/appointments/all")} variant="outline">
           Back to Appointments
@@ -73,6 +69,7 @@ export default function AdminSingleAppointmentPage() {
           onAssign={assignAppointment}
           onCancel={cancelAppointment}
           hideViewDetails={true}
+          audience="admin"
         />
       )}
     </div>

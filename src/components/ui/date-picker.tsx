@@ -46,17 +46,6 @@ export function DatePicker({
     return () => document.removeEventListener("mousedown", handleClickOutside)
   }, [])
 
-  // Sync state if value changes externally
-  useEffect(() => {
-    if (value) {
-      const d = new Date(value)
-      if (!isNaN(d.getTime())) {
-        setCurrentYear(d.getFullYear())
-        setCurrentMonth(d.getMonth())
-      }
-    }
-  }, [value])
-
   const getDaysInMonth = (month: number, year: number) => {
     return new Date(year, month + 1, 0).getDate()
   }

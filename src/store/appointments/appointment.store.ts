@@ -37,13 +37,17 @@ type AppointmentStore = {
      initialize: () => Promise<void>
      createAppointment: (payload: {
           illnessCategoryId: string
-          appointmentPreferredDate: string
-          appointmentPreferredDate2: string
-          appointmentPreferredDate3: string
+          doctorId: string
+          appointmentDate: string
+          startTime: string
           description: string
-     }) => Promise<void>
+     }) => Promise<Appointment>
      assignAppointment: (payload: AssignPayload) => Promise<void>
      cancelAppointment: (appointmentId: string, reason?: string) => Promise<void>
+     markAppointmentPaid: (appointmentId: string, paymentMethod: string) => Promise<void>
+     checkInAppointment: (appointmentId: string) => Promise<void>
+     startConsultation: (appointmentId: string) => Promise<void>
+     callNextPatient: () => Promise<void>
      updateAppointment: (appointmentId: string, payload: { status?: string;[key: string]: unknown }) => Promise<void>
      PayingAppointment: (appointmentId: string, phone: string) => Promise<void>
 }
@@ -58,9 +62,6 @@ function mapAppointment(apiAppointment: AppointmentApi): Appointment {
           fee: apiAppointment.fee,
           illnessCategory: apiAppointment.illness_category,
           date: apiAppointment.appointment_date,
-          preferredDate: apiAppointment.preferred_date,
-          preferredDate2: apiAppointment.preferred_date_2,
-          preferredDate3: apiAppointment.preferred_date_3,
           startTime: apiAppointment.start_time,
           endTime: apiAppointment.end_time,
           doctor: apiAppointment.doctor_name,
@@ -70,6 +71,8 @@ function mapAppointment(apiAppointment: AppointmentApi): Appointment {
           diagnosis: apiAppointment.diagnosis,
           notes: apiAppointment.notes,
           status: apiAppointment.status,
+          queueNumber: apiAppointment.queue_number,
+          checkedInAt: apiAppointment.checked_in_at,
           createdAt: apiAppointment.created_at,
      }
 }
@@ -251,13 +254,19 @@ export const useAppointmentStore = create<AppointmentStore>((set) => ({
           }
      },
 
-     createAppointment: async ({ illnessCategoryId, appointmentPreferredDate, appointmentPreferredDate2, appointmentPreferredDate3, description }) => {
+     createAppointment: async ({
+          illnessCategoryId,
+          doctorId,
+          appointmentDate,
+          startTime,
+          description,
+     }) => {
           try {
                const response = await appointmentService.createAppointment({
                     illnessCategoryId,
-                    appointmentPreferredDate,
-                    appointmentPreferredDate2,
-                    appointmentPreferredDate3,
+                    doctorId,
+                    appointmentDate,
+                    startTime,
                     description,
                })
                const appointment = mapAppointment(response.data)
@@ -267,6 +276,7 @@ export const useAppointmentStore = create<AppointmentStore>((set) => ({
                }))
 
                await useAppointmentStore.getState().initialize()
+               return appointment
 
           } catch (error: unknown) {
                const message = getApiErrorMessage(error, "Failed to create appointment")
@@ -346,6 +356,67 @@ export const useAppointmentStore = create<AppointmentStore>((set) => ({
                set({ error: message })
                throw error
           }
+     },
+
+     checkInAppointment: async (appointmentId) => {
+          try {
+               const response = await appointmentService.checkInAppointment(appointmentId)
+               set((state) => ({
+                    appointments: state.appointments.map((appointment) =>
+                         appointment.id === appointmentId
+                              ? mapAppointment(response.data)
+                              : appointment
+                    ),
+                    error: null,
+               }))
+          } catch (error: unknown) {
+               const message = getApiErrorMessage(
+                    error,
+                    "Check-in could not be completed"
+               )
+               set({ error: message })
+               throw new Error(message)
+          }
+     },
+
+     markAppointmentPaid: async (appointmentId, paymentMethod) => {
+          try {
+               const response = await appointmentService.markAppointmentPaid(
+                    appointmentId,
+                    paymentMethod
+               )
+               set((state) => ({
+                    appointments: state.appointments.map((appointment) =>
+                         appointment.id === appointmentId
+                              ? mapAppointment(response.data)
+                              : appointment
+                    ),
+                    error: null,
+               }))
+          } catch (error: unknown) {
+               const message = getApiErrorMessage(
+                    error,
+                    "Payment could not be confirmed"
+               )
+               set({ error: message })
+               throw error
+          }
+     },
+
+     startConsultation: async (appointmentId) => {
+          const response = await appointmentService.startConsultation(appointmentId)
+          set((state) => ({
+               appointments: state.appointments.map((appointment) =>
+                    appointment.id === appointmentId
+                         ? mapAppointment(response.data)
+                         : appointment
+               ),
+          }))
+     },
+
+     callNextPatient: async () => {
+          await appointmentService.callNextPatient()
+          await useAppointmentStore.getState().fetchAppointments()
      },
 
      PayingAppointment: async (appointmentId, phone) => {

@@ -48,7 +48,7 @@ export default function ReceptionistAppointmentsPage() {
       <div>
         <h1 className="text-2xl font-semibold">All Appointments</h1>
         <p className="text-sm text-muted-foreground">
-          Browse every appointment across pending, accepted, completed, and cancelled statuses.
+          Browse every appointment across pending, confirmed, clinical, completed, and cancelled statuses.
         </p>
       </div>
 

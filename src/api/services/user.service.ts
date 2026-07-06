@@ -1,4 +1,4 @@
-import type { AccountActivation, User } from "@/store/auth/auth.types"
+import type { AccountActivation, User, UserUpdatePayload } from "@/store/auth/auth.types"
 import api from "../axios"
 import { API_ENDPOINTS } from "../endpoints"
 
@@ -13,7 +13,7 @@ export const userServices = {
           }
      },
 
-     async updateUserMe(payload: Partial<User>) {
+     async updateUserMe(payload: UserUpdatePayload) {
           const response = await api.patch<User>(API_ENDPOINTS.CURRENT_USER_PROFILE, payload)
           return {
                status: response.status,

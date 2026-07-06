@@ -20,6 +20,7 @@ import { Calendar01Icon, Clock01Icon, UserIcon, CheckCircle, Cancel01Icon, Hourg
 import { HugeiconsIcon } from "@hugeicons/react"
 import { getAppointmentStatusMeta } from "@/lib/appointment-workflow"
 import { hasAppointmentStatus } from "@/lib/appointment-queues"
+import { useTranslation } from "@/lib/i18n"
 
 type Props = {
      appointment: Appointment
@@ -32,6 +33,7 @@ export default function AppointmentDisplay({
      onCancel,
      hideViewDetails = false,
 }: Props) {
+     const { t } = useTranslation()
      const router = useRouter()
      const [loading, setLoading] = useState(false)
 
@@ -62,7 +64,18 @@ export default function AppointmentDisplay({
           slate: Cancel01Icon,
      } as const
      const isPending = hasAppointmentStatus(appointment, "pending")
-     const isAssigned = hasAppointmentStatus(appointment, "accepted", "completed")
+     const isAssigned = hasAppointmentStatus(
+          appointment,
+          "confirmed",
+          "checked_in",
+          "waiting_in_queue",
+          "in_consultation",
+          "waiting_for_laboratory",
+          "laboratory_in_progress",
+          "laboratory_results_ready",
+          "back_to_doctor",
+          "completed"
+     )
      const isCompleted = hasAppointmentStatus(appointment, "completed")
      const hasDoctor = Boolean(appointment.doctor)
      const canPay =
@@ -82,7 +95,7 @@ export default function AppointmentDisplay({
                "group relative overflow-hidden rounded-[1.25rem] border border-border/60 bg-card/95 shadow-[0_12px_28px_rgba(15,23,42,0.05)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_18px_36px_rgba(15,23,42,0.08)]",
                isPending ? "border-amber-200/60 shadow-amber-500/5" : "border-muted/60"
           )}>
-               <div className={cn("absolute inset-x-0 top-0 h-1", isPending ? statusBarStyles.amber : hasAppointmentStatus(appointment, "accepted") ? statusBarStyles.emerald : hasAppointmentStatus(appointment, "cancelled", "declined") ? statusBarStyles.rose : statusBarStyles.blue)} />
+               <div className={cn("absolute inset-x-0 top-0 h-1", isPending ? statusBarStyles.amber : hasAppointmentStatus(appointment, "confirmed", "back_to_doctor") ? statusBarStyles.emerald : hasAppointmentStatus(appointment, "cancelled", "no_show") ? statusBarStyles.rose : statusBarStyles.blue)} />
 
                <CardHeader className="relative p-0">
                      <div className={cn(
@@ -93,7 +106,9 @@ export default function AppointmentDisplay({
                               <div className="min-w-0 flex-1">
                                    <div className="flex flex-wrap items-center gap-2">
                                         <Badge variant="outline" className="rounded-full border-border/70 px-2.5 py-0.5 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">
-                                             Appointment ID: {appointment.appointmentId ?? "Pending"}
+                                             {t("patientCard.appointmentId", {
+                                                  id: appointment.appointmentId ?? t("appointments.pending"),
+                                             })}
                                         </Badge>
                                         <Badge variant="outline" className={cn("rounded-full px-2.5 py-0.5 text-[10px] font-black uppercase tracking-[0.2em]", toneStyles[statusMeta.tone])}>
                                              <HugeiconsIcon icon={statusIcon[statusMeta.tone]} className="mr-1.5 h-3 w-3" />
@@ -101,12 +116,17 @@ export default function AppointmentDisplay({
                                         </Badge>
                                         {appointment.paymentStatus === "completed" && (
                                              <Badge className="rounded-full border-0 bg-emerald-500 px-2.5 py-0.5 text-[10px] font-black uppercase tracking-[0.2em] text-white">
-                                                  Paid
+                                                  {t("staffAppointmentCard.paid")}
                                              </Badge>
                                         )}
                                         {hasDoctor && (
                                              <Badge variant="outline" className="rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-0.5 text-[10px] font-black uppercase tracking-[0.2em] text-emerald-700">
-                                                  Doctor assigned
+                                                  {t("patientCard.doctorAssigned")}
+                                             </Badge>
+                                        )}
+                                        {appointment.queueNumber && (
+                                             <Badge className="rounded-full bg-blue-600 text-white">
+                                                  {t("patientCard.queueNumber", { number: appointment.queueNumber })}
                                              </Badge>
                                         )}
                                    </div>
@@ -127,16 +147,16 @@ export default function AppointmentDisplay({
 
                               <div className="grid gap-2 sm:grid-cols-2 lg:w-[15rem]">
                                    <div className="rounded-2xl border border-border/60 bg-card px-3 py-2.5 shadow-sm">
-                                        <p className="text-[10px] font-black uppercase tracking-[0.22em] text-muted-foreground">Fee</p>
+                                        <p className="text-[10px] font-black uppercase tracking-[0.22em] text-muted-foreground">{t("patientCard.fee")}</p>
                                         <p className="mt-1 text-xl font-black tracking-tight text-primary">
                                              {Number(appointment.fee).toLocaleString()}
                                         </p>
-                                        <p className="text-[10px] font-medium text-muted-foreground">TZS</p>
+                                        <p className="text-[10px] font-medium text-muted-foreground">{t("patientCard.tzs")}</p>
                                    </div>
                               <div className="rounded-2xl border border-border/60 bg-card px-3 py-2.5 shadow-sm">
-                                        <p className="text-[10px] font-black uppercase tracking-[0.22em] text-muted-foreground">Visit</p>
+                                        <p className="text-[10px] font-black uppercase tracking-[0.22em] text-muted-foreground">{t("patientCard.visit")}</p>
                                         <p className="mt-1 text-xs font-bold text-foreground">
-                                             {appointment.date || "Not scheduled"}
+                                             {appointment.date || t("patientCard.notScheduled")}
                                         </p>
                                         <p className="mt-1 text-[11px] text-muted-foreground">
                                              {appointment.startTime || "--:--"} - {appointment.endTime || "--:--"}
@@ -149,21 +169,32 @@ export default function AppointmentDisplay({
 
                <CardContent className="space-y-4 p-4 pt-0 sm:p-5 sm:pt-0">
                     <div className="grid gap-2.5 md:grid-cols-3">
-                         {[
-                              { label: "Choice 1", date: appointment.preferredDate },
-                              { label: "Choice 2", date: appointment.preferredDate2 },
-                              { label: "Choice 3", date: appointment.preferredDate3 },
-                         ].map((choice, i) => (
-                              <div key={i} className="rounded-2xl border border-border/60 bg-muted/20 p-3 shadow-sm">
-                                   <p className="text-[10px] font-black uppercase tracking-[0.22em] text-muted-foreground">{choice.label}</p>
-                                   <div className="mt-1.5 flex items-center gap-2">
-                                        <div className="flex h-7 w-7 items-center justify-center rounded-xl bg-background text-primary shadow-sm ring-1 ring-border/60">
-                                             <HugeiconsIcon icon={Clock01Icon} className="h-3.5 w-3.5" />
-                                        </div>
-                                        <p className="text-sm font-semibold text-foreground">{choice.date || "---"}</p>
-                                   </div>
-                              </div>
-                         ))}
+                         <div className="rounded-2xl border border-border/60 bg-muted/20 p-3 shadow-sm">
+                              <p className="text-[10px] font-black uppercase tracking-[0.22em] text-muted-foreground">
+                                   {t("doctorCard.doctor")}
+                              </p>
+                              <p className="mt-2 text-sm font-semibold">
+                                   {appointment.doctor || t("patientCard.awaitingDoctor")}
+                              </p>
+                         </div>
+                         <div className="rounded-2xl border border-border/60 bg-muted/20 p-3 shadow-sm">
+                              <p className="text-[10px] font-black uppercase tracking-[0.22em] text-muted-foreground">
+                                   {t("patientCard.confirmedSlot")}
+                              </p>
+                              <p className="mt-2 text-sm font-semibold">
+                                   {appointment.date || t("patientCard.notConfirmed")} · {appointment.startTime || "--:--"}
+                              </p>
+                         </div>
+                         <div className="rounded-2xl border border-border/60 bg-muted/20 p-3 shadow-sm">
+                              <p className="text-[10px] font-black uppercase tracking-[0.22em] text-muted-foreground">
+                                   {t("patientCard.dailyQueue")}
+                              </p>
+                              <p className="mt-2 text-sm font-semibold">
+                                   {appointment.queueNumber
+                                        ? t("patientCard.queueNumber", { number: appointment.queueNumber })
+                                        : t("patientCard.assignedAtCheckIn")}
+                              </p>
+                         </div>
                     </div>
 
                     <div className="grid gap-3 lg:grid-cols-[1.05fr_0.95fr]">
@@ -173,7 +204,7 @@ export default function AppointmentDisplay({
                                         <HugeiconsIcon icon={InformationCircleIcon} className="h-3.5 w-3.5" />
                                    </div>
                                    <div>
-                                        <p className="text-[10px] font-black uppercase tracking-[0.22em] text-muted-foreground">Journey Summary</p>
+                                        <p className="text-[10px] font-black uppercase tracking-[0.22em] text-muted-foreground">{t("patientCard.journeySummary")}</p>
                                         <p className="text-xs font-medium leading-5 text-muted-foreground">{statusMeta.summary}</p>
                                    </div>
                               </div>
@@ -187,15 +218,15 @@ export default function AppointmentDisplay({
                                                   <HugeiconsIcon icon={UserIcon} className="h-4 w-4" />
                                              </div>
                                              <div>
-                                                  <p className="text-[10px] font-black uppercase tracking-[0.22em] text-emerald-700/70">Assigned Doctor</p>
+                                                  <p className="text-[10px] font-black uppercase tracking-[0.22em] text-emerald-700/70">{t("patientCard.assignedDoctor")}</p>
                                                   <p className="text-sm font-bold text-foreground">{appointment.doctor}</p>
                                              </div>
                                         </div>
                                         <div className="text-right">
-                                             <p className="text-[10px] font-black uppercase tracking-[0.22em] text-emerald-700/70">Schedule</p>
+                                             <p className="text-[10px] font-black uppercase tracking-[0.22em] text-emerald-700/70">{t("patientCard.schedule")}</p>
                                              <p className="flex items-center gap-2 text-sm font-bold text-foreground">
                                                   <HugeiconsIcon icon={Clock01Icon} className="h-3.5 w-3.5 text-emerald-700" />
-                                                  {appointment.date} @ {appointment.startTime}
+                                                  {appointment.date} {t("patientCard.at")} {appointment.startTime}
                                              </p>
                                         </div>
                                    </div>
@@ -212,14 +243,14 @@ export default function AppointmentDisplay({
                                                   <HugeiconsIcon icon={Tick02Icon} className="h-3.5 w-3.5" />
                                              </div>
                                              <div>
-                                                  <p className="text-[10px] font-black uppercase tracking-[0.22em] text-blue-700/70">Doctor&apos;s Diagnosis</p>
+                                                  <p className="text-[10px] font-black uppercase tracking-[0.22em] text-blue-700/70">{t("patientCard.doctorDiagnosis")}</p>
                                                   <p className="text-sm font-bold text-foreground">{appointment.diagnosis}</p>
                                              </div>
                                         </div>
                                    </div>
                                    {appointment.notes && (
                                         <div className="max-w-sm rounded-2xl border border-dashed border-blue-500/20 bg-background/70 p-2.5">
-                                             <p className="text-[10px] font-black uppercase tracking-[0.22em] text-muted-foreground">Clinical Notes</p>
+                                             <p className="text-[10px] font-black uppercase tracking-[0.22em] text-muted-foreground">{t("search.clinicalNotes")}</p>
                                              <p className="mt-1 text-xs leading-5 text-muted-foreground">{appointment.notes}</p>
                                         </div>
                                    )}
@@ -230,7 +261,7 @@ export default function AppointmentDisplay({
                     <div className="flex flex-col gap-3 border-t border-border/60 pt-3.5 sm:flex-row sm:items-center sm:justify-between">
                          <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.22em] text-muted-foreground">
                               <HugeiconsIcon icon={InformationCircleIcon} className="h-3.5 w-3.5" />
-                              <span>{isPending ? "Awaiting your next action" : "Appointment updated"}</span>
+                              <span>{isPending ? t("patientCard.awaitingAction") : t("patientCard.appointmentUpdated")}</span>
                          </div>
                          <div className="flex flex-wrap items-center gap-3 sm:justify-end">
                               {!hideViewDetails && (
@@ -239,7 +270,7 @@ export default function AppointmentDisplay({
                                         onClick={() => router.push(`/patient-dashboard/appointments/${appointment.id}`)}
                                         className="h-10 rounded-full border-border/70 px-4 text-sm font-semibold shadow-sm"
                                    >
-                                        View Details
+                                        {t("doctorCard.viewDetails")}
                                    </Button>
                               )}
 

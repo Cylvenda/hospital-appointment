@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button"
 import type { EducationalContent } from "@/store/health-education/health-education.types"
 import { useHealthEducationStore } from "@/store/health-education/health-education.store"
 import { formatPublishedDate } from "@/lib/format-published-date"
+import Image from "next/image"
 
 interface ArticleCardProps {
     article: EducationalContent
@@ -29,10 +30,12 @@ export function ArticleCard({ article, isBookmarked = false }: ArticleCardProps)
                 <Card className="h-full overflow-hidden border-muted/40 hover:border-primary/20 hover:shadow-md transition-all duration-300 group">
                     <div className="relative aspect-video w-full bg-muted/20 overflow-hidden">
                         {article.featuredImage ? (
-                            <img 
+                            <Image
                                 src={article.featuredImage} 
                                 alt={article.title} 
-                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                fill
+                                unoptimized
+                                className="object-cover group-hover:scale-105 transition-transform duration-500"
                             />
                         ) : (
                             <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/5 to-primary/10">

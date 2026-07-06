@@ -128,7 +128,7 @@ export default function HealthEducationPage() {
                         <HugeiconsIcon icon={Book01Icon} className="w-12 h-12 text-muted-foreground/30 mb-4" />
                         <h4 className="text-lg font-medium text-foreground">No resources found</h4>
                         <p className="text-muted-foreground mt-1 max-w-md">
-                            We couldn't find any articles matching your search criteria. Try using different keywords or clearing the category filter.
+                            We could not find any articles matching your search criteria. Try using different keywords or clearing the category filter.
                         </p>
                     </div>
                 )}

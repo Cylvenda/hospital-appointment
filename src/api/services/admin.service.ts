@@ -6,6 +6,7 @@ import type {
      AdminIllnessCategory,
      AdminIllnessCategoryWritePayload,
      AdminDoctorWritePayload,
+     AdminDoctorUpdatePayload,
      AdminOverview,
      AdminSettings,
      AdminSettingsUpdatePayload,
@@ -88,6 +89,17 @@ export const AdminService = {
                status: response.status,
                data: response.data,
           }
+     },
+
+     async updateDoctor(
+          uuid: string,
+          payload: AdminDoctorUpdatePayload
+     ): Promise<ApiResponse<AdminDoctor>> {
+          const response = await api.patch<AdminDoctor>(
+               `${API_ENDPOINTS.ADMIN_DOCTORS}${uuid}/`,
+               payload
+          )
+          return { status: response.status, data: response.data }
      },
 
      async getIllnessCategories(): Promise<ApiResponse<AdminIllnessCategory[]>> {

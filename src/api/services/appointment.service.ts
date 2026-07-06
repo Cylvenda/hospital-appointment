@@ -6,6 +6,8 @@ import type {
      DoctorApi,
      IllnessCategoryApi,
      PaymentResponse,
+     AvailableAppointmentDay,
+     AvailableAppointmentSlot,
 } from "@/store/appointments/appointment.types"
 
 type AssignAppointmentPayload = {
@@ -17,9 +19,9 @@ type AssignAppointmentPayload = {
 
 type CreateAppointmentPayload = {
      illnessCategoryId: string
-     appointmentPreferredDate: string
-     appointmentPreferredDate2: string
-     appointmentPreferredDate3: string
+     doctorId: string
+     appointmentDate: string
+     startTime: string
      description: string
 }
 
@@ -44,12 +46,35 @@ export const appointmentService = {
           }
      },
 
-     async listDoctors(): Promise<ApiResponse<DoctorApi[]>> {
-          const response = await api.get<DoctorApi[]>(API_ENDPOINTS.APPOINTMENT_DOCTORS)
+     async listDoctors(categoryUuid?: string): Promise<ApiResponse<DoctorApi[]>> {
+          const response = await api.get<DoctorApi[]>(API_ENDPOINTS.APPOINTMENT_DOCTORS, {
+               params: categoryUuid ? { category_uuid: categoryUuid } : undefined,
+          })
           return {
                status: response.status,
                data: response.data,
           }
+     },
+
+     async listAvailableDays(
+          doctorUuid: string
+     ): Promise<ApiResponse<AvailableAppointmentDay[]>> {
+          const response = await api.get<AvailableAppointmentDay[]>(
+               `${API_ENDPOINTS.APPOINTMENTS}available-days/`,
+               { params: { doctor_uuid: doctorUuid, days: 60 } }
+          )
+          return { status: response.status, data: response.data }
+     },
+
+     async listAvailableSlots(
+          doctorUuid: string,
+          date: string
+     ): Promise<ApiResponse<AvailableAppointmentSlot[]>> {
+          const response = await api.get<AvailableAppointmentSlot[]>(
+               `${API_ENDPOINTS.APPOINTMENTS}available-slots/`,
+               { params: { doctor_uuid: doctorUuid, date } }
+          )
+          return { status: response.status, data: response.data }
      },
 
      async listIllnessCategories(): Promise<ApiResponse<IllnessCategoryApi[]>> {
@@ -97,9 +122,9 @@ export const appointmentService = {
      ): Promise<ApiResponse<AppointmentApi>> {
           const response = await api.post<AppointmentApi>(API_ENDPOINTS.APPOINTMENTS, {
                illness_category_uuid: payload.illnessCategoryId,
-               preferred_date: payload.appointmentPreferredDate,
-               preferred_date_2: payload.appointmentPreferredDate2,
-               preferred_date_3: payload.appointmentPreferredDate3,
+               doctor_uuid: payload.doctorId,
+               appointment_date: payload.appointmentDate,
+               start_time: payload.startTime,
                description: payload.description,
           })
 
@@ -120,7 +145,7 @@ export const appointmentService = {
                     appointment_date: payload.appointmentDate,
                     start_time: payload.startTime,
                     end_time: payload.endTime,
-                    status: "accepted",
+                    status: "confirmed",
                }
           )
 
@@ -143,6 +168,54 @@ export const appointmentService = {
                status: response.status,
                data: response.data,
           }
+     },
+
+     async checkInAppointment(
+          appointmentId: string
+     ): Promise<ApiResponse<AppointmentApi>> {
+          const response = await api.post<AppointmentApi>(
+               `${API_ENDPOINTS.APPOINTMENTS}${appointmentId}/check-in/`
+          )
+          return { status: response.status, data: response.data }
+     },
+
+     async markAppointmentPaid(
+          appointmentId: string,
+          paymentMethod: string
+     ): Promise<ApiResponse<AppointmentApi>> {
+          const response = await api.post<AppointmentApi>(
+               `${API_ENDPOINTS.APPOINTMENTS}${appointmentId}/mark-paid/`,
+               { payment_method: paymentMethod }
+          )
+          return { status: response.status, data: response.data }
+     },
+
+     async startConsultation(
+          appointmentId: string
+     ): Promise<ApiResponse<AppointmentApi>> {
+          const response = await api.post<AppointmentApi>(
+               `${API_ENDPOINTS.APPOINTMENTS}${appointmentId}/start-consultation/`
+          )
+          return { status: response.status, data: response.data }
+     },
+
+     async rescheduleAppointment(
+          appointmentId: string,
+          date: string,
+          startTime: string
+     ): Promise<ApiResponse<AppointmentApi>> {
+          const response = await api.post<AppointmentApi>(
+               `${API_ENDPOINTS.APPOINTMENTS}${appointmentId}/reschedule/`,
+               { date, start_time: startTime }
+          )
+          return { status: response.status, data: response.data }
+     },
+
+     async callNextPatient(): Promise<ApiResponse<AppointmentApi>> {
+          const response = await api.post<AppointmentApi>(
+               `${API_ENDPOINTS.APPOINTMENTS}call-next/`
+          )
+          return { status: response.status, data: response.data }
      },
 
      async updateAppointment(

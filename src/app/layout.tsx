@@ -1,19 +1,11 @@
 import type { Metadata } from "next";
-import { Poppins } from "next/font/google";
 import "./globals.css";
-import { cn } from "@/lib/utils";
 import { ToastContainer } from "react-toastify";
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { ThemeProvider } from "@/components/theme-provider";
 import { AuthBootstrap } from "@/components/auth-bootstrap";
 import { NotificationBootstrap } from "@/components/notification-bootstrap";
-
-const poppins = Poppins({
-  subsets: ["latin"],
-  weight: ["400", "500", "700"],
-  variable: "--font-poppins",
-  display: "swap",
-});
+import { LanguageBootstrap } from "@/components/language-bootstrap";
 
 export const metadata: Metadata = {
   title: {
@@ -36,15 +28,10 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={cn("h-full antialiased", poppins.variable)}
+      className="h-full antialiased"
     >
       <head />
-      <body
-        className={cn(
-          "min-h-screen bg-background text-foreground font-sans",
-          poppins.className
-        )}
-      >
+      <body className="min-h-screen bg-background text-foreground font-sans">
         <ToastContainer
           position="top-right"
           autoClose={3000}
@@ -58,6 +45,7 @@ export default function RootLayout({
           <main className="flex-1">
             <ThemeProvider>
                <TooltipProvider>
+                 <LanguageBootstrap />
                  <AuthBootstrap />
                  <NotificationBootstrap />
                  {children}

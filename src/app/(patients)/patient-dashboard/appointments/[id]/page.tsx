@@ -53,7 +53,7 @@ export default function SingleAppointmentPage() {
     return (
       <div className="flex w-full flex-col items-center gap-4 rounded-3xl border border-dashed border-border bg-card p-10 text-center mt-6">
         <p className="text-sm text-muted-foreground font-medium">
-          Appointment not found or you don't have access to it.
+          Appointment not found or you do not have access to it.
         </p>
         <Button onClick={() => router.back()} variant="outline" className="rounded-xl">
           Go Back

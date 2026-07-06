@@ -10,7 +10,6 @@ import {
   MedicineBottle01Icon,
   PlusSignIcon,
   Search01Icon,
-  TextAlignLeftIcon,
   Medicine01Icon,
   DatabaseIcon,
   FilterIcon,
@@ -53,7 +52,6 @@ export default function ReceptionistIllnessCategoriesPage() {
     createIllnessCategory,
     updateIllnessCategory,
     deleteIllnessCategory,
-    loading
   } = useAppointmentStore()
 
   const [search, setSearch] = useState("")

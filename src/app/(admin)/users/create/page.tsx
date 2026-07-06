@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -169,7 +169,7 @@ export default function CreateUserPage() {
 
       setForm(emptyForm)
       setErrors({})
-    } catch (error) {
+    } catch {
       toast.error(`Failed to create ${form.role}. Please try again.`)
     } finally {
       setIsSubmitting(false)

@@ -28,10 +28,12 @@ import {
      Notification01Icon,
      File01Icon
 } from "@hugeicons/core-free-icons"
+import { useTranslation } from "@/lib/i18n"
 
 export default function LabTechDashboardPage() {
+     const { t } = useTranslation()
      const router = useRouter()
-     const { user, checkAuth, exportMyReport } = useAuthUserStore()
+     const { user, checkAuth } = useAuthUserStore()
      const { requests, results, loading, initialize, initialized } = useLaboratoryStore()
 
      useEffect(() => {
@@ -103,42 +105,24 @@ export default function LabTechDashboardPage() {
                     <div className="relative z-10 flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
                          <div className="space-y-2">
                               <h1 className="text-3xl md:text-4xl font-bold tracking-tight">
-                                   Welcome back, {user?.first_name?.split(' ')[0] || "Lab Technician"}!
+                                   {t("labTech.welcome", { name: user?.first_name?.split(' ')[0] || "Lab Technician" })}
                               </h1>
                               <p className="text-primary-foreground/80 max-w-md text-lg">
-                                   You have <span className="font-bold text-white">{pendingRequests.length} lab requests</span> pending. Let&apos;s process them!
+                                   {t("labTech.labRequests", { count: pendingRequests.length })}
                               </p>
                          </div>
 
                          <div className="flex flex-wrap gap-3">
-                              <Button
-                                   size="lg"
-                                   variant="outline"
-                                   className="rounded-md border-white/30 bg-white/10 text-white backdrop-blur-md hover:bg-white/20 transition-all"
-                                   onClick={handleRefresh}
-                                   disabled={loading}
-                              >
-                                   <HugeiconsIcon icon={RefreshIcon} className={cn("mr-2 h-5 w-5", loading && "animate-spin")} />
-                                   Refresh Queue
-                              </Button>
-                              <Button
-                                   size="lg"
-                                   variant="outline"
-                                   className="rounded-md border-white/30 bg-white/10 text-white backdrop-blur-md hover:bg-white/20 transition-all"
-                                   onClick={() => exportMyReport("pdf")}
-                              >
-                                   <HugeiconsIcon icon={File01Icon} className="mr-2 h-5 w-5" />
-                                   PDF Report
-                              </Button>
-                              <Button
-                                   size="lg"
-                                   variant="outline"
-                                   className="rounded-md border-white/30 bg-white/10 text-white backdrop-blur-md hover:bg-white/20 transition-all"
-                                   onClick={() => exportMyReport("docx")}
-                              >
-                                   <HugeiconsIcon icon={File01Icon} className="mr-2 h-5 w-5" />
-                                   DOCX Report
-                              </Button>
+                                   <Button
+                                        size="lg"
+                                        variant="outline"
+                                        className="rounded-md border-white/30 bg-white/10 text-white backdrop-blur-md hover:bg-white/20 transition-all"
+                                        onClick={handleRefresh}
+                                        disabled={loading}
+                                   >
+                                        <HugeiconsIcon icon={RefreshIcon} className={cn("mr-2 h-5 w-5", loading && "animate-spin")} />
+                                        {t("labTech.refresh")}
+                                   </Button>
                          </div>
                     </div>
                </motion.div>
@@ -154,11 +138,11 @@ export default function LabTechDashboardPage() {
                                         <HugeiconsIcon icon={Medicine01Icon} className="w-6 h-6 text-blue-600" />
                                    </div>
                                    <div>
-                                        <p className="text-sm font-semibold text-blue-600/70 uppercase tracking-wider">Total Requests</p>
-                                        <p className="text-4xl font-black text-blue-900 dark:text-blue-100">{requests.length}</p>
-                                        <p className="text-xs text-blue-600/60 mt-1 flex items-center gap-1">
-                                             <HugeiconsIcon icon={CheckCircle} className="w-3 h-3" /> System Wide
-                                        </p>
+                                         <p className="text-sm font-semibold text-blue-600/70 uppercase tracking-wider">{t("labTech.totalRequests")}</p>
+                                         <p className="text-4xl font-black text-blue-900 dark:text-blue-100">{requests.length}</p>
+                                         <p className="text-xs text-blue-600/60 mt-1 flex items-center gap-1">
+                                              <HugeiconsIcon icon={CheckCircle} className="w-3 h-3" /> {t("labTech.systemWide")}
+                                         </p>
                                    </div>
                               </CardContent>
                          </Card>
@@ -171,11 +155,11 @@ export default function LabTechDashboardPage() {
                                         <HugeiconsIcon icon={HourglassIcon} className="w-6 h-6 text-amber-600" />
                                    </div>
                                    <div>
-                                        <p className="text-sm font-semibold text-amber-600/70 uppercase tracking-wider">Pending Requests</p>
-                                        <p className="text-4xl font-black text-amber-900 dark:text-amber-100">{pendingRequests.length}</p>
-                                        <p className="text-xs text-amber-600/60 mt-1 flex items-center gap-1">
-                                             <HugeiconsIcon icon={ArrowRight01Icon} className="w-3 h-3" /> In Queue
-                                        </p>
+                                         <p className="text-sm font-semibold text-amber-600/70 uppercase tracking-wider">{t("labTech.pendingRequests")}</p>
+                                         <p className="text-4xl font-black text-amber-900 dark:text-amber-100">{pendingRequests.length}</p>
+                                         <p className="text-xs text-amber-600/60 mt-1 flex items-center gap-1">
+                                              <HugeiconsIcon icon={ArrowRight01Icon} className="w-3 h-3" /> {t("labTech.inQueue")}
+                                         </p>
                                    </div>
                               </CardContent>
                          </Card>
@@ -187,31 +171,31 @@ export default function LabTechDashboardPage() {
                               <CardHeader className="bg-muted/30 pb-4">
                                    <div className="flex items-center justify-between">
                                         <div>
-                                             <CardTitle className="text-xl font-bold flex items-center gap-2">
-                                                  <HugeiconsIcon icon={File01Icon} className="w-6 h-6 text-primary" />
-                                                  Recent Lab Requests
-                                             </CardTitle>
-                                             <CardDescription>Patients waiting for sample collection or test results</CardDescription>
-                                        </div>
-                                        <Button variant="ghost" size="sm" className="rounded-md text-primary font-bold" onClick={() => router.push("/lab-tech-dashboard/requests")}>
-                                             View All <HugeiconsIcon icon={ArrowRight01Icon} className="ml-1 w-4 h-4" />
-                                        </Button>
+                                              <CardTitle className="text-xl font-bold flex items-center gap-2">
+                                                   <HugeiconsIcon icon={File01Icon} className="w-6 h-6 text-primary" />
+                                                   {t("labTech.recentLabRequests")}
+                                              </CardTitle>
+                                              <CardDescription>{t("labTech.patientsWaiting")}</CardDescription>
+                                         </div>
+                                         <Button variant="ghost" size="sm" className="rounded-md text-primary font-bold" onClick={() => router.push("/lab-tech-dashboard/requests")}>
+                                              {t("labTech.viewAll")} <HugeiconsIcon icon={ArrowRight01Icon} className="ml-1 w-4 h-4" />
+                                         </Button>
                                    </div>
                               </CardHeader>
                               <CardContent className="p-0 flex-1 overflow-y-auto max-h-[500px]">
                                    {loading && requests.length === 0 ? (
                                         <div className="p-12 text-center flex flex-col items-center gap-3">
                                              <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin" />
-                                             <p className="text-muted-foreground font-medium">Refreshing requests...</p>
-                                        </div>
-                                   ) : pendingRequests.length === 0 ? (
-                                        <div className="p-12 text-center flex flex-col items-center gap-4">
-                                             <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center text-muted-foreground">
-                                                  <HugeiconsIcon icon={CheckCircle} className="w-8 h-8" />
-                                             </div>
-                                             <p className="text-muted-foreground font-medium text-lg">All caught up!</p>
-                                             <p className="text-sm text-muted-foreground/60 max-w-[200px]">No pending lab requests at the moment.</p>
-                                        </div>
+                                              <p className="text-muted-foreground font-medium">{t("labTech.refreshingRequests")}</p>
+                                         </div>
+                                    ) : pendingRequests.length === 0 ? (
+                                         <div className="p-12 text-center flex flex-col items-center gap-4">
+                                              <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center text-muted-foreground">
+                                                   <HugeiconsIcon icon={CheckCircle} className="w-8 h-8" />
+                                              </div>
+                                              <p className="text-muted-foreground font-medium text-lg">{t("labTech.allCaughtUp")}</p>
+                                              <p className="text-sm text-muted-foreground/60 max-w-[200px]">{t("labTech.noPendingRequests")}</p>
+                                         </div>
                                    ) : (
                                         <div className="divide-y divide-muted/40">
                                              <AnimatePresence mode="popLayout">
@@ -233,7 +217,7 @@ export default function LabTechDashboardPage() {
                                                                       <p className="font-bold text-foreground group-hover:text-primary transition-colors">{req.patientName}</p>
                                                                       <div className="flex items-center gap-2 mt-0.5">
                                                                            <span className="text-[10px] bg-muted px-2 py-0.5 rounded-full text-muted-foreground font-bold uppercase tracking-wider">
-                                                                                {req.items.length > 0 ? req.items[0].testTypeName : "Multiple Tests"}
+                                                                                {req.items.length > 0 ? req.items[0].testTypeName : t("labTech.multipleTests")}
                                                                            </span>
                                                                            <span className="text-[10px] text-muted-foreground/60 flex items-center gap-1">
                                                                                 <HugeiconsIcon icon={Calendar03Icon} className="w-3 h-3" /> {new Date(req.requestedAt).toLocaleDateString()}
@@ -241,14 +225,14 @@ export default function LabTechDashboardPage() {
                                                                       </div>
                                                                  </div>
                                                             </div>
-                                                            <Button 
-                                                                 size="sm" 
-                                                                 variant="ghost" 
-                                                                 className="rounded-xl bg-primary/5 text-primary hover:bg-primary hover:text-white transition-all px-4"
-                                                                 onClick={() => router.push(`/lab-tech-dashboard/requests/${req.id}`)}
-                                                            >
-                                                                 Process <HugeiconsIcon icon={ArrowRight01Icon} className="ml-1 w-4 h-4" />
-                                                            </Button>
+                                                              <Button
+                                                                  size="sm"
+                                                                  variant="ghost"
+                                                                  className="rounded-xl bg-primary/5 text-primary hover:bg-primary hover:text-white transition-all px-4"
+                                                                  onClick={() => router.push(`/lab-tech-dashboard/requests/${req.id}`)}
+                                                             >
+                                                                  {t("labTech.process")} <HugeiconsIcon icon={ArrowRight01Icon} className="ml-1 w-4 h-4" />
+                                                             </Button>
                                                        </motion.div>
                                                   ))}
                                              </AnimatePresence>
@@ -265,13 +249,13 @@ export default function LabTechDashboardPage() {
                                    <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 flex items-center justify-center mb-4">
                                         <HugeiconsIcon icon={CheckCircle} className="w-6 h-6 text-emerald-600" />
                                    </div>
-                                   <div>
-                                        <p className="text-sm font-semibold text-emerald-600/70 uppercase tracking-wider">Completed Tests</p>
-                                        <p className="text-4xl font-black text-emerald-900 dark:text-emerald-100">{completedRequests.length}</p>
-                                        <p className="text-xs text-emerald-600/60 mt-1 flex items-center gap-1">
-                                             <HugeiconsIcon icon={Calendar03Icon} className="w-3 h-3" /> Successfully Resulted
-                                        </p>
-                                   </div>
+                                    <div>
+                                         <p className="text-sm font-semibold text-emerald-600/70 uppercase tracking-wider">{t("labTech.completedTests")}</p>
+                                         <p className="text-4xl font-black text-emerald-900 dark:text-emerald-100">{completedRequests.length}</p>
+                                         <p className="text-xs text-emerald-600/60 mt-1 flex items-center gap-1">
+                                              <HugeiconsIcon icon={Calendar03Icon} className="w-3 h-3" /> {t("labTech.successfullyResulted")}
+                                         </p>
+                                    </div>
                               </CardContent>
                          </Card>
                     </motion.div>
@@ -282,13 +266,13 @@ export default function LabTechDashboardPage() {
                                    <div className="w-12 h-12 rounded-2xl bg-rose-500/10 flex items-center justify-center mb-4">
                                         <HugeiconsIcon icon={File01Icon} className="w-6 h-6 text-rose-600" />
                                    </div>
-                                   <div>
-                                        <p className="text-sm font-semibold text-rose-600/70 uppercase tracking-wider">Critical Alerts</p>
-                                        <p className="text-4xl font-black text-rose-900 dark:text-rose-100">{criticalAlerts}</p>
-                                        <p className="text-xs text-rose-600/60 mt-1 flex items-center gap-1">
-                                             <span className="w-2 h-2 rounded-full bg-rose-500 block" /> Needs Verification
-                                        </p>
-                                   </div>
+                                    <div>
+                                         <p className="text-sm font-semibold text-rose-600/70 uppercase tracking-wider">{t("labTech.criticalAlerts")}</p>
+                                         <p className="text-4xl font-black text-rose-900 dark:text-rose-100">{criticalAlerts}</p>
+                                         <p className="text-xs text-rose-600/60 mt-1 flex items-center gap-1">
+                                              <span className="w-2 h-2 rounded-full bg-rose-500 block" /> {t("labTech.needsVerification")}
+                                         </p>
+                                    </div>
                               </CardContent>
                          </Card>
                     </motion.div>
@@ -301,10 +285,10 @@ export default function LabTechDashboardPage() {
                                         <div className="w-14 h-14 rounded-2xl bg-purple-500/10 flex items-center justify-center group-hover:bg-purple-500 group-hover:text-white transition-all shadow-sm">
                                              <HugeiconsIcon icon={Medicine01Icon} className="w-7 h-7" />
                                         </div>
-                                        <div className="space-y-1">
-                                             <p className="font-bold text-purple-950 dark:text-purple-100">Lab Test Types</p>
-                                             <p className="text-[10px] text-purple-900/50 dark:text-purple-100/50 font-medium uppercase tracking-widest">Manage Categories</p>
-                                        </div>
+                                         <div className="space-y-1">
+                                              <p className="font-bold text-purple-950 dark:text-purple-100">{t("labTech.labTestTypes")}</p>
+                                              <p className="text-[10px] text-purple-900/50 dark:text-purple-100/50 font-medium uppercase tracking-widest">{t("labTech.manageCategories")}</p>
+                                         </div>
                                    </CardContent>
                               </Card>
                               
@@ -313,10 +297,10 @@ export default function LabTechDashboardPage() {
                                         <div className="w-14 h-14 rounded-2xl bg-slate-500/10 flex items-center justify-center group-hover:bg-slate-500 group-hover:text-white transition-all shadow-sm">
                                              <HugeiconsIcon icon={Settings01Icon} className="w-7 h-7" />
                                         </div>
-                                        <div className="space-y-1">
-                                             <p className="font-bold text-slate-950 dark:text-slate-100">Settings</p>
-                                             <p className="text-[10px] text-slate-900/50 dark:text-slate-100/50 font-medium uppercase tracking-widest">System Preferences</p>
-                                        </div>
+                                         <div className="space-y-1">
+                                              <p className="font-bold text-slate-950 dark:text-slate-100">{t("nav.settings")}</p>
+                                              <p className="text-[10px] text-slate-900/50 dark:text-slate-100/50 font-medium uppercase tracking-widest">{t("labTech.manageAccountDetails")}</p>
+                                         </div>
                                    </CardContent>
                               </Card>
                          </motion.div>
@@ -330,12 +314,12 @@ export default function LabTechDashboardPage() {
                                                   <HugeiconsIcon icon={Notification01Icon} className="w-6 h-6 text-white" />
                                              </div>
                                              <div>
-                                                  <p className="font-bold text-lg">Notifications & Alerts</p>
-                                                  <p className="text-white/60 text-xs">Stay updated with priority results</p>
+                                                  <p className="font-bold text-lg">{t("labTech.notificationsAlerts")}</p>
+                                                  <p className="text-white/60 text-xs">{t("labTech.priorityResults")}</p>
                                              </div>
                                         </div>
                                         <Button variant="outline" className="w-full bg-white/10 border-white/20 text-white hover:bg-white/20 hover:text-white" onClick={() => router.push("/lab-tech-dashboard/notifications")}>
-                                             View All Notifications
+                                             {t("labTech.viewAllNotifications")}
                                              <HugeiconsIcon icon={ArrowRight01Icon} className="ml-2 w-4 h-4" />
                                         </Button>
                                    </CardContent>

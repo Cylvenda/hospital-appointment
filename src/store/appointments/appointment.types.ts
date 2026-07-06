@@ -1,10 +1,17 @@
 export type AppointmentStatus =
      | "pending"
-     | "accepted"
-     | "declined"
+     | "confirmed"
+     | "checked_in"
+     | "waiting_in_queue"
+     | "in_consultation"
+     | "waiting_for_laboratory"
+     | "laboratory_in_progress"
+     | "laboratory_results_ready"
+     | "back_to_doctor"
      | "cancelled"
+     | "no_show"
+     | "rescheduled"
      | "completed"
-     | "expired"
 
 export type Appointment = {
      id: string
@@ -13,9 +20,6 @@ export type Appointment = {
      email: string
      fee: string
      illnessCategory: string
-     preferredDate: string | null
-     preferredDate2: string | null
-     preferredDate3: string | null
      date: string
      startTime: string | null
      endTime: string | null
@@ -26,6 +30,8 @@ export type Appointment = {
      diagnosis: string | null
      notes: string | null
      status: AppointmentStatus
+     queueNumber: number | null
+     checkedInAt: string | null
      createdAt: string
 }
 
@@ -53,15 +59,14 @@ export type AppointmentApi = {
      illness_category: string
      illness_category_uuid: string
      description: string | null
-     preferred_date: string | null
-     preferred_date_2: string | null
-     preferred_date_3: string | null
      appointment_date: string
      start_time: string | null
      end_time: string | null
      status: AppointmentStatus
      diagnosis: string | null
      notes: string | null
+     queue_number: number | null
+     checked_in_at: string | null
      created_at: string
 }
 
@@ -69,6 +74,19 @@ export type DoctorApi = {
      uuid: string
      name: string
      is_available: boolean
+     consultation_duration: number
+     max_appointments_per_day: number | null
+     department_uuids: string[]
+}
+
+export type AvailableAppointmentDay = {
+     date: string
+     slot_count: number
+}
+
+export type AvailableAppointmentSlot = {
+     start_time: string
+     end_time: string
 }
 
 export type IllnessCategoryApi = {

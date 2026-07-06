@@ -62,7 +62,7 @@ export default function ReceptionistAppointmentsPage() {
       {acceptedAppointments.length === 0 ? (
         <div className="rounded-4xl border border-dashed border-border bg-card p-10 text-center">
           <p className="text-sm text-muted-foreground">
-            No accepted appointments are available.
+            No upcoming appointments are available.
           </p>
         </div>
       ) : (

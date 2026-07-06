@@ -14,6 +14,7 @@ export type AppointmentQueue =
   | "assigned"
   | "waiting-for-consultation"
   | "in-consultation"
+  | "waiting-for-doctor-review"
   | "upcoming"
   | "completed"
   | "cancelled"
@@ -64,8 +65,8 @@ const ROLE_QUEUE_DEFINITIONS: Record<AppointmentRole, Partial<RoleQueueMap>> = {
       summary: "Requests that are still waiting for payment confirmation.",
     },
     "awaiting-doctor-assignment": {
-      label: "Awaiting Doctor Assignment",
-      summary: "Paid requests ready to be scheduled with a clinician.",
+      label: "Booking Confirmation",
+      summary: "Paid bookings completing their final confirmation.",
     },
     today: {
       label: "Today’s Schedule",
@@ -74,6 +75,10 @@ const ROLE_QUEUE_DEFINITIONS: Record<AppointmentRole, Partial<RoleQueueMap>> = {
     "checked-in": {
       label: "Checked-In Patients",
       summary: "Patients who have arrived and are moving through the visit flow.",
+    },
+    upcoming: {
+      label: "Upcoming Appointments",
+      summary: "Confirmed appointments scheduled after today.",
     },
     completed: {
       label: "Completed",
@@ -96,6 +101,10 @@ const ROLE_QUEUE_DEFINITIONS: Record<AppointmentRole, Partial<RoleQueueMap>> = {
     "in-consultation": {
       label: "In Consultation",
       summary: "Patients currently being seen or actively in the visit window.",
+    },
+    "waiting-for-doctor-review": {
+      label: "Waiting for Doctor Review",
+      summary: "Laboratory results are ready and require follow-up by the same doctor.",
     },
     completed: {
       label: "Completed Consultations",
@@ -124,7 +133,10 @@ const ROLE_QUEUE_DEFINITIONS: Record<AppointmentRole, Partial<RoleQueueMap>> = {
 
 function isSameLocalDate(value: string | null | undefined, today = new Date()): boolean {
   if (!value) return false
-  return value === today.toISOString().slice(0, 10)
+  const year = today.getFullYear()
+  const month = String(today.getMonth() + 1).padStart(2, "0")
+  const day = String(today.getDate()).padStart(2, "0")
+  return value === `${year}-${month}-${day}`
 }
 
 function hasPaymentCompleted(appointment: Appointment): boolean {
@@ -144,7 +156,7 @@ export function getAppointmentQueueForRole(
 ): AppointmentQueue {
   const today = new Date()
 
-  if (appointment.status === "cancelled" || appointment.status === "declined") {
+  if (appointment.status === "cancelled" || appointment.status === "no_show") {
     return "cancelled"
   }
 
@@ -161,15 +173,26 @@ export function getAppointmentQueueForRole(
   }
 
   if (role === "doctor") {
-    if (appointment.status !== "accepted") {
+    if (
+      appointment.status === "back_to_doctor" ||
+      appointment.status === "laboratory_results_ready"
+    ) {
+      return "waiting-for-doctor-review"
+    }
+
+    if (appointment.status === "in_consultation") {
+      return "in-consultation"
+    }
+
+    if (appointment.status !== "confirmed" && appointment.status !== "waiting_in_queue") {
+      return "waiting-for-consultation"
+    }
+
+    if (appointment.status === "waiting_in_queue") {
       return "waiting-for-consultation"
     }
 
     if (isSameLocalDate(appointment.date, today) && appointment.startTime) {
-      const currentTime = today.toTimeString().slice(0, 5)
-      if (appointment.startTime <= currentTime) {
-        return "in-consultation"
-      }
       return "assigned"
     }
 
@@ -190,18 +213,22 @@ export function getAppointmentQueueForRole(
     }
 
     if (appointment.status === "pending" && hasPaymentCompleted(appointment)) {
-      return "awaiting-doctor-assignment"
+      return "upcoming"
     }
 
-    if (isSameLocalDate(appointment.date, today) && appointment.status === "accepted") {
-      const currentTime = today.toTimeString().slice(0, 5)
-      if (appointment.startTime && appointment.startTime <= currentTime) {
+    if (
+      isSameLocalDate(appointment.date, today) &&
+      ["confirmed", "checked_in", "waiting_in_queue", "in_consultation"].includes(
+        appointment.status
+      )
+    ) {
+      if (["checked_in", "waiting_in_queue", "in_consultation"].includes(appointment.status)) {
         return "checked-in"
       }
       return "today"
     }
 
-    return "awaiting-doctor-assignment"
+    return "upcoming"
   }
 
   if (appointment.date && isSameLocalDate(appointment.date, today)) {
@@ -270,7 +297,7 @@ export function filterAppointmentsForQueue(
       }
 
       if (queue === "accepted") {
-        return appointment.status === "accepted"
+        return appointment.status === "confirmed"
       }
 
       return appointment.status === queue
@@ -281,7 +308,7 @@ export function filterAppointmentsForQueue(
     }
 
     if (queue === "accepted") {
-      return appointment.status === "accepted"
+      return appointment.status === "confirmed"
     }
 
     return appointment.status === queue

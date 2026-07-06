@@ -1,5 +1,5 @@
 
-export type Notification<T = unknown> = {
+export type Notification = {
     uuid: string
     title: string
     message: string
@@ -25,4 +25,3 @@ export type NotificationType =
     | "appointment_reminder"
     | "payment_success"
     | "general"
-

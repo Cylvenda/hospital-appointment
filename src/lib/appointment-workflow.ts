@@ -1,13 +1,14 @@
-export type AppointmentStatus =
-  | "pending"
-  | "accepted"
-  | "declined"
-  | "cancelled"
-  | "completed"
-  | "expired"
+import type { AppointmentStatus } from "@/store/appointments/appointment.types"
+import { getTranslationValue } from "@/lib/i18n"
+import { useLanguageStore } from "@/store/language/language.store"
 
 export type AppointmentPaymentStatus = "pending" | "failed" | "completed" | null
-export type AppointmentAudience = "patient" | "doctor" | "receptionist" | "admin" | "default"
+export type AppointmentAudience =
+  | "patient"
+  | "doctor"
+  | "receptionist"
+  | "admin"
+  | "default"
 
 export type AppointmentStatusMeta = {
   label: string
@@ -15,46 +16,107 @@ export type AppointmentStatusMeta = {
   tone: "amber" | "emerald" | "blue" | "rose" | "slate"
 }
 
+function translate(key: string, params?: Record<string, string | number>) {
+  return getTranslationValue(key, useLanguageStore.getState().language, params)
+}
+
 export const appointmentWorkflowSteps = [
   {
-    title: "Request submitted",
-    summary: "The patient creates an appointment and the system places it in the intake queue.",
+    titleKey: "appointmentStatus.workflowStep1Title",
+    summaryKey: "appointmentStatus.workflowStep1Summary",
   },
   {
-    title: "Payment verified",
-    summary: "Once payment is confirmed, the request becomes eligible for scheduling and handoff.",
+    titleKey: "appointmentStatus.workflowStep2Title",
+    summaryKey: "appointmentStatus.workflowStep2Summary",
   },
   {
-    title: "Assigned to clinician",
-    summary: "Reception or admin schedules the visit and places it in a clinical queue.",
+    titleKey: "appointmentStatus.workflowStep3Title",
+    summaryKey: "appointmentStatus.workflowStep3Summary",
   },
   {
-    title: "Clinical outcome recorded",
-    summary: "The doctor completes the visit, adds notes, and closes the clinical record.",
+    titleKey: "appointmentStatus.workflowStep4Title",
+    summaryKey: "appointmentStatus.workflowStep4Summary",
   },
 ] as const
 
-export const doctorAppointmentWorkflowSteps = [
-  {
-    title: "Request submitted",
-    summary: "The patient creates an appointment and the system places it in the intake queue.",
-  },
-  {
-    title: "Request cleared",
-    summary: "The request is ready for clinical review and can move into the doctor's queue.",
-  },
-  {
-    title: "Assigned to clinician",
-    summary: "Reception or admin schedules the visit and places it in a clinical queue.",
-  },
-  {
-    title: "Clinical outcome recorded",
-    summary: "The doctor completes the visit, adds notes, and closes the clinical record.",
-  },
-] as const
+export const doctorAppointmentWorkflowSteps = appointmentWorkflowSteps
 
-export function getAppointmentWorkflowSteps(audience: AppointmentAudience = "default") {
-  return audience === "doctor" ? doctorAppointmentWorkflowSteps : appointmentWorkflowSteps
+export function getAppointmentWorkflowSteps(
+  audience: AppointmentAudience = "default"
+) {
+  void audience
+  return appointmentWorkflowSteps.map((step) => ({
+    title: translate(step.titleKey),
+    summary: translate(step.summaryKey),
+  }))
+}
+
+const STATUS_META: Record<AppointmentStatus, AppointmentStatusMeta> = {
+  pending: {
+    label: "appointmentStatus.pendingLabel",
+    summary: "appointmentStatus.pendingSummary",
+    tone: "amber",
+  },
+  confirmed: {
+    label: "appointmentStatus.confirmedLabel",
+    summary: "appointmentStatus.confirmedSummary",
+    tone: "emerald",
+  },
+  checked_in: {
+    label: "appointmentStatus.checkedInLabel",
+    summary: "appointmentStatus.checkedInSummary",
+    tone: "blue",
+  },
+  waiting_in_queue: {
+    label: "appointmentStatus.waitingInQueueLabel",
+    summary: "appointmentStatus.waitingInQueueSummary",
+    tone: "amber",
+  },
+  in_consultation: {
+    label: "appointmentStatus.inConsultationLabel",
+    summary: "appointmentStatus.inConsultationSummary",
+    tone: "blue",
+  },
+  waiting_for_laboratory: {
+    label: "appointmentStatus.waitingForLaboratoryLabel",
+    summary: "appointmentStatus.waitingForLaboratorySummary",
+    tone: "amber",
+  },
+  laboratory_in_progress: {
+    label: "appointmentStatus.laboratoryInProgressLabel",
+    summary: "appointmentStatus.laboratoryInProgressSummary",
+    tone: "blue",
+  },
+  laboratory_results_ready: {
+    label: "appointmentStatus.resultsReadyLabel",
+    summary: "appointmentStatus.resultsReadySummary",
+    tone: "emerald",
+  },
+  back_to_doctor: {
+    label: "appointmentStatus.backToDoctorLabel",
+    summary: "appointmentStatus.backToDoctorSummary",
+    tone: "emerald",
+  },
+  completed: {
+    label: "appointmentStatus.completedLabel",
+    summary: "appointmentStatus.completedSummary",
+    tone: "blue",
+  },
+  cancelled: {
+    label: "appointmentStatus.cancelledLabel",
+    summary: "appointmentStatus.cancelledSummary",
+    tone: "rose",
+  },
+  no_show: {
+    label: "appointmentStatus.noShowLabel",
+    summary: "appointmentStatus.noShowSummary",
+    tone: "slate",
+  },
+  rescheduled: {
+    label: "appointmentStatus.rescheduledLabel",
+    summary: "appointmentStatus.rescheduledSummary",
+    tone: "slate",
+  },
 }
 
 export function getAppointmentStatusMeta(
@@ -62,105 +124,20 @@ export function getAppointmentStatusMeta(
   paymentStatus: AppointmentPaymentStatus = null,
   audience: AppointmentAudience = "default"
 ): AppointmentStatusMeta {
-  if (status === "pending") {
-    if (audience === "doctor") {
-      return {
-        label: "Pending review",
-        summary: "This request is waiting to be assigned to a clinician.",
-        tone: "slate",
-      }
-    }
-
-    if (paymentStatus === "completed") {
-      if (audience === "patient") {
-        return {
-          label: "Awaiting assignment",
-          summary: "Your payment is confirmed and the care team is placing the request on the schedule.",
-          tone: "blue",
-        }
-      }
-
-      return {
-        label: "Ready to assign",
-        summary: "The appointment is paid and can now be scheduled into a work queue.",
-        tone: "blue",
-      }
-    }
-
-    if (audience === "receptionist" || audience === "admin") {
-      return {
-        label: "Awaiting payment",
-        summary: "The patient has requested a visit but payment has not yet cleared.",
-        tone: "amber",
-      }
-    }
-
+  if (status === "pending" && paymentStatus === "completed") {
     return {
-      label: "Waiting for payment",
-      summary: "The appointment request is still waiting for payment confirmation.",
-      tone: "amber",
-    }
-  }
-
-  if (status === "accepted") {
-    if (audience === "doctor") {
-      return {
-        label: "Ready for review",
-        summary: "This visit is assigned to you and ready for clinical assessment.",
-        tone: "emerald",
-      }
-    }
-
-    if (audience === "patient") {
-      return {
-        label: "Scheduled",
-        summary: "A clinician has been assigned and the visit is on the calendar.",
-        tone: "emerald",
-      }
-    }
-
-    return {
-      label: "Assigned",
-      summary: "The visit has been scheduled with a doctor and is ready for the next step.",
-      tone: "emerald",
-    }
-  }
-
-  if (status === "completed") {
-    return {
-      label: "Completed",
-      summary: "The appointment is finished and the clinical record is closed.",
+      label: translate("appointmentStatus.confirmingBookingLabel"),
+      summary: translate(
+        audience === "patient"
+          ? "appointmentStatus.confirmingBookingPatientSummary"
+          : "appointmentStatus.confirmingBookingStaffSummary"
+      ),
       tone: "blue",
     }
   }
-
-  if (status === "cancelled") {
-    return {
-      label: "Cancelled",
-      summary: "The appointment was cancelled and removed from the active queue.",
-      tone: "rose",
-    }
-  }
-
-  if (status === "declined") {
-    return {
-      label: "Declined",
-      summary: "The appointment was declined and needs a new booking if care is still needed.",
-      tone: "rose",
-    }
-  }
-
-  if (status === "expired") {
-    return {
-      label: "Expired",
-      summary: "The appointment expired before it could be processed.",
-      tone: "slate",
-    }
-  }
-
   return {
-    label: status,
-    summary: "Appointment status",
-    tone: "slate",
+    label: translate(STATUS_META[status].label),
+    summary: translate(STATUS_META[status].summary),
+    tone: STATUS_META[status].tone,
   }
 }

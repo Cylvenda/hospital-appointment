@@ -32,6 +32,7 @@ import {
 import { cn } from "@/lib/utils";
 import { getAppointmentStatusMeta } from "@/lib/appointment-workflow";
 import { hasAppointmentStatus } from "@/lib/appointment-queues";
+import { useTranslation } from "@/lib/i18n";
 
 type Props = {
   appointment: Appointment;
@@ -42,8 +43,9 @@ export const DoctorAppointmentCard = ({
   appointment,
   hideViewDetails = false,
 }: Props) => {
+  const { t } = useTranslation();
   const router = useRouter();
-  const { updateAppointment } = useAppointmentStore();
+  const { updateAppointment, startConsultation } = useAppointmentStore();
   const [isCompleteOpen, setIsCompleteOpen] = useState(false);
   const [isCancelOpen, setIsCancelOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -63,12 +65,40 @@ export const DoctorAppointmentCard = ({
     rose: "bg-rose-100 text-rose-700 border-rose-200",
     slate: "bg-slate-100 text-slate-700 border-slate-200",
   } as const;
-  const isAssigned = hasAppointmentStatus(appointment, "accepted");
+  const isAssigned = hasAppointmentStatus(
+    appointment,
+    "confirmed",
+    "waiting_in_queue",
+    "in_consultation",
+    "back_to_doctor"
+  );
   const isCompleted = hasAppointmentStatus(appointment, "completed");
+  const isReadyToStart = hasAppointmentStatus(
+    appointment,
+    "waiting_in_queue",
+    "back_to_doctor"
+  );
+  const canComplete = hasAppointmentStatus(appointment, "in_consultation");
+
+  const handleStart = async () => {
+    setLoading(true);
+    try {
+      await startConsultation(appointment.id);
+      toast.success(
+        appointment.status === "back_to_doctor"
+          ? t("doctorCard.labReviewResumed")
+          : t("doctorCard.consultationStarted")
+      );
+    } catch {
+      toast.error(t("doctorCard.consultationStartError"));
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleComplete = async () => {
     if (!diagnosis.trim()) {
-      toast.error("Please provide a diagnosis before completing.");
+      toast.error(t("doctorCard.requireDiagnosis"));
       return;
     }
 
@@ -79,10 +109,10 @@ export const DoctorAppointmentCard = ({
         diagnosis: diagnosis.trim(),
         notes: clinicalNotes.trim(),
       });
-      toast.success("Appointment marked as completed.");
+      toast.success(t("doctorCard.completeSuccess"));
       setIsCompleteOpen(false);
     } catch {
-      toast.error("Failed to complete appointment.");
+      toast.error(t("doctorCard.completeError"));
     } finally {
       setLoading(false);
     }
@@ -92,10 +122,10 @@ export const DoctorAppointmentCard = ({
     setLoading(true);
     try {
       await updateAppointment(appointment.id, { status: "cancelled" });
-      toast.success("Appointment cancelled.");
+      toast.success(t("doctorCard.cancelSuccess"));
       setIsCancelOpen(false);
     } catch {
-      toast.error("Failed to cancel appointment.");
+      toast.error(t("doctorCard.cancelError"));
     } finally {
       setLoading(false);
     }
@@ -121,8 +151,15 @@ export const DoctorAppointmentCard = ({
                         variant="outline"
                         className="rounded-full border-border/70 px-2.5 py-0.5 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground"
                       >
-                        Appointment ID: {appointment.appointmentId ?? "Pending"}
+                        {t("doctorCard.appointmentId", {
+                          id: appointment.appointmentId ?? t("appointments.pending"),
+                        })}
                       </Badge>
+                      {appointment.queueNumber && (
+                        <Badge className="rounded-full bg-blue-600 text-white">
+                          {t("doctorCard.queueNumber", { number: appointment.queueNumber })}
+                        </Badge>
+                      )}
                       <div
                         className={cn(
                           "rounded-full border px-2.5 py-0.5 text-[10px] font-black uppercase tracking-[0.2em]",
@@ -153,15 +190,15 @@ export const DoctorAppointmentCard = ({
                   <div className="grid gap-2 sm:grid-cols-2 lg:w-[15rem]">
                     <div className="rounded-2xl border border-border/60 bg-muted/20 px-3 py-2.5 shadow-sm">
                       <p className="text-[10px] font-black uppercase tracking-[0.22em] text-muted-foreground">
-                        Date
+                        {t("doctorCard.date")}
                       </p>
                       <p className="mt-1 text-xs font-bold text-foreground">
-                        {appointment.date || "Not Scheduled"}
+                        {appointment.date || t("doctorCard.notScheduled")}
                       </p>
                     </div>
                     <div className="rounded-2xl border border-border/60 bg-muted/20 px-3 py-2.5 shadow-sm">
                       <p className="text-[10px] font-black uppercase tracking-[0.22em] text-muted-foreground">
-                        Time
+                        {t("doctorCard.time")}
                       </p>
                       <p className="mt-1 flex items-center gap-2 text-xs font-bold text-foreground">
                         <HugeiconsIcon
@@ -178,18 +215,18 @@ export const DoctorAppointmentCard = ({
                 <div className="grid gap-2.5 md:grid-cols-3">
                   {[
                     {
-                      label: "Diagnosis",
-                      value: appointment.diagnosis || "Pending review",
+                      label: t("doctorCard.diagnosis"),
+                      value: appointment.diagnosis || t("doctorCard.pendingReview"),
                       tone: "blue",
                     },
                     {
-                      label: "Notes",
-                      value: appointment.notes || "No clinical notes yet",
+                      label: t("doctorCard.notes"),
+                      value: appointment.notes || t("doctorCard.noClinicalNotes"),
                       tone: "slate",
                     },
                     {
-                      label: "Doctor",
-                      value: appointment.doctor || "Unassigned",
+                      label: t("doctorCard.doctor"),
+                      value: appointment.doctor || t("doctorCard.unassigned"),
                       tone: "emerald",
                     },
                   ].map((item) => (
@@ -218,7 +255,7 @@ export const DoctorAppointmentCard = ({
                       </div>
                       <div className="min-w-0 flex-1">
                         <p className="text-[10px] font-black uppercase tracking-[0.22em] text-blue-700/70">
-                          Recorded Diagnosis
+                          {t("doctorCard.recordedDiagnosis")}
                         </p>
                         <p className="mt-1 text-sm font-bold text-foreground">
                           {appointment.diagnosis}
@@ -244,7 +281,7 @@ export const DoctorAppointmentCard = ({
                       className="h-3.5 w-3.5 text-primary"
                     />
                     <p className="text-[10px] font-black uppercase tracking-[0.22em] text-muted-foreground">
-                      Status
+                      {t("doctorCard.status")}
                     </p>
                   </div>
                   <p className="mt-1.5 text-xs font-medium leading-5 text-muted-foreground">
@@ -255,6 +292,16 @@ export const DoctorAppointmentCard = ({
                 <div className="space-y-2.5">
                   {isAssigned && (
                     <>
+                      {isReadyToStart && (
+                        <Button
+                          onClick={handleStart}
+                          disabled={loading}
+                          className="h-10 w-full rounded-full"
+                        >
+                          {t("doctorCard.startConsultation")}
+                        </Button>
+                      )}
+                      {canComplete && (
                       <Button
                         onClick={() => setIsCompleteOpen(true)}
                         className="h-10 w-full rounded-full bg-primary px-4 font-black shadow-lg shadow-primary/20 transition-all hover:scale-[1.01] active:scale-95"
@@ -263,8 +310,9 @@ export const DoctorAppointmentCard = ({
                           icon={Tick02Icon}
                           className="mr-2 h-4 w-4"
                         />
-                        Complete Visit
+                        {t("doctorCard.completeVisit")}
                       </Button>
+                      )}
                       <Button
                         variant="outline"
                         onClick={() => setIsCancelOpen(true)}
@@ -274,7 +322,7 @@ export const DoctorAppointmentCard = ({
                           icon={Cancel01Icon}
                           className="mr-2 h-4 w-4"
                         />
-                        Cancel Visit
+                        {t("doctorCard.cancelVisit")}
                       </Button>
                     </>
                   )}
@@ -289,7 +337,7 @@ export const DoctorAppointmentCard = ({
                       }
                       className="h-10 w-full rounded-full border-2 border-border/70 px-4 font-semibold shadow-sm transition-all hover:bg-muted/60"
                     >
-                      View Details
+                      {t("doctorCard.viewDetails")}
                     </Button>
                   )}
                 </div>
@@ -311,10 +359,12 @@ export const DoctorAppointmentCard = ({
                 />
               </div>
               <DialogTitle className="text-3xl font-black tracking-tight text-white">
-                Clinical Assessment
+                {t("doctorCard.clinicalAssessment")}
               </DialogTitle>
               <DialogDescription className="text-white/80 font-medium text-lg">
-                Record your findings for {appointment.patient}.
+                {t("doctorCard.clinicalAssessmentDescription", {
+                  patient: appointment.patient,
+                })}
               </DialogDescription>
             </DialogHeader>
           </div>
@@ -324,7 +374,7 @@ export const DoctorAppointmentCard = ({
               <div className="flex items-center gap-2 mb-2">
                 <div className="w-1 h-4 bg-primary rounded-full" />
                 <h3 className="text-sm font-black uppercase tracking-widest text-muted-foreground opacity-60">
-                  Primary Diagnosis
+                  {t("doctorCard.primaryDiagnosis")}
                 </h3>
               </div>
               <div className="relative group">
@@ -336,7 +386,7 @@ export const DoctorAppointmentCard = ({
                   type="text"
                   value={diagnosis}
                   onChange={(e) => setDiagnosis(e.target.value)}
-                  placeholder="e.g. Acute Pharyngitis"
+                  placeholder={t("doctorCard.primaryDiagnosisPlaceholder")}
                   className="h-12 w-full rounded-md border-2 bg-muted/20 pl-14 pr-5 text-base font-bold outline-none transition-all focus:border-primary focus:bg-background"
                 />
               </div>
@@ -346,7 +396,7 @@ export const DoctorAppointmentCard = ({
               <div className="flex items-center gap-2 mb-2">
                 <div className="w-1 h-4 bg-primary rounded-full" />
                 <h3 className="text-sm font-black uppercase tracking-widest text-muted-foreground opacity-60">
-                  Treatment & Clinical Notes
+                  {t("doctorCard.treatmentNotes")}
                 </h3>
               </div>
               <div className="relative group">
@@ -357,7 +407,7 @@ export const DoctorAppointmentCard = ({
                 <Textarea
                   value={clinicalNotes}
                   onChange={(e) => setClinicalNotes(e.target.value)}
-                  placeholder="Prescribed treatment, follow-up advice, etc..."
+                  placeholder={t("doctorCard.treatmentNotesPlaceholder")}
                   className="min-h-32 resize-none rounded-md border-2 border-secondary bg-muted/20 pl-14 pt-4 text-base font-medium outline-none transition-all focus:border-primary focus:bg-background"
                 />
               </div>
@@ -371,7 +421,7 @@ export const DoctorAppointmentCard = ({
               disabled={loading}
               className="h-10 rounded-md px-6 font-bold text-muted-foreground hover:text-foreground"
             >
-              Cancel
+              {t("common.cancel")}
             </Button>
             <Button
               onClick={handleComplete}
@@ -379,7 +429,7 @@ export const DoctorAppointmentCard = ({
               className="h-10 rounded-md px-6 font-black shadow-xl shadow-primary/20 transition-all hover:scale-[1.02] active:scale-95"
             >
               <HugeiconsIcon icon={Tick02Icon} className="mr-2 h-4 w-4" />
-              {loading ? "Recording..." : "Finalize & Complete"}
+              {loading ? t("doctorCard.recording") : t("doctorCard.finalizeComplete")}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -393,10 +443,10 @@ export const DoctorAppointmentCard = ({
           </div>
           <DialogHeader>
             <DialogTitle className="text-2xl font-black tracking-tight text-center">
-              Cancel Appointment?
+              {t("doctorCard.cancelAppointmentTitle")}
             </DialogTitle>
             <DialogDescription className="pt-2 text-base font-medium text-center">
-              Are you sure you want to cancel the visit with{" "}
+              {t("doctorCard.cancelAppointmentDescription")}{" "}
               <span className="text-foreground font-bold">
                 {appointment.patient}
               </span>
@@ -410,7 +460,7 @@ export const DoctorAppointmentCard = ({
               disabled={loading}
               className="h-10 rounded-md border-secondary font-bold"
             >
-              Go Back
+              {t("staffAppointmentCard.goBack")}
             </Button>
             <Button
               variant="destructive"
@@ -418,7 +468,7 @@ export const DoctorAppointmentCard = ({
               disabled={loading}
               className="h-10 rounded-md border-secondary font-bold"
             >
-              {loading ? "Cancelling..." : "Confirm Cancellation"}
+              {loading ? t("doctorCard.cancelling") : t("doctorCard.confirmCancellation")}
             </Button>
           </DialogFooter>
         </DialogContent>

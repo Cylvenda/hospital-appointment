@@ -6,6 +6,7 @@ import { motion } from "framer-motion"
 import { useAuthUserStore } from "@/store/auth/userAuth.store"
 import { useLaboratoryStore } from "@/store/laboratory/laboratory.store"
 import { getDashboardPath } from "@/lib/role-dashboard"
+import { useTranslation } from "@/lib/i18n"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
@@ -16,6 +17,7 @@ import { Search01Icon, FilterIcon, RefreshIcon, Medicine01Icon, ArrowRight01Icon
 import { cn } from "@/lib/utils"
 
 export default function LabRequestsPage() {
+     const { t } = useTranslation()
      const router = useRouter()
      const { checkAuth } = useAuthUserStore()
      const { requests, loading, initialize, initialized } = useLaboratoryStore()
@@ -81,69 +83,69 @@ export default function LabRequestsPage() {
           >
                <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                     <div>
-                         <h1 className="text-3xl font-bold tracking-tight text-foreground flex items-center gap-2">
-                              <HugeiconsIcon icon={Medicine01Icon} className="w-8 h-8 text-primary" />
-                              Lab Requests
-                         </h1>
-                         <p className="text-muted-foreground mt-1">
-                              Manage and process all laboratory test requests.
-                         </p>
+                          <h1 className="text-3xl font-bold tracking-tight text-foreground flex items-center gap-2">
+                               <HugeiconsIcon icon={Medicine01Icon} className="w-8 h-8 text-primary" />
+                               {t("labTech.labRequestsTitle")}
+                          </h1>
+                          <p className="text-muted-foreground mt-1">
+                               {t("labTech.manageProcess")}
+                          </p>
                     </div>
-                    <div className="flex items-center gap-3">
-                         <Button variant="outline" onClick={handleRefresh} disabled={loading} className="gap-2">
-                              <HugeiconsIcon icon={RefreshIcon} className={cn("w-4 h-4", loading && "animate-spin")} />
-                              Refresh
-                         </Button>
-                    </div>
+                     <div className="flex items-center gap-3">
+                          <Button variant="outline" onClick={handleRefresh} disabled={loading} className="gap-2">
+                               <HugeiconsIcon icon={RefreshIcon} className={cn("w-4 h-4", loading && "animate-spin")} />
+                               {t("labTech.refreshBtn")}
+                          </Button>
+                     </div>
                </div>
 
                <Card className="border-muted/40 shadow-xl rounded-md overflow-hidden">
                     <CardHeader className="bg-muted/30 border-b border-muted/40 pb-4">
                          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-                              <CardTitle className="text-lg">Request Queue</CardTitle>
-                              <div className="flex flex-col gap-3 md:flex-row md:items-center">
-                                   <div className="relative">
-                                        <HugeiconsIcon icon={Search01Icon} className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                                        <Input 
-                                             placeholder="Search patients or doctors..." 
-                                             className="pl-9 w-full md:w-64 bg-background"
-                                             value={searchQuery}
-                                             onChange={(e) => setSearchQuery(e.target.value)}
-                                        />
-                                   </div>
+                               <CardTitle className="text-lg">{t("labTech.requestQueue")}</CardTitle>
+                               <div className="flex flex-col gap-3 md:flex-row md:items-center">
+                                    <div className="relative">
+                                         <HugeiconsIcon icon={Search01Icon} className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                                         <Input 
+                                              placeholder={t("labTech.searchPatientsDoctors")} 
+                                              className="pl-9 w-full md:w-64 bg-background"
+                                              value={searchQuery}
+                                              onChange={(e) => setSearchQuery(e.target.value)}
+                                         />
+                                    </div>
                                    <div className="flex items-center gap-2 bg-background border border-input rounded-md p-1">
-                                        <Button 
-                                             variant={statusFilter === "all" ? "default" : "ghost"} 
-                                             size="sm" 
-                                             onClick={() => setStatusFilter("all")}
-                                             className="h-7 text-xs"
-                                        >
-                                             All
-                                        </Button>
-                                        <Button 
-                                             variant={statusFilter === "pending" ? "default" : "ghost"} 
-                                             size="sm" 
-                                             onClick={() => setStatusFilter("pending")}
-                                             className="h-7 text-xs"
-                                        >
-                                             Pending
-                                        </Button>
-                                        <Button 
-                                             variant={statusFilter === "processing" ? "default" : "ghost"} 
-                                             size="sm" 
-                                             onClick={() => setStatusFilter("processing")}
-                                             className="h-7 text-xs"
-                                        >
-                                             In Progress
-                                        </Button>
-                                        <Button 
-                                             variant={statusFilter === "completed" ? "default" : "ghost"} 
-                                             size="sm" 
-                                             onClick={() => setStatusFilter("completed")}
-                                             className="h-7 text-xs"
-                                        >
-                                             Completed
-                                        </Button>
+                                         <Button 
+                                              variant={statusFilter === "all" ? "default" : "ghost"} 
+                                              size="sm" 
+                                              onClick={() => setStatusFilter("all")}
+                                              className="h-7 text-xs"
+                                         >
+                                              {t("labTech.all")}
+                                         </Button>
+                                         <Button 
+                                              variant={statusFilter === "pending" ? "default" : "ghost"} 
+                                              size="sm" 
+                                              onClick={() => setStatusFilter("pending")}
+                                              className="h-7 text-xs"
+                                         >
+                                              {t("labTech.pending")}
+                                         </Button>
+                                         <Button 
+                                              variant={statusFilter === "processing" ? "default" : "ghost"} 
+                                              size="sm" 
+                                              onClick={() => setStatusFilter("processing")}
+                                              className="h-7 text-xs"
+                                         >
+                                              {t("labTech.inProgress")}
+                                         </Button>
+                                         <Button 
+                                              variant={statusFilter === "completed" ? "default" : "ghost"} 
+                                              size="sm" 
+                                              onClick={() => setStatusFilter("completed")}
+                                              className="h-7 text-xs"
+                                         >
+                                              {t("labTech.completed")}
+                                         </Button>
                                    </div>
                               </div>
                          </div>
@@ -152,28 +154,28 @@ export default function LabRequestsPage() {
                          {loading && requests.length === 0 ? (
                               <div className="p-12 text-center flex flex-col items-center justify-center">
                                    <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin mb-4" />
-                                   <p className="text-muted-foreground font-medium">Loading requests...</p>
-                              </div>
-                         ) : filteredRequests.length === 0 ? (
-                              <div className="p-16 text-center">
-                                   <div className="w-16 h-16 rounded-full bg-muted/50 flex items-center justify-center mx-auto mb-4 text-muted-foreground">
-                                        <HugeiconsIcon icon={FilterIcon} className="w-8 h-8" />
-                                   </div>
-                                   <h3 className="text-lg font-bold mb-1">No requests found</h3>
-                                   <p className="text-muted-foreground">Try adjusting your search or filters.</p>
-                              </div>
+                                    <p className="text-muted-foreground font-medium">{t("labTech.loadingRequests")}</p>
+                               </div>
+                          ) : filteredRequests.length === 0 ? (
+                               <div className="p-16 text-center">
+                                    <div className="w-16 h-16 rounded-full bg-muted/50 flex items-center justify-center mx-auto mb-4 text-muted-foreground">
+                                         <HugeiconsIcon icon={FilterIcon} className="w-8 h-8" />
+                                    </div>
+                                    <h3 className="text-lg font-bold mb-1">{t("labTech.noRequestsFound")}</h3>
+                                    <p className="text-muted-foreground">{t("labTech.adjustFilters")}</p>
+                               </div>
                          ) : (
                               <Table>
-                                   <TableHeader className="bg-muted/10">
-                                        <TableRow>
-                                             <TableHead className="w-[120px]">Date</TableHead>
-                                             <TableHead>Patient</TableHead>
-                                             <TableHead>Doctor</TableHead>
-                                             <TableHead>Tests Requested</TableHead>
-                                             <TableHead>Status</TableHead>
-                                             <TableHead className="text-right">Actions</TableHead>
-                                        </TableRow>
-                                   </TableHeader>
+                              <TableHeader className="bg-muted/10">
+                                   <TableRow>
+                                        <TableHead className="w-[120px]">{t("labTech.date")}</TableHead>
+                                        <TableHead>{t("common.patient")}</TableHead>
+                                        <TableHead>{t("labTech.doctorName")}</TableHead>
+                                        <TableHead>{t("labTech.testsRequested")}</TableHead>
+                                        <TableHead>{t("labTech.status")}</TableHead>
+                                        <TableHead className="text-right">{t("labTech.actions")}</TableHead>
+                                   </TableRow>
+                              </TableHeader>
                                    <TableBody>
                                         {filteredRequests.map((req) => (
                                              <TableRow key={req.id} className="hover:bg-primary/[0.02] transition-colors">
@@ -190,19 +192,19 @@ export default function LabRequestsPage() {
                                                                       {item.testTypeName}
                                                                  </Badge>
                                                             ))}
-                                                            {req.items.length === 0 && <span className="text-xs text-muted-foreground">No tests specified</span>}
+                                                             {req.items.length === 0 && <span className="text-xs text-muted-foreground">{t("labTech.noTestItems")}</span>}
                                                        </div>
                                                   </TableCell>
                                                   <TableCell>{getStatusBadge(req.status)}</TableCell>
                                                   <TableCell className="text-right">
-                                                       <Button 
-                                                            size="sm" 
-                                                            variant="ghost" 
-                                                            className="text-primary hover:text-primary hover:bg-primary/10 rounded-md"
-                                                            onClick={() => router.push(`/lab-tech-dashboard/requests/${req.id}`)}
-                                                       >
-                                                            Process <HugeiconsIcon icon={ArrowRight01Icon} className="ml-1 w-4 h-4" />
-                                                       </Button>
+                                                             <Button 
+                                                                  size="sm" 
+                                                                  variant="ghost" 
+                                                                  className="text-primary hover:text-primary hover:bg-primary/10 rounded-md"
+                                                                  onClick={() => router.push(`/lab-tech-dashboard/requests/${req.id}`)}
+                                                             >
+                                                                  {t("labTech.process")} <HugeiconsIcon icon={ArrowRight01Icon} className="ml-1 w-4 h-4" />
+                                                             </Button>
                                                   </TableCell>
                                              </TableRow>
                                         ))}

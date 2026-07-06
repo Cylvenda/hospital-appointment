@@ -30,6 +30,7 @@ import { useAuthUserStore } from "@/store/auth/userAuth.store"
 import { useNotificationStore } from "@/store/notifications/notification.store"
 import type { Notification } from "@/store/notifications/notification.types"
 import { getAppointmentsPath } from "@/lib/role-dashboard"
+import { useTranslation } from "@/lib/i18n"
 
 const allowedRoles = ["admin", "doctor", "receptionist", "patient"]
 
@@ -44,37 +45,38 @@ const notificationColors: Record<string, string> = {
      general: "bg-purple-500",
 }
 
-function getNotificationTypeLabel(type: string) {
-     return type.replace("_", " ").toUpperCase()
+function getNotificationTypeLabel(type: string, t: (key: string) => string) {
+     return t(`notifications.type.${type}`)
 }
 
 function getNotificationColor(type: string) {
      return notificationColors[type] || "bg-gray-500"
 }
 
-function formatTimeAgo(dateString: string) {
+function formatTimeAgo(dateString: string, t: (key: string, params?: Record<string, string | number>) => string) {
      try {
           const date = new Date(dateString)
           const now = new Date()
           const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000)
 
-          if (diffInSeconds < 60) return "Just now"
-          if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago`
-          if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h ago`
-          if (diffInSeconds < 604800) return `${Math.floor(diffInSeconds / 86400)}d ago`
+          if (diffInSeconds < 60) return t("notifications.justNow")
+          if (diffInSeconds < 3600) return t("notifications.minutesAgo", { count: Math.floor(diffInSeconds / 60) })
+          if (diffInSeconds < 86400) return t("notifications.hoursAgo", { count: Math.floor(diffInSeconds / 3600) })
+          if (diffInSeconds < 604800) return t("notifications.daysAgo", { count: Math.floor(diffInSeconds / 86400) })
           return date.toLocaleDateString()
      } catch {
-          return "Just now"
+          return t("notifications.justNow")
      }
 }
 
 export function NotificationsPage() {
+     const { t } = useTranslation()
      const searchParams = useSearchParams()
      const { notifications, markAsRead, markAllAsRead, fetchNotifications } =
           useNotificationStore()
      const role = useAuthUserStore((state) => state.user?.role)
-     const [selectedNotification, setSelectedNotification] =
-          useState<Notification | null>(null)
+     const [selectedNotificationId, setSelectedNotificationId] =
+          useState<string | null>(null)
 
      useEffect(() => {
           void fetchNotifications()
@@ -88,31 +90,14 @@ export function NotificationsPage() {
           return () => clearInterval(interval)
      }, [fetchNotifications])
 
-     useEffect(() => {
-          const notificationId = searchParams.get("notificationId")
-
-          if (notificationId) {
-               const matchingNotification = notifications.find(
-                    (notification) => notification.uuid === notificationId
-               )
-
-               if (matchingNotification) {
-                    setSelectedNotification(matchingNotification)
-                    return
-               }
-          }
-
-          if (selectedNotification) {
-               const updatedSelection = notifications.find(
-                    (notification) => notification.uuid === selectedNotification.uuid
-               )
-
-               setSelectedNotification(updatedSelection ?? null)
-               return
-          }
-
-          setSelectedNotification(notifications[0] ?? null)
-     }, [notifications, searchParams, selectedNotification])
+     const requestedNotificationId =
+          searchParams.get("notificationId") ?? selectedNotificationId
+     const selectedNotification =
+          notifications.find(
+               (notification) => notification.uuid === requestedNotificationId
+          ) ??
+          notifications[0] ??
+          null
 
      const unreadCount = useMemo(
           () => notifications.filter((notification) => !notification.is_read).length,
@@ -120,7 +105,7 @@ export function NotificationsPage() {
      )
 
      const handleNotificationClick = (notification: Notification) => {
-          setSelectedNotification(notification)
+          setSelectedNotificationId(notification.uuid)
 
           if (!notification.is_read) {
                void markAsRead(notification.uuid)
@@ -134,12 +119,10 @@ export function NotificationsPage() {
                          <div className="flex flex-col gap-4 rounded-3xl border bg-card/80 p-4 shadow-sm sm:p-6 lg:flex-row lg:items-center lg:justify-between">
                               <div className="space-y-1">
                                    <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
-                                        Notifications
+                                        {t("notifications.title")}
                                    </h1>
                                    <p className="max-w-2xl text-sm text-muted-foreground sm:text-base">
-                                        Stay updated with appointments, payment activity, and
-                                        system alerts in a layout that fits comfortably on every
-                                        screen.
+                                        {t("notifications.subtitle")}
                                    </p>
                               </div>
 
@@ -150,7 +133,7 @@ export function NotificationsPage() {
                                         className="w-full sm:w-auto"
                                    >
                                         <HugeiconsIcon icon={CheckCircle} className="mr-2 h-4 w-4" />
-                                        Mark all as read ({unreadCount})
+                                        {t("notifications.markAllAsRead", { count: unreadCount })}
                                    </Button>
                               )}
                          </div>
@@ -158,9 +141,12 @@ export function NotificationsPage() {
                          <div className="grid w-full gap-4 xl:grid-cols-12 xl:gap-6">
                               <Card className="overflow-hidden xl:col-span-5">
                                    <CardHeader className="space-y-1 border-b bg-muted/20 px-4 py-4 sm:px-6">
-                                        <CardTitle>All Notifications</CardTitle>
+                                        <CardTitle>{t("notifications.allNotifications")}</CardTitle>
                                         <CardDescription>
-                                             {notifications.length} total, {unreadCount} unread
+                                             {t("notifications.countSummary", {
+                                               total: notifications.length,
+                                               unread: unreadCount,
+                                             })}
                                         </CardDescription>
                                    </CardHeader>
 
@@ -170,11 +156,10 @@ export function NotificationsPage() {
                                                   <div className="flex h-full min-h-[320px] flex-col items-center justify-center px-6 text-center text-muted-foreground">
                                                        <HugeiconsIcon icon={Bell} className="mb-3 h-12 w-12 opacity-50" />
                                                        <p className="text-base font-medium">
-                                                            No notifications yet
+                                                            {t("notifications.emptyTitle")}
                                                        </p>
                                                        <p className="mt-1 text-sm">
-                                                            New activity will show up here as soon as it
-                                                            happens.
+                                                            {t("notifications.emptyDescription")}
                                                        </p>
                                                   </div>
                                              ) : (
@@ -208,7 +193,8 @@ export function NotificationsPage() {
                                                                                      className="w-fit shrink-0 text-[10px] sm:text-xs"
                                                                                 >
                                                                                      {getNotificationTypeLabel(
-                                                                                          notification.notification_type
+                                                                                          notification.notification_type,
+                                                                                          t
                                                                                      )}
                                                                                 </Badge>
                                                                            </div>
@@ -223,7 +209,8 @@ export function NotificationsPage() {
                                                                                      className="h-3 w-3"
                                                                                 />
                                                                                 {formatTimeAgo(
-                                                                                     notification.created_at
+                                                                                     notification.created_at,
+                                                                                     t
                                                                                 )}
                                                                            </span>
                                                                       </div>
@@ -242,11 +229,11 @@ export function NotificationsPage() {
 
                               <Card className="overflow-hidden xl:col-span-7 xl:sticky xl:top-24 xl:self-start">
                                    <CardHeader className="space-y-1 border-b bg-muted/20 px-4 py-4 sm:px-6">
-                                        <CardTitle>Notification Details</CardTitle>
+                                        <CardTitle>{t("notifications.detailsTitle")}</CardTitle>
                                         <CardDescription>
                                              {selectedNotification
-                                                  ? "Review the full message and any related action."
-                                                  : "Choose a notification from the list to view it here."}
+                                                  ? t("notifications.detailsDescription")
+                                                  : t("notifications.selectPrompt")}
                                         </CardDescription>
                                    </CardHeader>
 
@@ -260,7 +247,8 @@ export function NotificationsPage() {
                                                             </h2>
                                                             <Badge variant="outline" className="w-fit">
                                                                  {getNotificationTypeLabel(
-                                                                      selectedNotification.notification_type
+                                                                      selectedNotification.notification_type,
+                                                                      t
                                                                  )}
                                                             </Badge>
                                                        </div>
@@ -280,7 +268,7 @@ export function NotificationsPage() {
                                                                       className="h-4 w-4"
                                                                  />
                                                                  <span className="text-xs font-medium uppercase tracking-wide">
-                                                                      Received
+                                                                      {t("notifications.received")}
                                                                  </span>
                                                             </div>
                                                             <p className="mt-2 text-sm sm:text-base">
@@ -299,7 +287,7 @@ export function NotificationsPage() {
                                                                                 className="h-4 w-4 text-green-500"
                                                                            />
                                                                            <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                                                                                Status
+                                                                                {t("common.status")}
                                                                            </span>
                                                                       </>
                                                                  ) : (
@@ -309,7 +297,7 @@ export function NotificationsPage() {
                                                                                 className="h-4 w-4 text-orange-500"
                                                                            />
                                                                            <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                                                                                Status
+                                                                                {t("common.status")}
                                                                            </span>
                                                                       </>
                                                                  )}
@@ -317,7 +305,7 @@ export function NotificationsPage() {
                                                             <p
                                                                  className={`mt-2 text-sm font-medium sm:text-base ${selectedNotification.is_read ? "text-green-600" : "text-orange-600"}`}
                                                             >
-                                                                 {selectedNotification.is_read ? "Read" : "Unread"}
+                                                                 {selectedNotification.is_read ? t("notifications.read") : t("notifications.unread")}
                                                             </p>
                                                        </div>
                                                   </div>
@@ -331,7 +319,7 @@ export function NotificationsPage() {
                                                                  />
                                                                  <div className="min-w-0">
                                                                       <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                                                                           Triggered By
+                                                                           {t("notifications.triggeredBy")}
                                                                       </p>
                                                                       <p className="mt-2 text-sm font-medium sm:text-base">
                                                                            {
@@ -364,18 +352,17 @@ export function NotificationsPage() {
                                                                       />
                                                                       <div>
                                                                            <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                                                                                Related Appointment
+                                                                                {t("notifications.relatedAppointment")}
                                                                            </p>
                                                                            <p className="mt-2 text-sm text-muted-foreground">
-                                                                                Open your appointment workspace to
-                                                                                continue from this notification.
+                                                                                {t("notifications.relatedAppointmentDescription")}
                                                                            </p>
                                                                       </div>
                                                                  </div>
 
                                                                  <Button asChild className="w-full sm:w-auto">
                                                                       <Link href={getAppointmentsPath(role)}>
-                                                                           Go to appointments
+                                                                           {t("notifications.goToAppointments")}
                                                                       </Link>
                                                                  </Button>
                                                             </div>
@@ -386,11 +373,10 @@ export function NotificationsPage() {
                                              <div className="flex min-h-[320px] flex-col items-center justify-center rounded-2xl border border-dashed px-6 text-center text-muted-foreground">
                                                   <HugeiconsIcon icon={Circle} className="mb-3 h-12 w-12 opacity-50" />
                                                   <p className="text-base font-medium">
-                                                       Select a notification to view details
+                                                       {t("notifications.selectTitle")}
                                                   </p>
                                                   <p className="mt-1 max-w-md text-sm">
-                                                       On smaller screens, tap any notification card above.
-                                                       On larger screens, the detail panel stays visible here.
+                                                       {t("notifications.selectDescription")}
                                                   </p>
                                              </div>
                                         )}

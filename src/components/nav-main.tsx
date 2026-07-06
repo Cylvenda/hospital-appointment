@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import Link from "next/link"
+import { usePathname } from "next/navigation"
 import {
   SidebarGroup,
   SidebarGroupLabel,
@@ -20,29 +21,47 @@ export function NavMain({
     url: string
     icon?: React.ReactNode
     isActive?: boolean
+    sectionKey?: string
   }[]
 }) {
   const { t } = useTranslation()
+  const pathname = usePathname()
+  const sections = Array.from(
+    items.reduce((groups, item) => {
+      const sectionKey = item.sectionKey ?? "nav.platform"
+      const entries = groups.get(sectionKey) ?? []
+      entries.push(item)
+      groups.set(sectionKey, entries)
+      return groups
+    }, new Map<string, typeof items>())
+  )
 
   return (
-    <SidebarGroup>
-      <SidebarGroupLabel>Platform</SidebarGroupLabel>
-
-      <SidebarMenu>
-        {items.map((item) => {
-          const title = item.titleKey ? t(item.titleKey) : item.title || ""
-          return (
-            <SidebarMenuItem key={title}>
-              <SidebarMenuButton tooltip={title} asChild>
-                <Link className="flex flex-row items-center gap-2" href={item.url}>
-                  {item.icon}
-                  <span>{title}</span>
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          )
-        })}
-      </SidebarMenu>
-    </SidebarGroup>
+    <>
+      {sections.map(([sectionKey, sectionItems]) => (
+        <SidebarGroup key={sectionKey}>
+          <SidebarGroupLabel>{t(sectionKey)}</SidebarGroupLabel>
+          <SidebarMenu>
+            {sectionItems.map((item) => {
+              const title = item.titleKey ? t(item.titleKey) : item.title || ""
+              return (
+                <SidebarMenuItem key={item.url}>
+                  <SidebarMenuButton
+                    tooltip={title}
+                    isActive={item.isActive ?? pathname === item.url}
+                    asChild
+                  >
+                    <Link className="flex flex-row items-center gap-2" href={item.url}>
+                      {item.icon}
+                      <span>{title}</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              )
+            })}
+          </SidebarMenu>
+        </SidebarGroup>
+      ))}
+    </>
   )
 }

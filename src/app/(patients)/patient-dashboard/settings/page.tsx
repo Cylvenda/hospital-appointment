@@ -4,8 +4,10 @@ import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { useAuthUserStore } from "@/store/auth/userAuth.store"
+import { useTranslation } from "@/lib/i18n"
 
 export default function PatientSettingsPage() {
+  const { t } = useTranslation()
   const router = useRouter()
   const logout = useAuthUserStore((state) => state.logout)
 
@@ -13,14 +15,14 @@ export default function PatientSettingsPage() {
     <div className="w-full max-w-8xl">
       <Card>
         <CardHeader>
-          <CardTitle>Settings</CardTitle>
-          <CardDescription>Manage your account session and preferences.</CardDescription>
+          <CardTitle>{t("nav.settings")}</CardTitle>
+          <CardDescription>{t("settings.patientDescription")}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="rounded-2xl border p-4">
-            <p className="font-medium">Sign out from this device</p>
+            <p className="font-medium">{t("settings.signOutDevice")}</p>
             <p className="text-sm text-muted-foreground">
-              You can safely logout and sign back in anytime.
+              {t("settings.patientSignOutHelp")}
             </p>
             <Button
               className="mt-3"
@@ -30,7 +32,7 @@ export default function PatientSettingsPage() {
                 router.replace("/login")
               }}
             >
-              Logout
+              {t("nav.logOut")}
             </Button>
           </div>
         </CardContent>

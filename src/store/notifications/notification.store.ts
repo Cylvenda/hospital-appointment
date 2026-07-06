@@ -15,7 +15,7 @@ export type NotificationStore = {
     clearNotifications: () => void
 }
 
-export const useNotificationStore = create<NotificationStore>((set, get) => ({
+export const useNotificationStore = create<NotificationStore>((set) => ({
     notifications: [],
     loading: false,
     error: null,
@@ -30,7 +30,7 @@ export const useNotificationStore = create<NotificationStore>((set, get) => ({
                 const unreadCount = notifications.filter((n) => !n.is_read).length
                 set({ notifications, unreadCount, loading: false })
             }
-        } catch (error) {
+        } catch {
             set({ error: "Failed to fetch notifications", loading: false })
         }
     },
@@ -77,4 +77,3 @@ export const useNotificationStore = create<NotificationStore>((set, get) => ({
 
     clearNotifications: () => set({ notifications: [], unreadCount: 0 }),
 }))
-

@@ -43,7 +43,7 @@ export default function AddPatientPage() {
       })
       toast.success("Patient registered successfully!")
       router.push("/admin/patients")
-    } catch (error) {
+    } catch {
       toast.error("Failed to register patient. Please check your details.")
     } finally {
       setIsSubmitting(false)

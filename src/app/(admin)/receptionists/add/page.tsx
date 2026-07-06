@@ -43,7 +43,7 @@ export default function AddReceptionistPage() {
       })
       toast.success("Receptionist created successfully!")
       router.push("/admin/receptionist") // Assuming this is where receptionists are listed
-    } catch (error) {
+    } catch {
       toast.error("Failed to create receptionist. Please check your details.")
     } finally {
       setIsSubmitting(false)
