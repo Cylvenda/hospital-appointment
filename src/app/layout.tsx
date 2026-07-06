@@ -6,6 +6,19 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { AuthBootstrap } from "@/components/auth-bootstrap";
 import { NotificationBootstrap } from "@/components/notification-bootstrap";
 import { LanguageBootstrap } from "@/components/language-bootstrap";
+import { cn } from "@/lib/utils";
+import { Poppins, Inter } from "next/font/google";
+
+
+const inter = Inter({subsets:['latin'],variable:'--font-sans'});
+
+// Configure Poppins
+const poppins = Poppins({
+  subsets: ["latin"],
+  weight: ["400", "500", "700"], // optional: 400=regular, 500=medium, 700=bold
+  variable: "--font-poppins",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: {
@@ -27,8 +40,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      suppressHydrationWarning
-      className="h-full antialiased"
+      suppressHydrationWarning className={cn("h-full antialiased", poppins.variable, "font-sans", inter.variable)}
     >
       <head />
       <body className="min-h-screen bg-background text-foreground font-sans">
