@@ -21,6 +21,7 @@ export interface EducationalContentApi {
     tags: ContentTagApi[];
     author_name: string;
     featured_image: string | null;
+    video_file: string | null;
     content_type: "ARTICLE" | "VIDEO" | "INFOGRAPHIC" | "FAQ";
     status: "DRAFT" | "PUBLISHED" | "ARCHIVED";
     published_at: string | null;
@@ -58,6 +59,7 @@ export interface EducationalContent {
     tags: ContentTag[];
     authorName: string;
     featuredImage: string | null;
+    videoFile: string | null;
     contentType: "ARTICLE" | "VIDEO" | "INFOGRAPHIC" | "FAQ";
     status: "DRAFT" | "PUBLISHED" | "ARCHIVED";
     publishedAt: string | null;

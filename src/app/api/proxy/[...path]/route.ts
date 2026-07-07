@@ -55,7 +55,7 @@ async function proxy(request: NextRequest, context: { params: Promise<{ path: st
           body:
                request.method === "GET" || request.method === "HEAD"
                     ? undefined
-                    : await request.text(),
+                    : await request.arrayBuffer(),
           cache: "no-store",
      })
 

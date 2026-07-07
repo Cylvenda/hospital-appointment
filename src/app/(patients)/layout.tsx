@@ -36,7 +36,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                         </div>
                     </header>
                     <ProfileWarningBanner />
-                    <div className="bg-sidebar min-h-screen flex justify-center p-4 md:p-6">{children}</div>
+                    <div className="bg-sidebar min-h-screen w-full min-w-0 flex justify-center p-3 sm:p-4 md:p-6">{children}</div>
                 </SidebarInset>
             </RoleAccessGuard>
         </SidebarProvider>

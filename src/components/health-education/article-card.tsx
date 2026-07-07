@@ -25,7 +25,7 @@ export function ArticleCard({ article, isBookmarked = false }: ArticleCardProps)
     }
 
     return (
-        <motion.div whileHover={{ y: -4 }} transition={{ type: "spring", stiffness: 300, damping: 20 }}>
+        <motion.div className="min-w-0" whileHover={{ y: -4 }} transition={{ type: "spring", stiffness: 300, damping: 20 }}>
             <Link href={`/patient-dashboard/health-education/${article.slug}`}>
                 <Card className="h-full overflow-hidden border-muted/40 hover:border-primary/20 hover:shadow-md transition-all duration-300 group">
                     <div className="relative aspect-video w-full bg-muted/20 overflow-hidden">
@@ -53,17 +53,17 @@ export function ArticleCard({ article, isBookmarked = false }: ArticleCardProps)
                                 className={`w-4 h-4 ${isBookmarked ? 'fill-primary text-primary' : ''}`} 
                             />
                         </Button>
-                        <Badge className="absolute top-2 left-2 bg-background/80 backdrop-blur-sm text-foreground hover:bg-background/90">
+                        <Badge className="absolute top-2 left-2 max-w-[calc(100%-3.5rem)] truncate bg-background/80 backdrop-blur-sm text-foreground hover:bg-background/90">
                             {article.category.name}
                         </Badge>
                     </div>
-                    <CardContent className="p-5 flex flex-col gap-3">
+                    <CardContent className="p-4 sm:p-5 flex min-w-0 flex-col gap-3">
                         <div className="flex flex-col gap-1 text-xs text-muted-foreground">
-                            <span className="flex items-center gap-1">
-                                <HugeiconsIcon icon={Time01Icon} className="w-3 h-3" />
+                            <span className="flex min-w-0 items-center gap-1">
+                                <HugeiconsIcon icon={Time01Icon} className="w-3 h-3 shrink-0" />
                                 Published on {formatPublishedDate(article.publishedAt, article.createdAt)}
                             </span>
-                            <span>Written by {article.authorName}</span>
+                            <span className="truncate">Written by {article.authorName}</span>
                         </div>
                         <h3 className="font-semibold text-lg line-clamp-2 group-hover:text-primary transition-colors">
                             {article.title}

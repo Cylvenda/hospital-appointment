@@ -60,6 +60,7 @@ export function mapContent(apiObj: EducationalContentApi): EducationalContent {
         tags: apiObj.tags ? apiObj.tags.map(mapTag) : [],
         authorName: apiObj.author_name,
         featuredImage: apiObj.featured_image,
+        videoFile: apiObj.video_file,
         contentType: apiObj.content_type,
         status: apiObj.status,
         publishedAt: apiObj.published_at,

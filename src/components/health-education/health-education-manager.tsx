@@ -59,7 +59,8 @@ export function HealthEducationManager() {
     const [categoryId, setCategoryId] = useState("")
     const [contentType, setContentType] = useState("ARTICLE")
     const [status, setStatus] = useState("DRAFT")
-    const [file, setFile] = useState<File | null>(null)
+    const [featuredImage, setFeaturedImage] = useState<File | null>(null)
+    const [videoFile, setVideoFile] = useState<File | null>(null)
 
     // Form state for category
     const [categoryName, setCategoryName] = useState("")
@@ -77,7 +78,8 @@ export function HealthEducationManager() {
         setCategoryId("")
         setContentType("ARTICLE")
         setStatus("DRAFT")
-        setFile(null)
+        setFeaturedImage(null)
+        setVideoFile(null)
         setSelectedContent(null)
     }
 
@@ -101,7 +103,8 @@ export function HealthEducationManager() {
             setCategoryId(fullContent.category.uuid)
             setContentType(fullContent.content_type)
             setStatus(fullContent.status)
-            setFile(null)
+            setFeaturedImage(null)
+            setVideoFile(null)
             setIsEditOpen(true)
         } catch {
             toast.error(t("healthEducation.fetchContentDetailsError"))
@@ -181,8 +184,11 @@ export function HealthEducationManager() {
             formData.append("category_uuid", categoryId)
             formData.append("content_type", contentType)
             formData.append("status", status)
-            if (file) {
-                formData.append("featured_image", file)
+            if (featuredImage) {
+                formData.append("featured_image", featuredImage)
+            }
+            if (videoFile) {
+                formData.append("video_file", videoFile)
             }
 
             await createContent(formData)
@@ -208,8 +214,11 @@ export function HealthEducationManager() {
             formData.append("category_uuid", categoryId)
             formData.append("content_type", contentType)
             formData.append("status", status)
-            if (file) {
-                formData.append("featured_image", file)
+            if (featuredImage) {
+                formData.append("featured_image", featuredImage)
+            }
+            if (videoFile) {
+                formData.append("video_file", videoFile)
             }
 
             await updateContent(selectedContent.slug, formData)
@@ -248,19 +257,19 @@ export function HealthEducationManager() {
             <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                 <div>
                     <h1 className="text-3xl font-bold tracking-tight text-foreground flex items-center gap-2">
-                        <HugeiconsIcon icon={Book01Icon} className="w-8 h-8 text-primary" />
+                        <HugeiconsIcon icon={Book01Icon} className="w-7 h-7 sm:w-8 sm:h-8 shrink-0 text-primary" />
                         {t("healthEducation.title")}
                     </h1>
                     <p className="text-muted-foreground mt-1">
                         {t("healthEducation.subtitle")}
                     </p>
                 </div>
-                <div className="flex items-center gap-3">
-                    <Button variant="outline" onClick={() => { resetCategoryForm(); setIsCategoryOpen(true); }} className="gap-2">
+                <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center sm:gap-3">
+                    <Button variant="outline" onClick={() => { resetCategoryForm(); setIsCategoryOpen(true); }} className="w-full gap-2 sm:w-auto">
                         <HugeiconsIcon icon={Add01Icon} className="w-4 h-4" />
                         {t("healthEducation.newCategory")}
                     </Button>
-                    <Button onClick={() => { resetForm(); setIsAddOpen(true); }} className="gap-2">
+                    <Button onClick={() => { resetForm(); setIsAddOpen(true); }} className="w-full gap-2 sm:w-auto">
                         <HugeiconsIcon icon={Add01Icon} className="w-4 h-4" />
                         {t("healthEducation.publishContent")}
                     </Button>
@@ -301,9 +310,9 @@ export function HealthEducationManager() {
                         ) : (
                             contents.map((item) => (
                                 <TableRow key={item.id}>
-                                    <TableCell className="font-semibold max-w-[200px] truncate">{item.title}</TableCell>
+	                                    <TableCell className="font-semibold min-w-[180px] max-w-[220px] truncate">{item.title}</TableCell>
                                     <TableCell>
-                                        <Badge variant="outline">{item.category.name}</Badge>
+	                                        <Badge variant="outline" className="max-w-[180px] truncate">{item.category.name}</Badge>
                                     </TableCell>
                                     <TableCell>{t(`healthEducation.contentTypes.${item.contentType}`)}</TableCell>
                                     <TableCell>
@@ -361,8 +370,8 @@ export function HealthEducationManager() {
                                 ) : (
                                     categories.map((item) => (
                                         <TableRow key={item.id}>
-                                            <TableCell className="font-semibold">{item.name}</TableCell>
-                                            <TableCell className="text-muted-foreground truncate max-w-[300px]">{item.description || t("healthEducation.na")}</TableCell>
+                                            <TableCell className="font-semibold min-w-[160px] max-w-[220px] truncate">{item.name}</TableCell>
+                                            <TableCell className="text-muted-foreground truncate min-w-[220px] max-w-[320px]">{item.description || t("healthEducation.na")}</TableCell>
                                             <TableCell>
                                                 <Badge variant={item.isActive ? "default" : "secondary"}>
                                                     {item.isActive ? t("search.active") : t("search.inactive")}
@@ -397,7 +406,7 @@ export function HealthEducationManager() {
 
             {/* Add Dialog */}
             <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
-                <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+                <DialogContent className="max-h-[92vh] overflow-y-auto p-4 sm:max-w-2xl sm:p-6">
                     <DialogHeader>
                         <DialogTitle>{t("healthEducation.publishNewContent")}</DialogTitle>
                         <DialogDescription>{t("healthEducation.publishNewContentDescription")}</DialogDescription>
@@ -407,7 +416,7 @@ export function HealthEducationManager() {
                             <label className="text-sm font-semibold">{t("healthEducation.table.title")}</label>
                             <Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder={t("healthEducation.titlePlaceholder")} />
                         </div>
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                             <div className="space-y-2">
                                 <label className="text-sm font-semibold">{t("healthEducation.table.category")}</label>
                                 <Select value={categoryId} onValueChange={setCategoryId}>
@@ -459,9 +468,16 @@ export function HealthEducationManager() {
                         </div>
                         <div className="space-y-2">
                             <label className="text-sm font-semibold">{t("healthEducation.featuredImage")}</label>
-                            <Input type="file" onChange={(e) => setFile(e.target.files?.[0] || null)} accept="image/jpeg, image/png, image/webp" />
+                            <Input type="file" onChange={(e) => setFeaturedImage(e.target.files?.[0] || null)} accept="image/jpeg, image/png, image/webp" />
                             <p className="text-xs text-muted-foreground mt-1">{t("healthEducation.imageHelp")}</p>
                         </div>
+                        {contentType === "VIDEO" && (
+                            <div className="space-y-2">
+                                <label className="text-sm font-semibold">{t("healthEducation.videoFile")}</label>
+                                <Input type="file" onChange={(e) => setVideoFile(e.target.files?.[0] || null)} accept="video/mp4, video/quicktime, video/webm, .m4v" />
+                                <p className="text-xs text-muted-foreground mt-1">{t("healthEducation.videoHelp")}</p>
+                            </div>
+                        )}
                     </div>
                     <DialogFooter>
                         <Button variant="outline" onClick={() => setIsAddOpen(false)} disabled={isSubmitting}>{t("common.cancel")}</Button>
@@ -472,7 +488,7 @@ export function HealthEducationManager() {
 
             {/* Edit Dialog */}
             <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
-                <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+                <DialogContent className="max-h-[92vh] overflow-y-auto p-4 sm:max-w-2xl sm:p-6">
                     <DialogHeader>
                         <DialogTitle>{t("healthEducation.editContent")}</DialogTitle>
                         <DialogDescription>{t("healthEducation.editContentDescription")}</DialogDescription>
@@ -482,7 +498,7 @@ export function HealthEducationManager() {
                             <label className="text-sm font-semibold">{t("healthEducation.table.title")}</label>
                             <Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder={t("healthEducation.titlePlaceholder")} />
                         </div>
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                             <div className="space-y-2">
                                 <label className="text-sm font-semibold">{t("healthEducation.table.category")}</label>
                                 <Select value={categoryId} onValueChange={setCategoryId}>
@@ -534,9 +550,16 @@ export function HealthEducationManager() {
                         </div>
                         <div className="space-y-2">
                             <label className="text-sm font-semibold">{t("healthEducation.replaceFeaturedImage")}</label>
-                            <Input type="file" onChange={(e) => setFile(e.target.files?.[0] || null)} accept="image/jpeg, image/png, image/webp" />
+                            <Input type="file" onChange={(e) => setFeaturedImage(e.target.files?.[0] || null)} accept="image/jpeg, image/png, image/webp" />
                             <p className="text-xs text-muted-foreground mt-1">{t("healthEducation.imageHelp")}</p>
                         </div>
+                        {contentType === "VIDEO" && (
+                            <div className="space-y-2">
+                                <label className="text-sm font-semibold">{t("healthEducation.replaceVideoFile")}</label>
+                                <Input type="file" onChange={(e) => setVideoFile(e.target.files?.[0] || null)} accept="video/mp4, video/quicktime, video/webm, .m4v" />
+                                <p className="text-xs text-muted-foreground mt-1">{t("healthEducation.videoHelp")}</p>
+                            </div>
+                        )}
                     </div>
                     <DialogFooter>
                         <Button variant="outline" onClick={() => setIsEditOpen(false)} disabled={isSubmitting}>{t("common.cancel")}</Button>

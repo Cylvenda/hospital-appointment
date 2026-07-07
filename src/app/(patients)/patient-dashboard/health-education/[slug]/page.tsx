@@ -140,6 +140,17 @@ export default function ArticleDetailPage() {
                     </div>
                 )}
 
+                {article.contentType === "VIDEO" && article.videoFile && (
+                    <div className="w-full overflow-hidden rounded-3xl bg-black border border-muted/40 shadow-sm">
+                        <video
+                            src={article.videoFile}
+                            controls
+                            preload="metadata"
+                            className="block w-full aspect-video"
+                        />
+                    </div>
+                )}
+
                 <Separator />
 
                 <div 

@@ -57,12 +57,16 @@ export const healthEducationService = {
 
     // Admin/Receptionist Management Methods
     async createContent(payload: FormData): Promise<ApiResponse<EducationalContentApi>> {
-        const response = await api.post<EducationalContentApi>("/education/contents/", payload)
+        const response = await api.post<EducationalContentApi>("/education/contents/", payload, {
+            headers: { "Content-Type": "multipart/form-data" },
+        })
         return { status: response.status, data: response.data }
     },
 
     async updateContent(slug: string, payload: FormData): Promise<ApiResponse<EducationalContentApi>> {
-        const response = await api.patch<EducationalContentApi>(`/education/contents/${slug}/`, payload)
+        const response = await api.patch<EducationalContentApi>(`/education/contents/${slug}/`, payload, {
+            headers: { "Content-Type": "multipart/form-data" },
+        })
         return { status: response.status, data: response.data }
     },
 
