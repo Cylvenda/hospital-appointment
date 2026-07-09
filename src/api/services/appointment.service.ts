@@ -233,17 +233,27 @@ export const appointmentService = {
           }
      },
 
-     async payingForAppointment(appointmentId: string, phone: string): Promise<ApiResponse<PaymentResponse>> {
-          const response = await api.post<PaymentResponse>(
-               `${API_ENDPOINTS.APPOINTMENTS}${appointmentId}/pay/`,
-               {
-                    phone: phone,
-               }
-          )
+      async payingForAppointment(appointmentId: string, phone: string): Promise<ApiResponse<PaymentResponse>> {
+           const response = await api.post<PaymentResponse>(
+                `${API_ENDPOINTS.APPOINTMENTS}${appointmentId}/pay/`,
+                {
+                     phone: phone,
+                }
+           )
 
-          return {
-               status: response.status,
-               data: response.data,
-          }
-     }
+           return {
+                status: response.status,
+                data: response.data,
+           }
+      },
+
+      async getPublicSettings(): Promise<ApiResponse<{ appointment_fee: string }>> {
+           const response = await api.get<{ appointment_fee: string }>(
+                API_ENDPOINTS.PUBLIC_SETTINGS
+           )
+           return {
+                status: response.status,
+                data: response.data,
+           }
+      }
 }

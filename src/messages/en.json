@@ -935,6 +935,7 @@
     "date": "Date",
     "time": "Time",
     "duration": "Duration",
+    "appointmentFee": "Appointment Fee",
     "nextStep": "Next step",
     "appointmentPayment": "Appointment payment",
     "clinicalNote": "Clinical note",

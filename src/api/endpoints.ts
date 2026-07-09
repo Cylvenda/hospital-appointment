@@ -8,8 +8,8 @@ export const API_ENDPOINTS = {
      // User Authentication Endpoints
      USER_REGISTRATION: "auth/users/",
      USER_LOGIN: "me/auth/login/",
-     USER_TOKEN_REFRESH: "me/auth/csrf/",
-     USER_TOKEN_VERIFY: "me/auth/refresh/",
+      USER_TOKEN_REFRESH: "me/auth/token/refresh/",
+      USER_TOKEN_VERIFY: "me/auth/token/verify/",
      USER_LOGOUT: "me/auth/logout/",
      // User activation and password management
      USER_ACCOUNT_ACTIVATION: "auth/users/activation/",
@@ -33,6 +33,7 @@ export const API_ENDPOINTS = {
       ADMIN_USERS: "admin/users/",
       ADMIN_DOCTORS: "admin/doctors/",
       ADMIN_SETTINGS: "admin/settings/",
+      PUBLIC_SETTINGS: "public/settings/",
 
      // Notifications
      NOTIFICATIONS: "notifications/",

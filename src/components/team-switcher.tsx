@@ -4,7 +4,9 @@ import * as React from "react"
 import {
   SidebarMenu,
   SidebarMenuItem,
+  useSidebar,
 } from "@/components/ui/sidebar"
+import { cn } from "@/lib/utils"
 
 export function TeamSwitcher({
   teams,
@@ -15,18 +17,27 @@ export function TeamSwitcher({
     role: string
   }
 }) {
+  const { state } = useSidebar()
+  const isCollapsed = state === "collapsed"
 
   return (
     <SidebarMenu>
       <SidebarMenuItem>
-        <div className="flex items-center gap-3 rounded-2xl border border-sidebar-border/70 bg-sidebar-accent/40 px-3 py-3">
-          <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
+        <div
+          className={cn(
+            "flex items-center gap-3 rounded-2xl border border-sidebar-border/70 bg-sidebar-accent/40 px-3 py-3",
+            isCollapsed && "justify-center px-2 py-2"
+          )}
+        >
+          <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground shrink-0">
             {teams.logo}
           </div>
-          <div className="grid flex-1 text-left text-sm leading-tight">
-            <span className="truncate font-medium">{teams.name}</span>
-            <span className="truncate text-xs">{teams.role}</span>
-          </div>
+          {!isCollapsed && (
+            <div className="grid flex-1 text-left text-sm leading-tight">
+              <span className="truncate font-medium">{teams.name}</span>
+              <span className="truncate text-xs">{teams.role}</span>
+            </div>
+          )}
         </div>
       </SidebarMenuItem>
     </SidebarMenu>

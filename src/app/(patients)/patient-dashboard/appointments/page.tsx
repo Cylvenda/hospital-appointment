@@ -50,6 +50,8 @@ export default function PatientAppointmentsPage() {
   const [submitting, setSubmitting] = useState(false)
   const [summaryOpen, setSummaryOpen] = useState(false)
   const [readyToPay, setReadyToPay] = useState(false)
+  const [appointmentFee, setAppointmentFee] = useState<string | null>(null)
+  const [loadingFee, setLoadingFee] = useState(false)
 
   useEffect(() => {
     void (async () => {
@@ -75,6 +77,20 @@ export default function PatientAppointmentsPage() {
       void fetchIllnessCategories()
     })()
   }, [checkAuth, fetchAppointments, fetchIllnessCategories, router, t])
+
+  useEffect(() => {
+    void (async () => {
+      setLoadingFee(true)
+      try {
+        const response = await appointmentService.getPublicSettings()
+        setAppointmentFee(response.data.appointment_fee)
+      } catch {
+        // fee is optional in UI; leave as null on failure
+      } finally {
+        setLoadingFee(false)
+      }
+    })()
+  }, [t])
 
   useEffect(() => {
     setDoctorId("")
@@ -556,6 +572,14 @@ export default function PatientAppointmentsPage() {
                       duration: selectedDoctor.consultation_duration,
                     })
                   : "—",
+              ],
+              [
+                t("booking.appointmentFee"),
+                loadingFee
+                  ? "..."
+                  : appointmentFee
+                    ? `${Number(appointmentFee).toLocaleString()} TZS`
+                    : "—",
               ],
               [t("booking.nextStep"), t("booking.appointmentPayment")],
             ].map(([label, value]) => (

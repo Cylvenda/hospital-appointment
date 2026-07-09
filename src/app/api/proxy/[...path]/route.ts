@@ -72,9 +72,9 @@ async function proxy(request: NextRequest, context: { params: Promise<{ path: st
                  status: backendResponse.status,
             })
 
-     const isLogin = path.join("/") === "me/auth/login"
-     const isRefresh = path.join("/") === "me/auth/csrf"
-     const isLogout = path.join("/") === "me/auth/logout"
+      const isLogin = path.join("/") === "me/auth/login"
+      const isRefresh = path.join("/") === "me/auth/token/refresh"
+      const isLogout = path.join("/") === "me/auth/logout"
 
      let parsedBody: Record<string, unknown> | null = null
      if (rawContentType.includes("application/json") && responseText) {
