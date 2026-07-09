@@ -15,6 +15,9 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
+import { TimePicker } from "@/components/ui/time-picker"
+import { DatePicker } from "@/components/ui/date-picker"
+import { getBackendErrorMessage } from "@/lib/backend-errors"
 
 type Schedule = {
   uuid: string
@@ -91,7 +94,7 @@ export function DoctorScheduleManager({ doctor }: { doctor: AdminDoctor }) {
         uuid: "",
         day_of_week: day,
         start_time: "08:00",
-        end_time: "17:00",
+        end_time: "15:00",
         break_start_time: null,
         break_end_time: null,
         is_active: true,
@@ -130,8 +133,8 @@ export function DoctorScheduleManager({ doctor }: { doctor: AdminDoctor }) {
       )
       await load()
       toast.success("Doctor schedule saved.")
-    } catch {
-      toast.error("Doctor schedule could not be saved.")
+    } catch (error) {
+      toast.error(getBackendErrorMessage(error, "Doctor schedule could not be saved."))
     } finally {
       setSaving(false)
     }
@@ -148,8 +151,8 @@ export function DoctorScheduleManager({ doctor }: { doctor: AdminDoctor }) {
       setBlockedDate("")
       setBlockedReason("")
       await load()
-    } catch {
-      toast.error("Date could not be blocked.")
+    } catch (error) {
+      toast.error(getBackendErrorMessage(error, "Date could not be blocked."))
     }
   }
 
@@ -212,15 +215,15 @@ export function DoctorScheduleManager({ doctor }: { doctor: AdminDoctor }) {
                   ].map(([fieldLabel, field]) => (
                     <div className="space-y-1" key={field}>
                       <Label className="text-xs">{fieldLabel}</Label>
-                      <Input
-                        type="time"
+                      <TimePicker
                         disabled={!schedule?.is_active}
+                        format="24h"
                         value={timeValue(
                           schedule?.[field as keyof Schedule] as string | null
                         )}
-                        onChange={(event) =>
+                        onChange={(value) =>
                           updateLocalSchedule(day, {
-                            [field]: event.target.value || null,
+                            [field]: value || null,
                           })
                         }
                       />
@@ -234,10 +237,9 @@ export function DoctorScheduleManager({ doctor }: { doctor: AdminDoctor }) {
           <div className="space-y-3 rounded-xl border p-4">
             <Label>Unavailable date or leave</Label>
             <div className="grid gap-2 sm:grid-cols-[1fr_2fr_auto]">
-              <Input
-                type="date"
+              <DatePicker
                 value={blockedDate}
-                onChange={(event) => setBlockedDate(event.target.value)}
+                onChange={(value) => setBlockedDate(value)}
               />
               <Input
                 value={blockedReason}

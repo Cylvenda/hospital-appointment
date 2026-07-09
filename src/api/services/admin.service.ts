@@ -91,18 +91,26 @@ export const AdminService = {
           }
      },
 
-     async updateDoctor(
-          uuid: string,
-          payload: AdminDoctorUpdatePayload
-     ): Promise<ApiResponse<AdminDoctor>> {
-          const response = await api.patch<AdminDoctor>(
-               `${API_ENDPOINTS.ADMIN_DOCTORS}${uuid}/`,
-               payload
-          )
-          return { status: response.status, data: response.data }
-     },
+      async updateDoctor(
+           uuid: string,
+           payload: AdminDoctorUpdatePayload
+      ): Promise<ApiResponse<AdminDoctor>> {
+           const response = await api.patch<AdminDoctor>(
+                `${API_ENDPOINTS.ADMIN_DOCTORS}${uuid}/`,
+                payload
+           )
+           return { status: response.status, data: response.data }
+      },
 
-     async getIllnessCategories(): Promise<ApiResponse<AdminIllnessCategory[]>> {
+      async deleteDoctor(uuid: string): Promise<ApiResponse<null>> {
+           await api.delete(`${API_ENDPOINTS.ADMIN_DOCTORS}${uuid}/`)
+           return {
+                status: 204,
+                data: null,
+           }
+      },
+
+      async getIllnessCategories(): Promise<ApiResponse<AdminIllnessCategory[]>> {
           const response = await api.get<AdminIllnessCategory[]>(API_ENDPOINTS.ILLNESS_CATEGORIES)
           return {
                status: response.status,

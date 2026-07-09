@@ -29,3 +29,28 @@ export function getBackendFieldErrors<T extends string>(
     {} as Record<T, string>,
   );
 }
+
+export function getBackendErrorMessage(error: unknown, fallback: string): string {
+  if (axios.isAxiosError(error)) {
+    const data = error.response?.data;
+    if (data && typeof data === "object") {
+      const record = data as Record<string, unknown>;
+      const nonField = record.non_field_errors;
+      if (Array.isArray(nonField) && nonField.length > 0) {
+        const first = nonField[0];
+        if (typeof first === "string") return first;
+        return String(first);
+      }
+      const detail = record.detail;
+      if (typeof detail === "string") return detail;
+      if (Array.isArray(detail) && detail.length > 0) {
+        const first = detail[0];
+        if (typeof first === "string") return first;
+        return String(first);
+      }
+    }
+  } else if (error instanceof Error && error.message) {
+    return error.message;
+  }
+  return fallback;
+}

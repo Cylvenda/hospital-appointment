@@ -20,6 +20,7 @@ import {
   CircleCheckBig,
   ClipboardList,
   CreditCard,
+  TestTube,
 } from "lucide-react"
 import { Separator } from "./ui/separator"
 import { useAuthUserStore } from "@/store/auth/userAuth.store"
@@ -112,6 +113,12 @@ const navMain = [
     )
   },
   {
+    titleKey: "nav.labTech",
+    sectionKey: "nav.management",
+    url: "/lab-tech",
+    icon: <TestTube className="size-5 text-primary" />,
+  },
+  {
     titleKey: "nav.illnessCategories",
     sectionKey: "nav.management",
     url: "/illness-categories",
@@ -122,7 +129,7 @@ const navMain = [
   {
     titleKey: "nav.healthEducation",
     sectionKey: "nav.management",
-    url: "/health-education",
+    url: "/admin-dashboard/health-education",
     icon: (
       <HugeiconsIcon color="var(--primary)" icon={Book01Icon} strokeWidth={2} />
     )

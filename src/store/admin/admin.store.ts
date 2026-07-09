@@ -30,12 +30,13 @@ type AdminStore = {
      createUser: (payload: AdminUserWritePayload) => Promise<AdminUser>
      updateUser: (uuid: string, payload: Partial<AdminUserWritePayload>) => Promise<AdminUser>
      deleteUser: (uuid: string) => Promise<void>
-     createDoctor: (payload: AdminDoctorWritePayload) => Promise<AdminDoctor>
-     updateDoctor: (
-          uuid: string,
-          payload: AdminDoctorUpdatePayload
-     ) => Promise<AdminDoctor>
-     createIllnessCategory: (
+      createDoctor: (payload: AdminDoctorWritePayload) => Promise<AdminDoctor>
+      updateDoctor: (
+           uuid: string,
+           payload: AdminDoctorUpdatePayload
+      ) => Promise<AdminDoctor>
+      deleteDoctor: (uuid: string) => Promise<void>
+      createIllnessCategory: (
           payload: AdminIllnessCategoryWritePayload
      ) => Promise<AdminIllnessCategory>
      updateIllnessCategory: (
@@ -157,17 +158,24 @@ export const useAdminStore = create<AdminStore>((set) => ({
           return response.data
      },
 
-     updateDoctor: async (uuid, payload) => {
-          const response = await AdminService.updateDoctor(uuid, payload)
-          set((state) => ({
-               doctors: state.doctors.map((doctor) =>
-                    doctor.uuid === uuid ? response.data : doctor
-               ),
-          }))
-          return response.data
-     },
+      updateDoctor: async (uuid, payload) => {
+           const response = await AdminService.updateDoctor(uuid, payload)
+           set((state) => ({
+                doctors: state.doctors.map((doctor) =>
+                     doctor.uuid === uuid ? response.data : doctor
+                ),
+           }))
+           return response.data
+      },
 
-     createIllnessCategory: async (payload) => {
+      deleteDoctor: async (uuid) => {
+           await AdminService.deleteDoctor(uuid)
+           set((state) => ({
+                doctors: state.doctors.filter((doctor) => doctor.uuid !== uuid),
+           }))
+      },
+
+      createIllnessCategory: async (payload) => {
           const response = await AdminService.createIllnessCategory(payload)
           set((state) => ({
                illnessCategories: [response.data, ...state.illnessCategories],

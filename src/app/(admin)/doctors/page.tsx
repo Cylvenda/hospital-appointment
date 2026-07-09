@@ -1,9 +1,9 @@
-"use client";
+"use client"
 
-import { useEffect, useMemo, useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { useTranslation } from "@/lib/i18n";
+import { useEffect, useMemo, useState } from "react"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { useTranslation } from "@/lib/i18n"
 import {
   Sheet,
   SheetContent,
@@ -11,7 +11,15 @@ import {
   SheetFooter,
   SheetHeader,
   SheetTitle,
-} from "@/components/ui/sheet";
+} from "@/components/ui/sheet"
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
 import {
   Calendar01Icon,
   CallIcon,
@@ -21,27 +29,30 @@ import {
   PlusSignIcon,
   Search01Icon,
   Watch01Icon,
-} from "@hugeicons/core-free-icons";
-import { HugeiconsIcon } from "@hugeicons/react";
-import { toast } from "react-toastify";
-import { useAdminStore } from "@/store/admin/admin.store";
-import { PasswordInput } from "@/components/password-input";
-import { Label } from "@/components/ui/label";
-import { DoctorScheduleManager } from "@/components/doctor-schedule-manager";
-import { DoctorProfileManager } from "@/components/doctor-profile-manager";
-import { cn } from "@/lib/utils";
-import { getBackendFieldErrors } from "@/lib/backend-errors";
+  Delete02Icon,
+  ViewIcon,
+  Edit02Icon,
+} from "@hugeicons/core-free-icons"
+import { HugeiconsIcon } from "@hugeicons/react"
+import { toast } from "react-toastify"
+import { useAdminStore } from "@/store/admin/admin.store"
+import { PasswordInput } from "@/components/password-input"
+import { Label } from "@/components/ui/label"
+import { DoctorScheduleManager } from "@/components/doctor-schedule-manager"
+import { cn } from "@/lib/utils"
+import { getBackendFieldErrors } from "@/lib/backend-errors"
 
 type FormErrors = {
-  first_name?: string;
-  last_name?: string;
-  email?: string;
-  phone?: string;
-  password?: string;
-  license_number?: string;
-};
+  first_name?: string
+  last_name?: string
+  email?: string
+  phone?: string
+  password?: string
+  license_number?: string
+}
 
 const emptyDoctorForm = {
+  uuid: "",
   first_name: "",
   last_name: "",
   email: "",
@@ -49,47 +60,69 @@ const emptyDoctorForm = {
   password: "",
   license_number: "",
   category_uuids: [] as string[],
-};
+}
+
+type ViewEditMode = "view" | "edit" | null
 
 function statusClasses(status: string) {
   if (status === "Available") {
-    return "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100 dark:bg-emerald-500/15 dark:text-emerald-300 dark:ring-emerald-500/20";
+    return "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100 dark:bg-emerald-500/15 dark:text-emerald-300 dark:ring-emerald-500/20"
   }
 
   if (status === "In Session") {
-    return "bg-amber-50 text-amber-700 ring-1 ring-amber-100 dark:bg-amber-500/15 dark:text-amber-300 dark:ring-amber-500/20";
+    return "bg-amber-50 text-amber-700 ring-1 ring-amber-100 dark:bg-amber-500/15 dark:text-amber-300 dark:ring-amber-500/20"
   }
 
-  return "bg-muted text-muted-foreground ring-1 ring-border";
+  return "bg-muted text-muted-foreground ring-1 ring-border"
 }
 
 export default function DoctorsPage() {
-  const { t } = useTranslation();
+  const { t } = useTranslation()
   const {
     doctors: doctorDirectory,
     illnessCategories,
     fetchDoctors,
     fetchIllnessCategories,
     createDoctor,
-  } = useAdminStore();
-  const [search, setSearch] = useState("");
-  const [sheetOpen, setSheetOpen] = useState(false);
-  const [form, setForm] = useState(emptyDoctorForm);
-  const [formErrors, setFormErrors] = useState<FormErrors>({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
+    updateDoctor,
+    deleteDoctor,
+  } = useAdminStore()
+  const [search, setSearch] = useState("")
+  const [sheetOpen, setSheetOpen] = useState(false)
+  const [form, setForm] = useState(emptyDoctorForm)
+  const [formErrors, setFormErrors] = useState<FormErrors>({})
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [viewEditMode, setViewEditMode] = useState<ViewEditMode>(null)
+  const [activeDoctor, setActiveDoctor] = useState<typeof emptyDoctorForm | null>(null)
+  const [editForm, setEditForm] = useState(emptyDoctorForm)
+  const [editErrors, setEditErrors] = useState<FormErrors>({})
+  const [editSubmitting, setEditSubmitting] = useState(false)
+  const [deleteTarget, setDeleteTarget] = useState<typeof emptyDoctorForm | null>(null)
+
   const handleDoctorFieldChange = (
     field: keyof typeof emptyDoctorForm,
     value: string | string[],
   ) => {
-    setForm((prev) => ({ ...prev, [field]: value }));
+    setForm((prev) => ({ ...prev, [field]: value }))
     if (field !== "category_uuids" && formErrors[field as keyof FormErrors]) {
-      setFormErrors((prev) => ({ ...prev, [field]: undefined }));
+      setFormErrors((prev) => ({ ...prev, [field]: undefined }))
     }
-  };
+  }
+
+  const handleEditDoctorFieldChange = (
+    field: keyof typeof emptyDoctorForm,
+    value: string | string[],
+  ) => {
+    setEditForm((prev) => ({ ...prev, [field]: value }))
+    if (field !== "category_uuids" && editErrors[field as keyof FormErrors]) {
+      setEditErrors((prev) => ({ ...prev, [field]: undefined }))
+    }
+  }
+
   useEffect(() => {
-    void fetchDoctors();
-    void fetchIllnessCategories();
-  }, [fetchDoctors, fetchIllnessCategories]);
+    void fetchDoctors()
+    void fetchIllnessCategories()
+  }, [fetchDoctors, fetchIllnessCategories])
 
   const doctors = useMemo(
     () =>
@@ -98,7 +131,7 @@ export default function DoctorsPage() {
           [doctor.name, doctor.email, doctor.phone, doctor.categories.join(" ")]
             .join(" ")
             .toLowerCase()
-            .includes(search.trim().toLowerCase()),
+            .includes(search.trim().toLowerCase())
         )
         .map((doctor) => ({
           uuid: doctor.uuid,
@@ -110,13 +143,12 @@ export default function DoctorsPage() {
           shift: doctor.is_available
             ? t("adminDoctors.availableToday")
             : t("adminDoctors.unavailable"),
-          nextClinic: t("adminDoctors.seeSchedule"),
           status: doctor.is_available
             ? t("adminDoctors.available")
             : t("adminDoctors.offDuty"),
         })),
     [doctorDirectory, search, t],
-  );
+  )
 
   const isFormValid =
     form.first_name.trim() &&
@@ -124,15 +156,15 @@ export default function DoctorsPage() {
     form.email.trim() &&
     form.phone.trim() &&
     form.password.trim() &&
-    form.license_number.trim();
+    form.license_number.trim()
 
   async function handleCreateDoctor() {
     if (!isFormValid || isSubmitting) {
-      return;
+      return
     }
 
-    setIsSubmitting(true);
-    setFormErrors({});
+    setIsSubmitting(true)
+    setFormErrors({})
 
     try {
       await createDoctor({
@@ -144,10 +176,10 @@ export default function DoctorsPage() {
         license_number: form.license_number.trim(),
         is_available: true,
         category_uuids: form.category_uuids,
-      });
-      toast.success(t("adminDoctors.doctorAddedSuccess"));
-      setForm(emptyDoctorForm);
-      setSheetOpen(false);
+      })
+      toast.success(t("adminDoctors.doctorAddedSuccess"))
+      setForm(emptyDoctorForm)
+      setSheetOpen(false)
     } catch (error: unknown) {
       const backendErrors = getBackendFieldErrors(error, [
         "first_name",
@@ -156,14 +188,115 @@ export default function DoctorsPage() {
         "phone",
         "password",
         "license_number",
-      ]);
+      ])
       if (Object.keys(backendErrors).length > 0) {
-        setFormErrors(backendErrors);
+        setFormErrors(backendErrors)
       } else {
-        toast.error(t("adminDoctors.doctorAddFailed"));
+        toast.error(t("adminDoctors.doctorAddFailed"))
       }
     } finally {
-      setIsSubmitting(false);
+      setIsSubmitting(false)
+    }
+  }
+
+  const handleView = (doctor: (typeof emptyDoctorForm)) => {
+    setActiveDoctor(doctor)
+    setEditForm({
+      uuid: doctor.uuid,
+      first_name: doctor.first_name,
+      last_name: doctor.last_name,
+      email: doctor.email,
+      phone: doctor.phone,
+      password: "",
+      license_number: doctor.license_number,
+      category_uuids: doctor.category_uuids,
+    })
+    setViewEditMode("view")
+  }
+
+  const handleEdit = (doctor: (typeof emptyDoctorForm)) => {
+    setActiveDoctor(doctor)
+    setEditForm({
+      uuid: doctor.uuid,
+      first_name: doctor.first_name,
+      last_name: doctor.last_name,
+      email: doctor.email,
+      phone: doctor.phone,
+      password: "",
+      license_number: doctor.license_number,
+      category_uuids: doctor.category_uuids,
+    })
+    setEditErrors({})
+    setViewEditMode("edit")
+  }
+
+  const handleDelete = (doctor: (typeof emptyDoctorForm)) => {
+    setDeleteTarget(doctor)
+  }
+
+  function closeViewEditSheet() {
+    setViewEditMode(null)
+    setActiveDoctor(null)
+    setEditForm(emptyDoctorForm)
+    setEditErrors({})
+  }
+
+  function closeDeletePopup() {
+    setDeleteTarget(null)
+  }
+
+  async function confirmDelete() {
+    if (!deleteTarget) {
+      return
+    }
+
+    try {
+      await deleteDoctor(deleteTarget.uuid)
+      toast.success("Doctor deleted successfully")
+      if (activeDoctor?.uuid === deleteTarget.uuid) {
+        closeViewEditSheet()
+      }
+      closeDeletePopup()
+    } catch {
+      toast.error("Failed to delete doctor")
+      closeDeletePopup()
+    }
+  }
+
+  async function handleSaveEdit() {
+    if (!activeDoctor) {
+      return
+    }
+
+    setEditSubmitting(true)
+    setEditErrors({})
+
+    try {
+      await updateDoctor(activeDoctor.uuid, {
+        first_name: editForm.first_name.trim(),
+        last_name: editForm.last_name.trim(),
+        email: editForm.email.trim(),
+        phone: editForm.phone.trim(),
+        license_number: editForm.license_number.trim(),
+        category_uuids: editForm.category_uuids,
+      })
+      toast.success("Doctor updated successfully")
+      closeViewEditSheet()
+    } catch (error: unknown) {
+      const backendErrors = getBackendFieldErrors(error, [
+        "first_name",
+        "last_name",
+        "email",
+        "phone",
+        "license_number",
+      ])
+      if (Object.keys(backendErrors).length > 0) {
+        setEditErrors(backendErrors)
+      } else {
+        toast.error("Failed to update doctor")
+      }
+    } finally {
+      setEditSubmitting(false)
     }
   }
 
@@ -241,87 +374,131 @@ export default function DoctorsPage() {
         </div>
       </div>
 
-      <div className="grid gap-4 xl:grid-cols-2">
-        {doctors.map((doctor) => (
-          <div
-            key={doctor.id}
-            className="rounded-4xl border border-sidebar-border bg-card p-5 shadow-sm"
-          >
-            <div className="flex items-start justify-between gap-4">
-              <div className="flex items-start gap-4">
-                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10 text-primary">
-                  <HugeiconsIcon icon={Doctor01Icon} strokeWidth={1.8} />
-                </div>
-                <div className="space-y-1">
-                  <p className="font-semibold">{doctor.name}</p>
-                  <p className="text-sm text-muted-foreground">
-                    {doctor.specialty}
-                  </p>
-                  <p className="font-mono text-xs text-muted-foreground">
-                    {doctor.id}
-                  </p>
-                </div>
-              </div>
-              <span
-                className={`rounded-full px-3 py-1 text-xs font-medium ${statusClasses(doctor.status)}`}
-              >
-                {doctor.status}
-              </span>
-            </div>
-
-            <div className="mt-5 grid gap-3 text-sm text-muted-foreground sm:grid-cols-2">
-              <p className="flex items-center gap-2">
-                <HugeiconsIcon
-                  icon={Mail01Icon}
-                  strokeWidth={1.8}
-                  className="size-4"
-                />
-                {doctor.email}
-              </p>
-              <p className="flex items-center gap-2">
-                <HugeiconsIcon
-                  icon={CallIcon}
-                  strokeWidth={1.8}
-                  className="size-4"
-                />
-                {doctor.phone}
-              </p>
-              <p className="flex items-center gap-2">
-                <HugeiconsIcon
-                  icon={Watch01Icon}
-                  strokeWidth={1.8}
-                  className="size-4"
-                />
-                {t("adminDoctors.shift")} {doctor.shift}
-              </p>
-              <p className="flex items-center gap-2">
-                <HugeiconsIcon
-                  icon={Calendar01Icon}
-                  strokeWidth={1.8}
-                  className="size-4"
-                />
-                {t("adminDoctors.nextClinic")} {doctor.nextClinic}
-              </p>
-            </div>
-
-            <div className="mt-5 flex flex-wrap gap-2">
-              {(() => {
+      <div className="overflow-hidden rounded-4xl border border-sidebar-border bg-card shadow-sm">
+        <Table>
+          <TableHeader className="bg-muted/50">
+            <TableRow className="hover:bg-transparent">
+              <TableHead className="w-12">#</TableHead>
+              <TableHead>Name</TableHead>
+              <TableHead>Specialty</TableHead>
+              <TableHead>Email</TableHead>
+              <TableHead>Phone</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead className="text-right">Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {doctors.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={7} className="h-24 text-center">
+                  No doctors found.
+                </TableCell>
+              </TableRow>
+            ) : (
+              doctors.map((doctor, index) => {
                 const record = doctorDirectory.find(
                   (item) => item.uuid === doctor.uuid,
-                );
-                return record ? <DoctorProfileManager doctor={record} /> : null;
-              })()}
-              {(() => {
-                const record = doctorDirectory.find(
-                  (item) => item.uuid === doctor.uuid,
-                );
-                return record ? (
-                  <DoctorScheduleManager doctor={record} />
-                ) : null;
-              })()}
-            </div>
-          </div>
-        ))}
+                )
+                return (
+                  <TableRow key={doctor.uuid}>
+                    <TableCell className="font-mono text-xs text-muted-foreground">
+                      {index + 1}
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-3">
+                        <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+                          <HugeiconsIcon icon={Doctor01Icon} strokeWidth={1.8} />
+                        </div>
+                        <div className="min-w-0">
+                          <p className="font-medium text-foreground">{doctor.name}</p>
+                          <p className="text-xs text-muted-foreground font-mono">
+                            {doctor.id}
+                          </p>
+                        </div>
+                      </div>
+                    </TableCell>
+                    <TableCell>{doctor.specialty}</TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-2 text-muted-foreground">
+                        <HugeiconsIcon icon={Mail01Icon} strokeWidth={1.8} className="size-4" />
+                        {doctor.email}
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-2 text-muted-foreground">
+                        <HugeiconsIcon icon={CallIcon} strokeWidth={1.8} className="size-4" />
+                        {doctor.phone}
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <span className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-medium ${statusClasses(doctor.status)}`}>
+                        {doctor.status}
+                      </span>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <div className="flex items-center justify-end gap-2">
+                        <Button
+                          size="icon-sm"
+                          variant="outline"
+                          className="rounded-xl"
+                          onClick={() => record && handleView({
+                            uuid: record.uuid,
+                            first_name: record.first_name,
+                            last_name: record.last_name,
+                            email: record.email,
+                            phone: record.phone,
+                            password: "",
+                            license_number: record.license_number,
+                            category_uuids: record.category_uuids,
+                          })}
+                        >
+                          <HugeiconsIcon icon={ViewIcon} strokeWidth={1.8} className="size-4" />
+                        </Button>
+                        <Button
+                          size="icon-sm"
+                          variant="outline"
+                          className="rounded-xl"
+                          onClick={() => record && handleEdit({
+                            uuid: record.uuid,
+                            first_name: record.first_name,
+                            last_name: record.last_name,
+                            email: record.email,
+                            phone: record.phone,
+                            password: "",
+                            license_number: record.license_number,
+                            category_uuids: record.category_uuids,
+                          })}
+                        >
+                          <HugeiconsIcon icon={Edit02Icon} strokeWidth={1.8} className="size-4" />
+                        </Button>
+                        <Button
+                          size="icon-sm"
+                          variant="destructive"
+                          className="rounded-xl"
+                          onClick={() => record && handleDelete({
+                            uuid: record.uuid,
+                            first_name: record.first_name,
+                            last_name: record.last_name,
+                            email: record.email,
+                            phone: record.phone,
+                            password: "",
+                            license_number: record.license_number,
+                            category_uuids: record.category_uuids,
+                          })}
+                        >
+                          <HugeiconsIcon icon={Delete02Icon} strokeWidth={1.8} className="size-4" />
+                        </Button>
+                        {record ? (
+                          <DoctorScheduleManager doctor={record} />
+                        ) : null}
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                )
+              })
+            )}
+          </TableBody>
+        </Table>
       </div>
 
       <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
@@ -452,7 +629,7 @@ export default function DoctorsPage() {
               </p>
               <div className="grid gap-2 sm:grid-cols-2">
                 {illnessCategories.map((category) => {
-                  const selected = form.category_uuids.includes(category.uuid);
+                  const selected = form.category_uuids.includes(category.uuid)
                   return (
                     <button
                       key={category.uuid}
@@ -476,7 +653,7 @@ export default function DoctorsPage() {
                     >
                       {category.name}
                     </button>
-                  );
+                  )
                 })}
               </div>
             </div>
@@ -497,6 +674,156 @@ export default function DoctorsPage() {
           </SheetFooter>
         </SheetContent>
       </Sheet>
+
+      <Sheet open={viewEditMode !== null} onOpenChange={(open) => !open && closeViewEditSheet()}>
+        <SheetContent side="right" className="w-full sm:max-w-xl">
+          <SheetHeader className="border-b border-sidebar-border">
+            <SheetTitle>
+              {viewEditMode === "view" ? "Doctor Details" : "Edit Doctor"}
+            </SheetTitle>
+            <SheetDescription>
+              {viewEditMode === "view"
+                ? "Review doctor profile information."
+                : "Update doctor account details."}
+            </SheetDescription>
+          </SheetHeader>
+
+          <div className="flex-1 space-y-5 overflow-y-auto p-6">
+            <div className="space-y-2">
+              <Label htmlFor="view-uuid">ID</Label>
+              <Input id="view-uuid" value={editForm.license_number ? editForm.license_number : ""} disabled />
+            </div>
+
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-2">
+                <Label htmlFor="edit-first_name">First Name</Label>
+                <Input
+                  id="edit-first_name"
+                  value={editForm.first_name}
+                  disabled={viewEditMode === "view"}
+                  onChange={(event) =>
+                    handleEditDoctorFieldChange("first_name", event.target.value)
+                  }
+                />
+                {editErrors.first_name && (
+                  <p className="text-sm text-red-500">{editErrors.first_name}</p>
+                )}
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="edit-last_name">Last Name</Label>
+                <Input
+                  id="edit-last_name"
+                  value={editForm.last_name}
+                  disabled={viewEditMode === "view"}
+                  onChange={(event) =>
+                    handleEditDoctorFieldChange("last_name", event.target.value)
+                  }
+                />
+                {editErrors.last_name && (
+                  <p className="text-sm text-red-500">{editErrors.last_name}</p>
+                )}
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="edit-email">Email</Label>
+              <Input
+                id="edit-email"
+                type="email"
+                value={editForm.email}
+                disabled={viewEditMode === "view"}
+                onChange={(event) =>
+                  handleEditDoctorFieldChange("email", event.target.value)
+                }
+              />
+              {editErrors.email && (
+                <p className="text-sm text-red-500">{editErrors.email}</p>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="edit-phone">Phone</Label>
+              <Input
+                id="edit-phone"
+                value={editForm.phone}
+                disabled={viewEditMode === "view"}
+                onChange={(event) =>
+                  handleEditDoctorFieldChange("phone", event.target.value)
+                }
+              />
+              {editErrors.phone && (
+                <p className="text-sm text-red-500">{editErrors.phone}</p>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="edit-license_number">License Number</Label>
+              <Input
+                id="edit-license_number"
+                value={editForm.license_number}
+                disabled={viewEditMode === "view"}
+                onChange={(event) =>
+                  handleEditDoctorFieldChange("license_number", event.target.value)
+                }
+              />
+              {editErrors.license_number && (
+                <p className="text-sm text-red-500">{editErrors.license_number}</p>
+              )}
+            </div>
+          </div>
+
+          <SheetFooter className="border-t border-sidebar-border flex flex-row justify-between">
+            <Button variant="outline" onClick={closeViewEditSheet}>
+              Close
+            </Button>
+            {viewEditMode === "edit" && (
+              <Button onClick={handleSaveEdit} disabled={editSubmitting}>
+                {editSubmitting ? "Saving..." : "Save Changes"}
+              </Button>
+            )}
+          </SheetFooter>
+        </SheetContent>
+      </Sheet>
+
+      <Sheet
+        open={deleteTarget !== null}
+        onOpenChange={(open) => !open && closeDeletePopup()}
+      >
+        <SheetContent side="bottom" className="mx-auto my-auto w-full rounded-t-4xl sm:max-w-xl">
+          <SheetHeader className="border-b border-sidebar-border">
+            <SheetTitle>Delete Doctor</SheetTitle>
+            <SheetDescription>
+              This action cannot be undone. The doctor account will be permanently removed.
+            </SheetDescription>
+          </SheetHeader>
+          <div className="space-y-4 p-6">
+            <div className="rounded-3xl border border-rose-200 bg-rose-50/70 p-4 text-sm text-rose-700 dark:border-rose-500/20 dark:bg-rose-500/10 dark:text-rose-300">
+              {deleteTarget ? (
+                <p>
+                  You are about to delete{" "}
+                  <span className="font-semibold">
+                    {deleteTarget.first_name} {deleteTarget.last_name}
+                  </span>{" "}
+                  with license number{" "}
+                  <span className="font-mono">{deleteTarget.license_number}</span>.
+                </p>
+              ) : null}
+            </div>
+            <p className="text-sm text-muted-foreground">
+              You can close this popup if you want to keep the record.
+            </p>
+          </div>
+          <SheetFooter className="border-t border-sidebar-border">
+            <Button variant="outline" onClick={closeDeletePopup}>
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={confirmDelete}>
+              <HugeiconsIcon icon={Delete02Icon} strokeWidth={1.8} />
+              Delete
+            </Button>
+          </SheetFooter>
+        </SheetContent>
+      </Sheet>
     </div>
-  );
+  )
 }

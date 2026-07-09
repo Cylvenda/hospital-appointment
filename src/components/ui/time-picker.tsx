@@ -13,9 +13,11 @@ interface TimePickerProps {
   placeholder?: string
   className?: string
   disabled?: boolean
+  format?: "12h" | "24h"
 }
 
-const HOURS = Array.from({ length: 12 }, (_, i) => String(i + 1).padStart(2, "0"))
+const HOURS_12 = Array.from({ length: 12 }, (_, i) => String(i + 1).padStart(2, "0"))
+const HOURS_24 = Array.from({ length: 24 }, (_, i) => String(i).padStart(2, "0"))
 const MINUTES = Array.from({ length: 12 }, (_, i) => String(i * 5).padStart(2, "0"))
 const PERIODS = ["AM", "PM"]
 
@@ -24,29 +26,37 @@ export function TimePicker({
   onChange,
   placeholder = "Select time",
   className,
-  disabled
+  disabled,
+  format = "12h"
 }: TimePickerProps) {
   const [isOpen, setIsOpen] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
+  const is24h = format === "24h"
 
-  // Parse 24h value to 12h pieces
+  // Parse 24h value to display pieces
   const parse24h = (val?: string) => {
-    if (!val) return { hour: "09", minute: "00", period: "AM" }
+    if (!val) return { hour: "09", minute: "00", period: "AM" as const }
     const [hStr, mStr] = val.split(":")
-    let h = parseInt(hStr || "9")
+    const h = parseInt(hStr || "9")
     const m = mStr || "00"
     const period = h >= 12 ? "PM" : "AM"
-    if (h > 12) h -= 12
-    if (h === 0) h = 12
-    
-    // Find closest 5-minute interval for initial selection
-    const mInt = parseInt(m)
-    const closestM = String(Math.round(mInt / 5) * 5 % 60).padStart(2, "0")
+
+    if (is24h) {
+      return {
+        hour: String(h).padStart(2, "0"),
+        minute: String(Math.round(parseInt(m) / 5) * 5 % 60).padStart(2, "0"),
+        period: "AM" as const
+      }
+    }
+
+    let hour12 = h
+    if (hour12 > 12) hour12 -= 12
+    if (hour12 === 0) hour12 = 12
 
     return {
-      hour: String(h).padStart(2, "0"),
-      minute: closestM,
-      period
+      hour: String(hour12).padStart(2, "0"),
+      minute: String(Math.round(parseInt(m) / 5) * 5 % 60).padStart(2, "0"),
+      period: period as "AM" | "PM"
     }
   }
 
@@ -68,12 +78,16 @@ export function TimePicker({
   }, [])
 
   // Calculate 24h format on change
-  const handleTimeChange = (h: string, m: string, p: string) => {
+  const handleTimeChange = (h: string, m: string, p?: string) => {
+    if (is24h) {
+      onChange?.(`${h}:${m}`)
+      return
+    }
+
     let hour24 = parseInt(h)
     if (p === "PM" && hour24 < 12) hour24 += 12
     if (p === "AM" && hour24 === 12) hour24 = 0
-    const formatted = `${String(hour24).padStart(2, "0")}:${m}`
-    onChange?.(formatted)
+    onChange?.(`${String(hour24).padStart(2, "0")}:${m}`)
   }
 
   const selectHour = (h: string) => {
@@ -81,17 +95,23 @@ export function TimePicker({
   }
 
   const selectMinute = (m: string) => {
-    handleTimeChange(selectedHour, m, selectedPeriod)
+    if (is24h) {
+      handleTimeChange(selectedHour, m)
+    } else {
+      handleTimeChange(selectedHour, m, selectedPeriod)
+    }
   }
 
   const selectPeriod = (p: string) => {
-    handleTimeChange(selectedHour, selectedMinute, p)
+    if (!is24h) {
+      handleTimeChange(selectedHour, selectedMinute, p)
+    }
   }
 
   const getDisplayValue = () => {
     if (!value) return ""
-    const { hour, minute, period } = parse24h(value)
-    return `${hour}:${minute} ${period}`
+    const { hour, minute } = parse24h(value)
+    return is24h ? `${hour}:${minute}` : `${hour}:${minute} ${selectedPeriod}`
   }
 
   return (
@@ -118,7 +138,7 @@ export function TimePicker({
             <div className="flex flex-col gap-1 items-center">
               <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-1">Hour</span>
               <div className="h-40 overflow-y-auto w-16 scrollbar-none rounded-lg border border-border bg-muted/20 p-1 flex flex-col gap-0.5">
-                {HOURS.map(h => (
+                {(is24h ? HOURS_24 : HOURS_12).map(h => (
                   <button
                     key={h}
                     type="button"
@@ -158,27 +178,29 @@ export function TimePicker({
               </div>
             </div>
 
-            {/* Period Column (AM/PM) */}
-            <div className="flex flex-col gap-1 items-center">
-              <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-1">AM/PM</span>
-              <div className="h-40 w-16 rounded-lg border border-border bg-muted/20 p-1 flex flex-col gap-1 justify-center">
-                {PERIODS.map(p => (
-                  <button
-                    key={p}
-                    type="button"
-                    onClick={() => selectPeriod(p)}
-                    className={cn(
-                      "py-2 text-xs rounded font-bold transition-all text-center",
-                      selectedPeriod === p
-                        ? "bg-emerald-600 text-white font-bold shadow-sm"
-                        : "hover:bg-emerald-500/10 text-foreground"
-                    )}
-                  >
-                    {p}
-                  </button>
-                ))}
+            {/* Period Column (AM/PM) - only for 12h format */}
+            {!is24h && (
+              <div className="flex flex-col gap-1 items-center">
+                <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-1">AM/PM</span>
+                <div className="h-40 w-16 rounded-lg border border-border bg-muted/20 p-1 flex flex-col gap-1 justify-center">
+                  {PERIODS.map(p => (
+                    <button
+                      key={p}
+                      type="button"
+                      onClick={() => selectPeriod(p)}
+                      className={cn(
+                        "py-2 text-xs rounded font-bold transition-all text-center",
+                        selectedPeriod === p
+                          ? "bg-emerald-600 text-white font-bold shadow-sm"
+                          : "hover:bg-emerald-500/10 text-foreground"
+                      )}
+                    >
+                      {p}
+                    </button>
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
           </div>
         </div>
       )}

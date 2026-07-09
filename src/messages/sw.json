@@ -784,6 +784,8 @@
     "adminEyebrow": "Uendeshaji wa hospitali",
     "receptionEyebrow": "Uendeshaji wa mapokezi",
     "adminTitle": "Dashibodi ya Mtiririko wa Miadi",
+    "adminWelcome": "Karibu, {{name}}",
+    "adminFallback": "Msimamizi",
     "welcomeReceptionist": "Karibu, {{name}}",
     "receptionistFallback": "Karani",
     "heroSummary": "Wagonjwa {{arrivals}} wanahitaji uangalizi wa kuwasili au foleni leo, na nafasi {{payments}} zinasubiri malipo.",

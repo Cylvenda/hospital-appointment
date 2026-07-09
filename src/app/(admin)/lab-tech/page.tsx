@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { useTranslation } from "@/lib/i18n"
+import { Label } from "@/components/ui/label"
 import {
   Sheet,
   SheetContent,
@@ -21,80 +21,70 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import {
-  FilterIcon,
   PlusSignIcon,
   Search01Icon,
   Mail01Icon,
   CallIcon,
-  UserIcon,
-  CheckmarkCircle02Icon,
-  Shield01Icon,
-  ViewIcon,
-  Edit02Icon,
   Delete02Icon,
+  Edit02Icon,
+  ViewIcon,
 } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
-import Link from "next/link"
 import { useAdminStore } from "@/store/admin/admin.store"
 import { toast } from "react-toastify"
+import Link from "next/link"
+import { useTranslation } from "@/lib/i18n"
 import { getBackendFieldErrors } from "@/lib/backend-errors"
-import { Label } from "@/components/ui/label"
+
+type UserRole = "user" | "receptionist" | "doctor" | "lab_tech"
 
 type FormErrors = {
   first_name?: string
   last_name?: string
   email?: string
   phone?: string
+  password?: string
 }
 
-const emptyUserForm = {
+const emptyForm = {
   uuid: "",
   first_name: "",
   last_name: "",
   email: "",
   phone: "",
-  role: "user",
+  role: "lab_tech",
   is_active: true,
 }
 
 type SheetMode = "view" | "edit" | null
 
-function roleClasses(role: string) {
-  if (role === "admin") {
-    return "bg-purple-50 text-purple-700 ring-1 ring-purple-100 dark:bg-purple-500/15 dark:text-purple-300 dark:ring-purple-500/20"
-  }
-  if (role === "doctor") {
-    return "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100 dark:bg-emerald-500/15 dark:text-emerald-300 dark:ring-emerald-500/20"
-  }
-  if (role === "receptionist") {
-    return "bg-blue-50 text-blue-700 ring-1 ring-blue-100 dark:bg-blue-500/15 dark:text-blue-300 dark:ring-blue-500/20"
-  }
+function statusClasses(role: string) {
   if (role === "lab_tech") {
     return "bg-amber-50 text-amber-700 ring-1 ring-amber-100 dark:bg-amber-500/15 dark:text-amber-300 dark:ring-amber-500/20"
   }
   return "bg-muted text-muted-foreground ring-1 ring-border"
 }
 
-export default function UsersPage() {
+export default function LabTechPage() {
   const { t } = useTranslation()
   const { users: userDirectory, fetchUsers, updateUser, deleteUser } = useAdminStore()
   const [search, setSearch] = useState("")
   const [sheetMode, setSheetMode] = useState<SheetMode>(null)
-  const [activeUser, setActiveUser] = useState<(typeof emptyUserForm) | null>(null)
-  const [form, setForm] = useState(emptyUserForm)
+  const [activeUser, setActiveUser] = useState<(typeof emptyForm) | null>(null)
+  const [form, setForm] = useState(emptyForm)
   const [errors, setErrors] = useState<FormErrors>({})
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [deleteTarget, setDeleteTarget] = useState<(typeof emptyUserForm) | null>(null)
+  const [deleteTarget, setDeleteTarget] = useState<(typeof emptyForm) | null>(null)
 
   useEffect(() => {
-    void fetchUsers()
+    void fetchUsers({ role: "lab_tech" })
   }, [fetchUsers])
 
-  const users = useMemo(
+  const labTechs = useMemo(
     () =>
       userDirectory
         .filter((user) =>
-          [user.full_name, user.first_name, user.last_name, user.email, user.phone, user.role, user.username]
+          [user.full_name, user.first_name, user.last_name, user.email, user.phone]
             .filter(Boolean)
             .join(" ")
             .toLowerCase()
@@ -104,38 +94,37 @@ export default function UsersPage() {
           uuid: user.uuid,
           first_name: user.first_name,
           last_name: user.last_name,
-          id: user.uuid.slice(0, 8).toUpperCase(),
           name: user.full_name || `${user.first_name} ${user.last_name}`,
           email: user.email,
           phone: user.phone,
           role: user.role,
           is_active: user.is_active,
           isActive: user.is_active,
+          id: user.uuid.slice(0, 8).toUpperCase(),
         })),
     [userDirectory, search]
   )
 
-  const handleView = (user: (typeof emptyUserForm)) => {
+  const handleView = (user: (typeof emptyForm)) => {
     setActiveUser(user)
     setForm({ ...user })
     setSheetMode("view")
   }
 
-  const handleEdit = (user: (typeof emptyUserForm)) => {
+  const handleEdit = (user: (typeof emptyForm)) => {
     setActiveUser(user)
     setForm({ ...user })
-    setErrors({})
     setSheetMode("edit")
   }
 
-  const handleDelete = (user: (typeof emptyUserForm)) => {
+  const handleDelete = (user: (typeof emptyForm)) => {
     setDeleteTarget(user)
   }
 
   function closeSheet() {
     setSheetMode(null)
     setActiveUser(null)
-    setForm(emptyUserForm)
+    setForm(emptyForm)
     setErrors({})
   }
 
@@ -148,36 +137,27 @@ export default function UsersPage() {
       return
     }
 
-    try {
-      await deleteUser(deleteTarget.uuid)
-      toast.success("User deleted successfully")
-      if (activeUser?.uuid === deleteTarget.uuid) {
-        closeSheet()
-      }
-      closeDeletePopup()
-    } catch {
-      toast.error("Failed to delete user")
-      closeDeletePopup()
+    await deleteUser(deleteTarget.uuid)
+    if (activeUser?.uuid === deleteTarget.uuid) {
+      closeSheet()
     }
+    closeDeletePopup()
+    toast.success("Lab technician deleted successfully")
   }
 
-  async function handleSaveEdit() {
-    if (!activeUser) {
-      return
-    }
-
+  async function handleSave() {
     setIsSubmitting(true)
     setErrors({})
 
     try {
-      await updateUser(activeUser.uuid, {
+      await updateUser(form.uuid, {
         first_name: form.first_name,
         last_name: form.last_name,
         email: form.email,
         phone: form.phone,
         is_active: form.is_active,
       })
-      toast.success("User updated successfully")
+      toast.success("Lab technician updated successfully")
       closeSheet()
     } catch (error: unknown) {
       const backendErrors = getBackendFieldErrors(error, [
@@ -189,7 +169,7 @@ export default function UsersPage() {
       if (Object.keys(backendErrors).length > 0) {
         setErrors(backendErrors)
       } else {
-        toast.error("Failed to update user")
+        toast.error("Failed to update lab technician")
       }
     } finally {
       setIsSubmitting(false)
@@ -200,9 +180,9 @@ export default function UsersPage() {
     <div className="w-full space-y-6 p-4 md:p-6">
       <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-center">
         <div className="space-y-1">
-          <h1 className="font-heading text-2xl font-semibold">{t("adminUsers.users")}</h1>
+          <h1 className="font-heading text-2xl font-semibold">Lab Technicians</h1>
           <p className="text-sm text-muted-foreground">
-            {t("adminUsers.usersDesc")}
+            Manage laboratory staff accounts and access.
           </p>
         </div>
 
@@ -217,17 +197,13 @@ export default function UsersPage() {
               value={search}
               onChange={(event) => setSearch(event.target.value)}
               className="h-11 rounded-2xl border-2 border-sidebar-border pl-11"
-              placeholder={t("adminUsers.searchUsersOrRoles")}
+              placeholder="Search lab techs..."
             />
           </div>
-          <Button variant="outline" size="lg" className="rounded-md">
-            <HugeiconsIcon icon={FilterIcon} strokeWidth={1.8} />
-            {t("adminUsers.filter")}
-          </Button>
           <Button size="lg" className="rounded-md" asChild>
-            <Link href="/users/create">
+            <Link href="/lab-tech/add">
               <HugeiconsIcon icon={PlusSignIcon} strokeWidth={1.8} />
-              {t("adminUsers.addUser")}
+              Add Lab Tech
             </Link>
           </Button>
         </div>
@@ -235,19 +211,19 @@ export default function UsersPage() {
 
       <div className="grid gap-4 md:grid-cols-3">
         <div className="rounded-4xl border border-sidebar-border bg-card p-5 shadow-sm">
-          <p className="text-sm text-muted-foreground">{t("adminUsers.totalUsers")}</p>
-          <p className="mt-2 text-3xl font-semibold">{users.length}</p>
+          <p className="text-sm text-muted-foreground">Total Lab Techs</p>
+          <p className="mt-2 text-3xl font-semibold">{labTechs.length}</p>
         </div>
         <div className="rounded-4xl border border-sidebar-border bg-card p-5 shadow-sm">
-          <p className="text-sm text-muted-foreground">{t("adminUsers.activeUsers")}</p>
+          <p className="text-sm text-muted-foreground">Active Accounts</p>
           <p className="mt-2 text-3xl font-semibold">
-            {users.filter((user) => user.isActive).length}
+            {labTechs.filter((tech) => tech.isActive).length}
           </p>
         </div>
         <div className="rounded-4xl border border-sidebar-border bg-card p-5 shadow-sm">
-          <p className="text-sm text-muted-foreground">{t("adminUsers.inactiveUsers")}</p>
+          <p className="text-sm text-muted-foreground">Inactive Accounts</p>
           <p className="mt-2 text-3xl font-semibold">
-            {users.filter((user) => !user.isActive).length}
+            {labTechs.filter((tech) => !tech.isActive).length}
           </p>
         </div>
       </div>
@@ -266,55 +242,44 @@ export default function UsersPage() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {users.length === 0 ? (
+            {labTechs.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={7} className="h-24 text-center">
-                  No users found.
+                  No lab technicians found.
                 </TableCell>
               </TableRow>
             ) : (
-              users.map((user, index) => (
-                <TableRow key={user.uuid}>
+              labTechs.map((tech, index) => (
+                <TableRow key={tech.uuid}>
                   <TableCell className="font-mono text-xs text-muted-foreground">
                     {index + 1}
                   </TableCell>
-                  <TableCell className="font-medium">{user.name}</TableCell>
+                  <TableCell className="font-medium">{tech.name}</TableCell>
                   <TableCell>
                     <div className="flex items-center gap-2 text-muted-foreground">
                       <HugeiconsIcon icon={Mail01Icon} strokeWidth={1.8} className="size-4" />
-                      {user.email || t("adminUsers.noEmail")}
+                      {tech.email}
                     </div>
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-2 text-muted-foreground">
                       <HugeiconsIcon icon={CallIcon} strokeWidth={1.8} className="size-4" />
-                      {user.phone || t("adminUsers.noPhone")}
+                      {tech.phone}
                     </div>
                   </TableCell>
                   <TableCell>
-                    <span className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-medium capitalize ${roleClasses(user.role)}`}>
-                      <HugeiconsIcon icon={UserIcon} strokeWidth={1.8} className="size-3.5" />
-                      {user.role}
+                    <span className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-medium capitalize ${statusClasses(tech.role)}`}>
+                      {tech.role.replace("_", " ")}
                     </span>
                   </TableCell>
                   <TableCell>
-                    {user.isActive ? (
-                      <span className="inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700 ring-1 ring-emerald-100 dark:bg-emerald-500/15 dark:text-emerald-300 dark:ring-emerald-500/20">
-                        <HugeiconsIcon
-                          icon={CheckmarkCircle02Icon}
-                          strokeWidth={1.8}
-                          className="size-3.5"
-                        />
+                    {tech.isActive ? (
+                      <span className="inline-flex items-center rounded-full bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700 ring-1 ring-emerald-100 dark:bg-emerald-500/15 dark:text-emerald-300 dark:ring-emerald-500/20">
                         Active
                       </span>
                     ) : (
-                      <span className="inline-flex items-center gap-2 rounded-full bg-rose-50 px-3 py-1 text-xs font-medium text-rose-700 ring-1 ring-rose-100 dark:bg-rose-500/15 dark:text-rose-300 dark:ring-rose-500/20">
-                        <HugeiconsIcon
-                          icon={Shield01Icon}
-                          strokeWidth={1.8}
-                          className="size-3.5"
-                        />
-                        {t("adminUsers.inactive")}
+                      <span className="inline-flex items-center rounded-full bg-rose-50 px-3 py-1 text-xs font-medium text-rose-700 ring-1 ring-rose-100 dark:bg-rose-500/15 dark:text-rose-300 dark:ring-rose-500/20">
+                        Inactive
                       </span>
                     )}
                   </TableCell>
@@ -324,7 +289,7 @@ export default function UsersPage() {
                         size="icon-sm"
                         variant="outline"
                         className="rounded-xl"
-                        onClick={() => handleView(user)}
+                        onClick={() => handleView(tech)}
                       >
                         <HugeiconsIcon icon={ViewIcon} strokeWidth={1.8} className="size-4" />
                       </Button>
@@ -332,7 +297,7 @@ export default function UsersPage() {
                         size="icon-sm"
                         variant="outline"
                         className="rounded-xl"
-                        onClick={() => handleEdit(user)}
+                        onClick={() => handleEdit(tech)}
                       >
                         <HugeiconsIcon icon={Edit02Icon} strokeWidth={1.8} className="size-4" />
                       </Button>
@@ -340,7 +305,7 @@ export default function UsersPage() {
                         size="icon-sm"
                         variant="destructive"
                         className="rounded-xl"
-                        onClick={() => handleDelete(user)}
+                        onClick={() => handleDelete(tech)}
                       >
                         <HugeiconsIcon icon={Delete02Icon} strokeWidth={1.8} className="size-4" />
                       </Button>
@@ -357,12 +322,12 @@ export default function UsersPage() {
         <SheetContent side="right" className="w-full sm:max-w-xl">
           <SheetHeader className="border-b border-sidebar-border">
             <SheetTitle>
-              {sheetMode === "view" ? "User Details" : "Edit User"}
+              {sheetMode === "view" ? "Lab Technician Details" : "Edit Lab Technician"}
             </SheetTitle>
             <SheetDescription>
               {sheetMode === "view"
-                ? "Review user profile information."
-                : "Update user account details."}
+                ? "Review lab technician profile information."
+                : "Update lab technician account details."}
             </SheetDescription>
           </SheetHeader>
 
@@ -440,7 +405,7 @@ export default function UsersPage() {
               Close
             </Button>
             {sheetMode === "edit" && (
-              <Button onClick={handleSaveEdit} disabled={isSubmitting}>
+              <Button onClick={handleSave} disabled={isSubmitting}>
                 {isSubmitting ? "Saving..." : "Save Changes"}
               </Button>
             )}
@@ -454,9 +419,9 @@ export default function UsersPage() {
       >
         <SheetContent side="bottom" className="mx-auto my-auto w-full rounded-t-4xl sm:max-w-xl">
           <SheetHeader className="border-b border-sidebar-border">
-            <SheetTitle>Delete User</SheetTitle>
+            <SheetTitle>Delete Lab Technician</SheetTitle>
             <SheetDescription>
-              This action cannot be undone. The user account will be permanently removed.
+              This action cannot be undone. The lab technician account will be permanently removed.
             </SheetDescription>
           </SheetHeader>
           <div className="space-y-4 p-6">

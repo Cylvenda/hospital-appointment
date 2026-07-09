@@ -200,13 +200,27 @@ export default function PatientsPage() {
 
   const handleView = React.useCallback((patient: User) => {
     setActivePatient(patient)
-    setFormPatient({ ...patient })
+    setFormPatient({
+      ...patient,
+      first_name: patient.first_name ?? "",
+      last_name: patient.last_name ?? "",
+      email: patient.email ?? "",
+      phone: patient.phone ?? "",
+      username: patient.username ?? "",
+    })
     setSheetMode("view")
   }, [])
 
   const handleEdit = React.useCallback((patient: User) => {
     setActivePatient(patient)
-    setFormPatient({ ...patient })
+    setFormPatient({
+      ...patient,
+      first_name: patient.first_name ?? "",
+      last_name: patient.last_name ?? "",
+      email: patient.email ?? "",
+      phone: patient.phone ?? "",
+      username: patient.username ?? "",
+    })
     setSheetMode("edit")
   }, [])
 

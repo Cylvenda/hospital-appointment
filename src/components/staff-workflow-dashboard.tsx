@@ -31,6 +31,36 @@ function localDateKey(date = new Date()) {
   return `${year}-${month}-${day}`
 }
 
+function toDateKey(value: string | null | undefined): string | null {
+  if (!value || typeof value !== "string") {
+    return null
+  }
+
+  const trimmed = value.trim()
+  if (!trimmed) {
+    return null
+  }
+
+  const [year, month, day] = trimmed.split("-")
+  if (!year || !month || !day) {
+    return null
+  }
+
+  const numericYear = Number(year)
+  const numericMonth = Number(month)
+  const numericDay = Number(day)
+
+  if (
+    !Number.isInteger(numericYear) ||
+    !Number.isInteger(numericMonth) ||
+    !Number.isInteger(numericDay)
+  ) {
+    return null
+  }
+
+  return `${numericYear}-${String(numericMonth).padStart(2, "0")}-${String(numericDay).padStart(2, "0")}`
+}
+
 export function StaffWorkflowDashboard({ role }: { role: StaffRole }) {
   const { t } = useTranslation()
   const router = useRouter()
@@ -65,7 +95,7 @@ export function StaffWorkflowDashboard({ role }: { role: StaffRole }) {
         appointment.paymentStatus !== "completed"
     )
     const todayAppointments = appointments.filter(
-      (appointment) => appointment.date === today
+      (appointment) => toDateKey(appointment.date) === today
     )
     const arrivals = todayAppointments.filter(
       (appointment) => appointment.status === "confirmed"
@@ -157,7 +187,9 @@ export function StaffWorkflowDashboard({ role }: { role: StaffRole }) {
               </p>
               <h1 className="text-3xl font-black tracking-tight md:text-4xl">
                 {role === "admin"
-                  ? t("workflowDashboard.adminTitle")
+                  ? t("workflowDashboard.adminWelcome", {
+                      name: user?.first_name || t("workflowDashboard.adminFallback"),
+                    })
                   : t("workflowDashboard.welcomeReceptionist", {
                       name: user?.first_name || t("workflowDashboard.receptionistFallback"),
                     })}
