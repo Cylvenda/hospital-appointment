@@ -40,6 +40,7 @@ import { PasswordInput } from "@/components/password-input"
 import { Label } from "@/components/ui/label"
 import { DoctorScheduleManager } from "@/components/doctor-schedule-manager"
 import { cn } from "@/lib/utils"
+import { Switch } from "@/components/ui/switch"
 import { getBackendFieldErrors } from "@/lib/backend-errors"
 
 type FormErrors = {
@@ -60,6 +61,7 @@ const emptyDoctorForm = {
   password: "",
   license_number: "",
   category_uuids: [] as string[],
+  is_available: true,
 }
 
 type ViewEditMode = "view" | "edit" | null
@@ -111,7 +113,7 @@ export default function DoctorsPage() {
 
   const handleEditDoctorFieldChange = (
     field: keyof typeof emptyDoctorForm,
-    value: string | string[],
+    value: string | string[] | boolean,
   ) => {
     setEditForm((prev) => ({ ...prev, [field]: value }))
     if (field !== "category_uuids" && editErrors[field as keyof FormErrors]) {
@@ -203,13 +205,14 @@ export default function DoctorsPage() {
     setActiveDoctor(doctor)
     setEditForm({
       uuid: doctor.uuid,
-      first_name: doctor.first_name,
-      last_name: doctor.last_name,
-      email: doctor.email,
-      phone: doctor.phone,
+      first_name: doctor.first_name || "",
+      last_name: doctor.last_name || "",
+      email: doctor.email || "",
+      phone: doctor.phone || "",
       password: "",
       license_number: doctor.license_number,
       category_uuids: doctor.category_uuids,
+      is_available: doctor.is_available,
     })
     setViewEditMode("view")
   }
@@ -218,13 +221,14 @@ export default function DoctorsPage() {
     setActiveDoctor(doctor)
     setEditForm({
       uuid: doctor.uuid,
-      first_name: doctor.first_name,
-      last_name: doctor.last_name,
-      email: doctor.email,
-      phone: doctor.phone,
+      first_name: doctor.first_name || "",
+      last_name: doctor.last_name || "",
+      email: doctor.email || "",
+      phone: doctor.phone || "",
       password: "",
       license_number: doctor.license_number,
       category_uuids: doctor.category_uuids,
+      is_available: doctor.is_available,
     })
     setEditErrors({})
     setViewEditMode("edit")
@@ -237,7 +241,17 @@ export default function DoctorsPage() {
   function closeViewEditSheet() {
     setViewEditMode(null)
     setActiveDoctor(null)
-    setEditForm(emptyDoctorForm)
+    setEditForm({
+      uuid: "",
+      first_name: "",
+      last_name: "",
+      email: "",
+      phone: "",
+      password: "",
+      license_number: "",
+      category_uuids: [],
+      is_available: true,
+    })
     setEditErrors({})
   }
 
@@ -279,6 +293,7 @@ export default function DoctorsPage() {
         phone: editForm.phone.trim(),
         license_number: editForm.license_number.trim(),
         category_uuids: editForm.category_uuids,
+        is_available: editForm.is_available,
       })
       toast.success("Doctor updated successfully")
       closeViewEditSheet()
@@ -450,6 +465,7 @@ export default function DoctorsPage() {
                             password: "",
                             license_number: record.license_number,
                             category_uuids: record.category_uuids,
+                            is_available: record.is_available,
                           })}
                         >
                           <HugeiconsIcon icon={ViewIcon} strokeWidth={1.8} className="size-4" />
@@ -467,6 +483,7 @@ export default function DoctorsPage() {
                             password: "",
                             license_number: record.license_number,
                             category_uuids: record.category_uuids,
+                            is_available: record.is_available,
                           })}
                         >
                           <HugeiconsIcon icon={Edit02Icon} strokeWidth={1.8} className="size-4" />
@@ -484,6 +501,7 @@ export default function DoctorsPage() {
                             password: "",
                             license_number: record.license_number,
                             category_uuids: record.category_uuids,
+                            is_available: record.is_available,
                           })}
                         >
                           <HugeiconsIcon icon={Delete02Icon} strokeWidth={1.8} className="size-4" />
@@ -770,6 +788,61 @@ export default function DoctorsPage() {
                 <p className="text-sm text-red-500">{editErrors.license_number}</p>
               )}
             </div>
+
+            {viewEditMode === "edit" && (
+              <div className="space-y-2">
+                <Label>Departments</Label>
+                <p className="text-xs text-muted-foreground">
+                  Select every department where this doctor can work.
+                </p>
+                <div className="grid gap-2 sm:grid-cols-2">
+                  {illnessCategories.map((category) => {
+                    const selected = editForm.category_uuids.includes(category.uuid)
+                    return (
+                      <button
+                        key={category.uuid}
+                        type="button"
+                        onClick={() =>
+                          handleEditDoctorFieldChange(
+                            "category_uuids",
+                            selected
+                              ? editForm.category_uuids.filter(
+                                  (uuid) => uuid !== category.uuid,
+                                )
+                              : [...editForm.category_uuids, category.uuid],
+                          )
+                        }
+                        className={cn(
+                          "rounded-xl border p-3 text-left text-sm",
+                          selected
+                            ? "border-primary bg-primary/10 text-primary"
+                            : "border-border",
+                        )}
+                      >
+                        {category.name}
+                      </button>
+                    )
+                  })}
+                </div>
+              </div>
+            )}
+
+            {viewEditMode === "edit" && (
+              <div className="flex items-center justify-between rounded-3xl border border-sidebar-border bg-muted/20 p-4">
+                <div>
+                  <p className="text-sm font-medium">Availability</p>
+                  <p className="text-xs text-muted-foreground">
+                    {editForm.is_available ? "Available" : "Unavailable"}
+                  </p>
+                </div>
+                <Switch
+                  checked={editForm.is_available}
+                  onCheckedChange={(checked) =>
+                    handleEditDoctorFieldChange("is_available", checked)
+                  }
+                />
+              </div>
+            )}
           </div>
 
           <SheetFooter className="border-t border-sidebar-border flex flex-row justify-between">

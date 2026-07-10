@@ -14,6 +14,7 @@ import {
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { DatePicker } from "@/components/ui/date-picker"
 import { useAppointmentStore } from "@/store/appointments/appointment.store"
 import { useAuthUserStore } from "@/store/auth/userAuth.store"
 import type { AppointmentStatus } from "@/store/appointments/appointment.types"
@@ -21,7 +22,7 @@ import { getAppointmentStatusMeta } from "@/lib/appointment-workflow"
 import { useTranslation } from "@/lib/i18n"
 import { cn } from "@/lib/utils"
 
-type AnalyticsRole = "admin" | "receptionist" | "doctor"
+type AnalyticsRole = "admin" | "receptionist" | "doctor" | "lab_tech"
 
 const STATUS_ORDER: AppointmentStatus[] = [
   "pending",
@@ -59,6 +60,12 @@ const ROLE_COPY: Record<
     description:
       "Review your assigned consultations and export your personal clinical activity report.",
   },
+  lab_tech: {
+    eyebrow: "Laboratory performance",
+    title: "My Analytics & Reports",
+    description:
+      "Review your verified test results and export your personal laboratory activity report.",
+  },
 }
 
 function localDateKey(date = new Date()) {
@@ -66,6 +73,13 @@ function localDateKey(date = new Date()) {
   const month = String(date.getMonth() + 1).padStart(2, "0")
   const day = String(date.getDate()).padStart(2, "0")
   return `${year}-${month}-${day}`
+}
+
+function isWithinRange(appointmentDate: string, startDate?: string, endDate?: string) {
+  if (!startDate && !endDate) return true
+  if (startDate && appointmentDate < startDate) return false
+  if (endDate && appointmentDate > endDate) return false
+  return true
 }
 
 export function AnalyticsReportPage({ role }: { role: AnalyticsRole }) {
@@ -78,7 +92,10 @@ export function AnalyticsReportPage({ role }: { role: AnalyticsRole }) {
   } = useAppointmentStore()
   const exportMyReport = useAuthUserStore((state) => state.exportMyReport)
   const reportLoading = useAuthUserStore((state) => state.loading)
+  const reportError = useAuthUserStore((state) => state.error)
   const [exporting, setExporting] = useState<"pdf" | "docx" | null>(null)
+  const [startDate, setStartDate] = useState("")
+  const [endDate, setEndDate] = useState("")
 
   useEffect(() => {
     if (!initialized) {
@@ -86,37 +103,48 @@ export function AnalyticsReportPage({ role }: { role: AnalyticsRole }) {
     }
   }, [initialize, initialized])
 
+  const filteredAppointments = useMemo(() => {
+    return appointments.filter((appointment) => isWithinRange(appointment.date, startDate || undefined, endDate || undefined))
+  }, [appointments, startDate, endDate])
+
   const metrics = useMemo(() => {
-    const total = appointments.length
-    const completed = appointments.filter(
+    const total = filteredAppointments.length
+    const completed = filteredAppointments.filter(
       (appointment) => appointment.status === "completed"
     ).length
-    const cancelled = appointments.filter((appointment) =>
+    const cancelled = filteredAppointments.filter((appointment) =>
       ["cancelled", "no_show", "rescheduled"].includes(appointment.status)
     ).length
-    const today = appointments.filter(
+    const today = filteredAppointments.filter(
       (appointment) => appointment.date === localDateKey()
     ).length
     const completionRate = total ? Math.round((completed / total) * 100) : 0
     return { total, completed, cancelled, today, completionRate }
-  }, [appointments])
+  }, [filteredAppointments])
 
   const statusRows = useMemo(
     () =>
       STATUS_ORDER.map((status) => ({
         status,
-        count: appointments.filter(
+        count: filteredAppointments.filter(
           (appointment) => appointment.status === status
         ).length,
-        meta: getAppointmentStatusMeta(status, null, role),
+        meta: getAppointmentStatusMeta(status, null, role as Parameters<typeof getAppointmentStatusMeta>[2]),
       })).filter((row) => row.count > 0),
-    [appointments, role]
+    [filteredAppointments, role]
   )
+
+  const canExport = statusRows.length > 0 && !exporting && !reportLoading
+
+  const handleClearFilters = () => {
+    setStartDate("")
+    setEndDate("")
+  }
 
   const exportReport = async (format: "pdf" | "docx") => {
     setExporting(format)
     try {
-      await exportMyReport(format)
+      await exportMyReport(format, startDate || undefined, endDate || undefined)
       toast.success(
         t("analytics.reportDownloaded", { format: format.toUpperCase() })
       )
@@ -188,6 +216,52 @@ export function AnalyticsReportPage({ role }: { role: AnalyticsRole }) {
           </div>
         </div>
       </section>
+
+      <Card className="rounded-3xl">
+        <CardHeader>
+          <CardTitle className="text-base font-bold">
+            {t("common.filter")} {t("analytics.dateRange")}
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="flex flex-wrap items-end gap-4">
+          <div className="flex flex-col gap-1">
+            <label className="text-xs font-semibold text-muted-foreground">
+              {t("reports.startDate")}
+            </label>
+            <DatePicker
+              value={startDate}
+              onChange={(date) => {
+                setStartDate(date)
+                if (endDate && date > endDate) {
+                  setEndDate("")
+                }
+              }}
+              placeholder="Select start date"
+              className="h-10 w-48"
+            />
+          </div>
+          <div className="flex flex-col gap-1">
+            <label className="text-xs font-semibold text-muted-foreground">
+              {t("reports.endDate")}
+            </label>
+            <DatePicker
+              value={endDate}
+              onChange={setEndDate}
+              placeholder="Select end date"
+              className="h-10 w-48"
+              min={startDate}
+            />
+          </div>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleClearFilters}
+            disabled={!startDate && !endDate}
+          >
+            Clear
+          </Button>
+        </CardContent>
+      </Card>
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {cards.map((card) => {
@@ -273,10 +347,15 @@ export function AnalyticsReportPage({ role }: { role: AnalyticsRole }) {
             <div className="rounded-2xl border bg-muted/20 p-4 text-sm text-muted-foreground">
               {t("analytics.downloadHelp")}
             </div>
+            {reportError && (
+              <p className="text-sm text-rose-600 font-medium">
+                {reportError}
+              </p>
+            )}
             <Button
               className="h-12 w-full rounded-xl"
               onClick={() => void exportReport("pdf")}
-              disabled={reportLoading || exporting !== null}
+              disabled={!canExport}
             >
               <Download className="size-4" />
               {exporting === "pdf"
@@ -287,13 +366,18 @@ export function AnalyticsReportPage({ role }: { role: AnalyticsRole }) {
               variant="outline"
               className="h-12 w-full rounded-xl"
               onClick={() => void exportReport("docx")}
-              disabled={reportLoading || exporting !== null}
+              disabled={!canExport}
             >
               <Download className="size-4" />
               {exporting === "docx"
                 ? t("analytics.preparingDocx")
                 : t("analytics.downloadDocx")}
             </Button>
+            {startDate && endDate && (
+              <p className="text-xs text-muted-foreground text-center">
+                Filtered: {startDate} to {endDate}
+              </p>
+            )}
           </CardContent>
         </Card>
       </div>

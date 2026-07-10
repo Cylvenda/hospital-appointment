@@ -119,7 +119,7 @@ const navMain = [
     icon: <TestTube className="size-5 text-primary" />,
   },
   {
-    titleKey: "nav.illnessCategories",
+    titleKey: "nav.departments",
     sectionKey: "nav.management",
     url: "/illness-categories",
     icon: (

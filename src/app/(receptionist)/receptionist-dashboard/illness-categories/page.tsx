@@ -45,7 +45,7 @@ const emptyForm = {
   description: "",
 }
 
-export default function ReceptionistIllnessCategoriesPage() {
+export default function ReceptionistDepartmentsPage() {
   const {
     illnessCategories,
     fetchIllnessCategories,
@@ -80,10 +80,10 @@ export default function ReceptionistIllnessCategoriesPage() {
     (category) => Boolean(category.description?.trim())
   ).length
 
-  const formTitle = editingId ? "Update Category" : "New Category"
+  const formTitle = editingId ? "Update Department" : "New Department"
   const formDescription = editingId
-    ? "Modify the medical service details."
-    : "Create a new medical service category."
+    ? "Modify the department details."
+    : "Create a new department."
 
   const isFormValid = form.name.trim().length > 0
 
@@ -107,15 +107,15 @@ export default function ReceptionistIllnessCategoriesPage() {
 
       if (editingId) {
         await updateIllnessCategory(editingId, payload)
-        toast.success("Category updated successfully.")
+        toast.success("Department updated successfully.")
       } else {
         await createIllnessCategory(payload)
-        toast.success("New category added.")
+        toast.success("Department added.")
       }
 
       resetForm()
     } catch {
-      toast.error(editingId ? "Failed to update category." : "Failed to add category.")
+      toast.error(editingId ? "Failed to update department." : "Failed to add department.")
     } finally {
       setIsSaving(false)
     }
@@ -143,7 +143,7 @@ export default function ReceptionistIllnessCategoriesPage() {
 
     try {
       await deleteIllnessCategory(deleteTarget.uuid)
-      toast.success("Category deleted.")
+      toast.success("Department deleted.")
 
       if (editingId === deleteTarget.uuid) {
         resetForm()
@@ -151,7 +151,7 @@ export default function ReceptionistIllnessCategoriesPage() {
 
       setDeleteTarget(null)
     } catch {
-      toast.error("Failed to delete category.")
+      toast.error("Failed to delete department.")
     } finally {
       setIsDeleting(false)
     }
@@ -176,10 +176,10 @@ export default function ReceptionistIllnessCategoriesPage() {
         className="flex flex-col justify-between gap-6 lg:flex-row lg:items-end"
       >
         <div className="space-y-2">
-          <h1 className="text-4xl font-black tracking-tight">Care Categories</h1>
-          <p className="text-muted-foreground text-lg max-w-2xl">
-            Define and manage medical specialties used for triage and doctor matching.
-          </p>
+           <h1 className="text-4xl font-black tracking-tight">Departments</h1>
+           <p className="text-muted-foreground text-lg max-w-2xl">
+             Define and manage departments used for triage and doctor matching.
+           </p>
         </div>
 
         <div className="relative group sm:w-96">
@@ -243,7 +243,7 @@ export default function ReceptionistIllnessCategoriesPage() {
 
             <CardContent className="p-8 space-y-6">
               <div className="space-y-3">
-                <label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-1">Category Name</label>
+                 <label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-1">Department Name</label>
                 <Input
                   value={form.name}
                   onChange={(event) =>
@@ -262,7 +262,7 @@ export default function ReceptionistIllnessCategoriesPage() {
                     setForm((current) => ({ ...current, description: event.target.value }))
                   }
                   className="min-h-[150px] rounded-2xl border-2 bg-background focus:border-primary transition-all text-base font-medium p-6 resize-none"
-                  placeholder="Provide a brief overview of this medical specialty..."
+                   placeholder="Provide a brief overview of this department..."
                 />
               </div>
 
@@ -272,7 +272,7 @@ export default function ReceptionistIllnessCategoriesPage() {
                   disabled={!isFormValid || isSaving} 
                   className="h-14 rounded-2xl text-base font-black shadow-lg shadow-primary/20 transition-all hover:scale-[1.02] active:scale-95"
                 >
-                  {isSaving ? "Processing..." : editingId ? "Update Specialty" : "Register Specialty"}
+                   {isSaving ? "Processing..." : editingId ? "Update Department" : "Register Department"}
                 </Button>
                 {(editingId || form.name || form.description) && (
                   <Button
@@ -294,18 +294,18 @@ export default function ReceptionistIllnessCategoriesPage() {
           <Card className="rounded-[3rem] border-2 shadow-xl overflow-hidden min-h-[600px]">
             <CardHeader className="p-8 border-b">
               <CardTitle className="text-2xl font-black flex items-center gap-3">
-                <HugeiconsIcon icon={Medicine01Icon} className="w-8 h-8 text-primary" />
-                Specialty Directory
-              </CardTitle>
+                 <HugeiconsIcon icon={Medicine01Icon} className="w-8 h-8 text-primary" />
+                 Department Directory
+               </CardTitle>
             </CardHeader>
 
             <CardContent className="p-0">
               <Table>
                 <TableHeader>
                   <TableRow className="bg-muted/50 hover:bg-muted/50">
-                    <TableHead className="px-8 h-14 text-xs font-black uppercase tracking-widest text-muted-foreground">Specialty</TableHead>
-                    <TableHead className="h-14 text-xs font-black uppercase tracking-widest text-muted-foreground">Description</TableHead>
-                    <TableHead className="h-14 text-xs font-black uppercase tracking-widest text-muted-foreground text-right px-8">Actions</TableHead>
+                     <TableHead className="px-8 h-14 text-xs font-black uppercase tracking-widest text-muted-foreground">Department</TableHead>
+                     <TableHead className="h-14 text-xs font-black uppercase tracking-widest text-muted-foreground">Description</TableHead>
+                     <TableHead className="h-14 text-xs font-black uppercase tracking-widest text-muted-foreground text-right px-8">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -317,8 +317,8 @@ export default function ReceptionistIllnessCategoriesPage() {
                             <div className="w-20 h-20 rounded-full bg-muted flex items-center justify-center">
                               <HugeiconsIcon icon={Search01Icon} className="w-10 h-10 opacity-20" />
                             </div>
-                            <p className="text-xl font-bold opacity-40">No specialties found</p>
-                            <p className="text-sm">Try adjusting your search criteria.</p>
+                             <p className="text-xl font-bold opacity-40">No departments found</p>
+                             <p className="text-sm">Try adjusting your search criteria.</p>
                           </div>
                         </TableCell>
                       </TableRow>
@@ -387,13 +387,13 @@ export default function ReceptionistIllnessCategoriesPage() {
             <DialogDescription className="text-center text-base font-medium">
               {deleteTarget
                 ? `You are about to permanently remove "${deleteTarget.name}". This action cannot be undone.`
-                : "This action will permanently remove the selected medical specialty."}
+                 : "This action will permanently remove the selected department."}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="flex flex-col sm:flex-row gap-3 pt-4 sm:justify-center">
             <Button variant="outline" onClick={() => setDeleteTarget(null)} disabled={isDeleting} className="h-14 rounded-md flex-1 font-bold">
               <HugeiconsIcon icon={Cancel01Icon} className="mr-2 w-5 h-5" />
-              Keep Specialty
+               Keep Department
             </Button>
             <Button variant="destructive" onClick={handleDelete} disabled={isDeleting} className="h-14 rounded-md flex-1 font-black shadow-lg shadow-rose-200">
               <HugeiconsIcon icon={Tick02Icon} className="mr-2 w-5 h-5" />

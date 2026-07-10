@@ -34,6 +34,7 @@ import { toast } from "react-toastify"
 import { useAdminStore } from "@/store/admin/admin.store"
 import { useAppointmentStore } from "@/store/appointments/appointment.store"
 import { PasswordInput } from "@/components/password-input"
+import { Switch } from "@/components/ui/switch"
 import { filterAppointmentsForQueue } from "@/lib/appointment-queues"
 import { getBackendFieldErrors } from "@/lib/backend-errors"
 
@@ -51,6 +52,7 @@ type ReceptionistRow = {
   last_name: string
   email: string
   phone: string
+  is_active: boolean
 }
 
 const emptyReceptionistForm = {
@@ -60,6 +62,7 @@ const emptyReceptionistForm = {
   email: "",
   phone: "",
   password: "",
+  is_active: true,
 }
 
 type SheetMode = "view" | "edit" | null
@@ -79,6 +82,7 @@ export default function ReceptionistPage() {
     last_name: "",
     email: "",
     phone: "",
+    is_active: true,
   })
   const [errors, setErrors] = useState<FormErrors>({})
   const [createErrors, setCreateErrors] = useState<FormErrors>({})
@@ -154,10 +158,11 @@ export default function ReceptionistPage() {
     setActiveUser(user)
     setEditForm({
       uuid: user.uuid,
-      first_name: user.first_name,
-      last_name: user.last_name,
-      email: user.email,
-      phone: user.phone,
+      first_name: user.first_name || "",
+      last_name: user.last_name || "",
+      email: user.email || "",
+      phone: user.phone || "",
+      is_active: user.is_active,
     })
     setSheetMode("view")
   }
@@ -166,10 +171,11 @@ export default function ReceptionistPage() {
     setActiveUser(user)
     setEditForm({
       uuid: user.uuid,
-      first_name: user.first_name,
-      last_name: user.last_name,
-      email: user.email,
-      phone: user.phone,
+      first_name: user.first_name || "",
+      last_name: user.last_name || "",
+      email: user.email || "",
+      phone: user.phone || "",
+      is_active: user.is_active,
     })
     setErrors({})
     setSheetMode("edit")
@@ -188,6 +194,7 @@ export default function ReceptionistPage() {
       last_name: "",
       email: "",
       phone: "",
+      is_active: true,
     })
     setErrors({})
   }
@@ -228,7 +235,7 @@ export default function ReceptionistPage() {
         last_name: editForm.last_name,
         email: editForm.email,
         phone: editForm.phone,
-        is_active: true,
+        is_active: editForm.is_active,
       })
       toast.success("Receptionist updated successfully")
       closeSheet()
@@ -580,6 +587,23 @@ export default function ReceptionistPage() {
                 <p className="text-sm text-red-500">{errors.phone}</p>
               )}
             </div>
+
+            {sheetMode === "edit" && (
+              <div className="flex items-center justify-between rounded-3xl border border-sidebar-border bg-muted/20 p-4">
+                <div>
+                  <p className="text-sm font-medium">Status</p>
+                  <p className="text-xs text-muted-foreground">
+                    {editForm.is_active ? "Active" : "Inactive"}
+                  </p>
+                </div>
+                <Switch
+                  checked={editForm.is_active}
+                  onCheckedChange={(checked) =>
+                    setEditForm((current) => ({ ...current, is_active: checked }))
+                  }
+                />
+              </div>
+            )}
           </div>
 
           <SheetFooter className="border-t border-sidebar-border flex flex-row justify-between">

@@ -34,6 +34,7 @@ import { useAdminStore } from "@/store/admin/admin.store"
 import { toast } from "react-toastify"
 import Link from "next/link"
 import { useTranslation } from "@/lib/i18n"
+import { Switch } from "@/components/ui/switch"
 import { getBackendFieldErrors } from "@/lib/backend-errors"
 
 type UserRole = "user" | "receptionist" | "doctor" | "lab_tech"
@@ -107,13 +108,25 @@ export default function LabTechPage() {
 
   const handleView = (user: (typeof emptyForm)) => {
     setActiveUser(user)
-    setForm({ ...user })
+    setForm({
+      ...user,
+      first_name: user.first_name || "",
+      last_name: user.last_name || "",
+      email: user.email || "",
+      phone: user.phone || "",
+    })
     setSheetMode("view")
   }
 
   const handleEdit = (user: (typeof emptyForm)) => {
     setActiveUser(user)
-    setForm({ ...user })
+    setForm({
+      ...user,
+      first_name: user.first_name || "",
+      last_name: user.last_name || "",
+      email: user.email || "",
+      phone: user.phone || "",
+    })
     setSheetMode("edit")
   }
 
@@ -398,6 +411,23 @@ export default function LabTechPage() {
                 <p className="text-sm text-red-500">{errors.phone}</p>
               )}
             </div>
+
+            {sheetMode === "edit" && (
+              <div className="flex items-center justify-between rounded-3xl border border-sidebar-border bg-muted/20 p-4">
+                <div>
+                  <p className="text-sm font-medium">Status</p>
+                  <p className="text-xs text-muted-foreground">
+                    {form.is_active ? "Active" : "Inactive"}
+                  </p>
+                </div>
+                <Switch
+                  checked={form.is_active}
+                  onCheckedChange={(checked) =>
+                    setForm((current) => ({ ...current, is_active: checked }))
+                  }
+                />
+              </div>
+            )}
           </div>
 
           <SheetFooter className="border-t border-sidebar-border flex flex-row justify-between">

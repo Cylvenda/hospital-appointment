@@ -38,7 +38,7 @@ const emptyForm = {
   description: "",
 }
 
-export default function IllnessCategoriesPage() {
+export default function DepartmentsPage() {
   const {
     illnessCategories,
     fetchIllnessCategories,
@@ -73,10 +73,10 @@ export default function IllnessCategoriesPage() {
     (category) => Boolean(category.description?.trim())
   ).length
 
-  const formTitle = editingId ? "Update Illness Category" : "Add Illness Category"
+  const formTitle = editingId ? "Update Department" : "Add Department"
   const formDescription = editingId
-    ? "Edit the illness category details and save your changes."
-    : "Create a new illness category for appointment booking and triage."
+    ? "Edit the department details and save your changes."
+    : "Create a new department for appointment booking and triage."
 
   const isFormValid = form.name.trim().length > 0
 
@@ -100,15 +100,15 @@ export default function IllnessCategoriesPage() {
 
       if (editingId) {
         await updateIllnessCategory(editingId, payload)
-        toast.success("Illness category updated.")
+        toast.success("Department updated.")
       } else {
         await createIllnessCategory(payload)
-        toast.success("Illness category added.")
+        toast.success("Department added.")
       }
 
       resetForm()
     } catch {
-      toast.error(editingId ? "Failed to update illness category." : "Failed to add illness category.")
+      toast.error(editingId ? "Failed to update department." : "Failed to add department.")
     } finally {
       setIsSaving(false)
     }
@@ -136,7 +136,7 @@ export default function IllnessCategoriesPage() {
 
     try {
       await deleteIllnessCategory(deleteTarget.uuid)
-      toast.success("Illness category deleted.")
+      toast.success("Department deleted.")
 
       if (editingId === deleteTarget.uuid) {
         resetForm()
@@ -144,7 +144,7 @@ export default function IllnessCategoriesPage() {
 
       setDeleteTarget(null)
     } catch {
-      toast.error("Failed to delete illness category.")
+      toast.error("Failed to delete department.")
     } finally {
       setIsDeleting(false)
     }
@@ -154,10 +154,10 @@ export default function IllnessCategoriesPage() {
     <div className="w-full space-y-6 p-4 md:p-6">
       <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-center">
         <div className="space-y-1">
-          <h1 className="font-heading text-2xl font-semibold">Illness Categories</h1>
-          <p className="text-sm text-muted-foreground">
-            Add, review, update, and remove the medical categories used during appointment booking.
-          </p>
+           <h1 className="font-heading text-2xl font-semibold">Departments</h1>
+           <p className="text-sm text-muted-foreground">
+             Add, review, update, and remove the departments used during appointment booking.
+           </p>
         </div>
 
         <div className="relative sm:w-80">
@@ -170,14 +170,14 @@ export default function IllnessCategoriesPage() {
             value={search}
             onChange={(event) => setSearch(event.target.value)}
             className="h-11 rounded-2xl border-2 border-sidebar-border pl-11"
-            placeholder="Search category or description..."
+             placeholder="Search department or description..."
           />
         </div>
       </div>
 
       <div className="grid gap-4 md:grid-cols-3">
         <div className="rounded-4xl border border-sidebar-border bg-card p-5 shadow-sm">
-          <p className="text-sm text-muted-foreground">Total Categories</p>
+          <p className="text-sm text-muted-foreground">Total Departments</p>
           <p className="mt-2 text-3xl font-semibold">{illnessCategories.length}</p>
         </div>
         <div className="rounded-4xl border border-sidebar-border bg-card p-5 shadow-sm">
@@ -199,32 +199,32 @@ export default function IllnessCategoriesPage() {
 
           <CardContent className="space-y-4 py-6">
             <div className="space-y-2">
-              <label className="text-sm font-medium">Category Name</label>
-              <Input
-                value={form.name}
-                onChange={(event) =>
-                  setForm((current) => ({ ...current, name: event.target.value }))
-                }
-                placeholder="Example: Dermatology"
-              />
+               <label className="text-sm font-medium">Department Name</label>
+               <Input
+                 value={form.name}
+                 onChange={(event) =>
+                   setForm((current) => ({ ...current, name: event.target.value }))
+                 }
+                 placeholder="Example: Dermatology"
+               />
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-medium">Description</label>
-              <Textarea
-                value={form.description}
-                onChange={(event) =>
-                  setForm((current) => ({ ...current, description: event.target.value }))
-                }
-                placeholder="Short explanation about what this illness category covers."
-              />
+               <label className="text-sm font-medium">Description</label>
+               <Textarea
+                 value={form.description}
+                 onChange={(event) =>
+                   setForm((current) => ({ ...current, description: event.target.value }))
+                 }
+                 placeholder="Short explanation about what this department covers."
+               />
             </div>
 
             <div className="flex flex-wrap gap-2">
-              <Button onClick={handleSubmit} disabled={!isFormValid || isSaving} className="rounded-md">
-                <HugeiconsIcon icon={editingId ? Edit02Icon : PlusSignIcon} strokeWidth={1.8} />
-                {isSaving ? "Saving..." : editingId ? "Update Category" : "Add Category"}
-              </Button>
+               <Button onClick={handleSubmit} disabled={!isFormValid || isSaving} className="rounded-md">
+                 <HugeiconsIcon icon={editingId ? Edit02Icon : PlusSignIcon} strokeWidth={1.8} />
+                 {isSaving ? "Saving..." : editingId ? "Update Department" : "Add Department"}
+               </Button>
               <Button
                 variant="outline"
                 onClick={resetForm}
@@ -239,9 +239,9 @@ export default function IllnessCategoriesPage() {
 
         <Card className="border border-sidebar-border py-5 shadow-sm">
           <CardHeader className="border-b border-sidebar-border">
-            <CardTitle>Category Directory</CardTitle>
+            <CardTitle>Department Directory</CardTitle>
             <CardDescription>
-              Every illness category currently available in the appointment system.
+              Every department currently available in the appointment system.
             </CardDescription>
           </CardHeader>
 
@@ -259,7 +259,7 @@ export default function IllnessCategoriesPage() {
                 {filteredCategories.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={4} className="py-10 text-center text-muted-foreground">
-                      No illness categories match your search yet.
+                       No departments match your search yet.
                     </TableCell>
                   </TableRow>
                 ) : (
@@ -321,19 +321,19 @@ export default function IllnessCategoriesPage() {
       <Dialog open={Boolean(deleteTarget)} onOpenChange={(open) => !open && setDeleteTarget(null)}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Delete Illness Category</DialogTitle>
-            <DialogDescription>
-              {deleteTarget
-                ? `This will permanently remove "${deleteTarget.name}" from the system.`
-                : "This action will permanently remove the selected illness category."}
-            </DialogDescription>
+             <DialogTitle>Delete Department</DialogTitle>
+             <DialogDescription>
+               {deleteTarget
+                 ? `This will permanently remove "${deleteTarget.name}" from the system.`
+                 : "This action will permanently remove the selected department."}
+             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <Button variant="outline" onClick={() => setDeleteTarget(null)} disabled={isDeleting}>
               Cancel
             </Button>
             <Button variant="destructive" onClick={handleDelete} disabled={isDeleting}>
-              {isDeleting ? "Deleting..." : "Delete Category"}
+               {isDeleting ? "Deleting..." : "Delete Department"}
             </Button>
           </DialogFooter>
         </DialogContent>

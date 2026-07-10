@@ -1,5 +1,6 @@
 // src/store/auth/userAuth.store.ts
 import { create } from "zustand"
+import type { AxiosError } from "axios"
 import type { User, UserUpdatePayload } from "./auth.types"
 import { userServices } from "@/api/services/user.service"
 import { authUserService } from "@/api/services/auth.service"
@@ -17,7 +18,7 @@ type AuthState = {
      logout: () => Promise<void>
      initAuth: () => Promise<boolean>
      updateProfile: (payload: UserUpdatePayload) => Promise<User | null>
-     exportMyReport: (format: "pdf" | "docx") => Promise<void>
+     exportMyReport: (format: "pdf" | "docx", startDate?: string, endDate?: string) => Promise<void>
 }
 
 export const useAuthUserStore = create<AuthState>((set, get) => ({
@@ -122,27 +123,30 @@ export const useAuthUserStore = create<AuthState>((set, get) => ({
           }
      },
 
-     exportMyReport: async (format) => {
-          set({ loading: true, error: null })
-          try {
-               const res = await userServices.exportMyReport(format)
-               const blob = new Blob([res.data], { 
-                    type: format === 'pdf' ? 'application/pdf' : 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' 
-               })
-               const url = window.URL.createObjectURL(blob)
-               const link = document.createElement('a')
-               link.href = url
-               const role = get().user?.role || "user"
-               link.setAttribute('download', `${role}_report.${format}`)
-               document.body.appendChild(link)
-               link.click()
-               link.parentNode?.removeChild(link)
-               window.URL.revokeObjectURL(url)
-               set({ loading: false })
-          } catch (err: unknown) {
-               const message = err instanceof Error ? err.message : "Report export failed"
-               set({ loading: false, error: message })
-               throw err
-          }
-     },
+      exportMyReport: async (format, startDate?, endDate?) => {
+           set({ loading: true, error: null })
+           try {
+                const res = await userServices.exportMyReport(format, startDate, endDate)
+                const blob = new Blob([res.data], { 
+                     type: format === 'pdf' ? 'application/pdf' : 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' 
+                })
+                const url = window.URL.createObjectURL(blob)
+                const link = document.createElement('a')
+                link.href = url
+                const role = get().user?.role || "user"
+                link.setAttribute('download', `${role}_report.${format}`)
+                document.body.appendChild(link)
+                link.click()
+                link.parentNode?.removeChild(link)
+                window.URL.revokeObjectURL(url)
+                set({ loading: false })
+            } catch (err: unknown) {
+                const axiosError = err as AxiosError<{ detail?: string }>
+                const detail = axiosError.response?.data?.detail
+                const baseMessage = err instanceof Error ? err.message : "Report export failed"
+                const message = detail ?? baseMessage
+                set({ loading: false, error: message })
+                throw err
+           }
+      },
 }))

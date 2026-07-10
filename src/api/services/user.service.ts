@@ -1,6 +1,7 @@
 import type { AccountActivation, User, UserUpdatePayload } from "@/store/auth/auth.types"
 import api from "../axios"
 import { API_ENDPOINTS } from "../endpoints"
+import type { AxiosError } from "axios"
 
 
 export const userServices = {
@@ -37,9 +38,35 @@ export const userServices = {
           }
      },
 
-     async exportMyReport(format: "pdf" | "docx") {
-          return api.get(`/me/report/export/?format=${format}`, {
-               responseType: 'blob'
-          })
+     async exportMyReport(format: "pdf" | "docx", startDate?: string, endDate?: string) {
+          const params: Record<string, string> = { format }
+          if (startDate) params.start_date = startDate
+          if (endDate) params.end_date = endDate
+          
+          try {
+               return await api.get(`/me/report/export/`, {
+                    params,
+                    responseType: 'blob'
+               })
+          } catch (err: unknown) {
+               const axiosError = err as AxiosError<Blob>
+               const data = axiosError.response?.data
+               
+               if (data instanceof Blob) {
+                    try {
+                         const text = await data.text()
+                         const json = JSON.parse(text)
+                         if (json.detail) {
+                              throw new Error(json.detail)
+                         }
+                    } catch {
+                         if (err instanceof Error) throw err
+                         throw new Error("Report export failed")
+                    }
+               }
+               
+               if (err instanceof Error) throw err
+               throw new Error("Report export failed")
+          }
      },
 }

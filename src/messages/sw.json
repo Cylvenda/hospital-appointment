@@ -117,6 +117,7 @@
     "analyticsReports": "Takwimu na Ripoti",
     "clinicalFlow": "Mtiririko wa Kliniki",
     "todaysPatients": "Wagonjwa wa Leo",
+    "departments": "Idara",
     "illnessCategories": "Vitengo vya Magonjwa",
     "healthEducation": "Elimu ya Afya",
     "newAppointments": "Inasubiri Malipo",
@@ -835,7 +836,8 @@
     "preparingDocx": "Inaandaa DOCX...",
     "downloadDocx": "Pakua Ripoti ya DOCX",
     "reportDownloaded": "Ripoti ya {{format}} imepakuliwa.",
-    "reportDownloadFailed": "Ripoti haikuweza kupakuliwa."
+    "reportDownloadFailed": "Ripoti haikuweza kupakuliwa.",
+    "dateRange": "Muda wa tarehe"
   },
   "search": {
     "recordLookup": "Utafutaji wa rekodi",

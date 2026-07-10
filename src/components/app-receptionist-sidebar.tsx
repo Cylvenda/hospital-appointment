@@ -87,12 +87,12 @@ const navMain = [
           ),
      },
      {
-          titleKey: "nav.illnessCategories",
-          sectionKey: "nav.management",
-          url: "/receptionist-dashboard/illness-categories",
-          icon: (
-               <HugeiconsIcon color="var(--primary)" icon={StethoscopeIcon} strokeWidth={2} />
-          ),
+           titleKey: "nav.departments",
+           sectionKey: "nav.management",
+           url: "/receptionist-dashboard/illness-categories",
+           icon: (
+                <HugeiconsIcon color="var(--primary)" icon={StethoscopeIcon} strokeWidth={2} />
+           ),
      },
      {
           titleKey: "nav.healthEducation",

@@ -117,6 +117,7 @@
     "analyticsReports": "Analytics & Reports",
     "clinicalFlow": "Clinical Flow",
     "todaysPatients": "Today's Patients",
+    "departments": "Departments",
     "illnessCategories": "Illness Categories",
     "healthEducation": "Health Education",
     "newAppointments": "Awaiting Payment",
@@ -894,7 +895,8 @@
     "preparingDocx": "Preparing DOCX...",
     "downloadDocx": "Download DOCX report",
     "reportDownloaded": "{{format}} report downloaded.",
-    "reportDownloadFailed": "Could not download report."
+    "reportDownloadFailed": "Could not download report.",
+    "dateRange": "Date range"
   },
   "booking": {
     "title": "Book Appointment",

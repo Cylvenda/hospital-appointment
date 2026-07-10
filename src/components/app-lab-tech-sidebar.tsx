@@ -12,7 +12,17 @@ import {
      SidebarRail,
 } from "@/components/ui/sidebar"
 import { HugeiconsIcon } from "@hugeicons/react"
-import { DashboardCircleIcon, UserAccountIcon, Bell, Settings05Icon, Medicine01Icon, File01Icon, TaskDone01Icon, Search01Icon } from "@hugeicons/core-free-icons"
+import {
+     DashboardCircleIcon,
+     UserAccountIcon,
+     Bell,
+     Settings05Icon,
+     Medicine01Icon,
+     File01Icon,
+     TaskDone01Icon,
+     Search01Icon,
+     Analytics01Icon,
+} from "@hugeicons/core-free-icons"
 import { Separator } from "./ui/separator"
 import { useAuthUserStore } from "@/store/auth/userAuth.store"
 import { useTranslation } from "@/lib/i18n"
@@ -23,6 +33,13 @@ const navMain = [
           url: "/lab-tech-dashboard",
           icon: (
                <HugeiconsIcon color="var(--primary)" icon={DashboardCircleIcon} strokeWidth={2} />
+          ),
+     },
+     {
+          titleKey: "nav.analyticsReports",
+          url: "/lab-tech-dashboard/analytics",
+          icon: (
+               <HugeiconsIcon color="var(--primary)" icon={Analytics01Icon} strokeWidth={2} />
           ),
      },
      {
