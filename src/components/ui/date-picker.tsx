@@ -32,6 +32,7 @@ export function DatePicker({
 }: DatePickerProps) {
   const [isOpen, setIsOpen] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
+  const portalRef = useRef<HTMLDivElement>(null)
 
   const parsedDate = value ? new Date(value) : null
   const [currentYear, setCurrentYear] = useState(parsedDate ? parsedDate.getFullYear() : new Date().getFullYear())
@@ -41,7 +42,9 @@ export function DatePicker({
     if (!isOpen) return
 
     function handleClickOutside(event: MouseEvent) {
-      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+      const clickedOutsideContainer = containerRef.current && !containerRef.current.contains(event.target as Node)
+      const clickedOutsidePortal = portalRef.current && !portalRef.current.contains(event.target as Node)
+      if (clickedOutsideContainer && clickedOutsidePortal) {
         setIsOpen(false)
       }
     }
@@ -220,7 +223,7 @@ export function DatePicker({
 
       {isOpen && (
         <Portal>
-          <div className="fixed inset-0 z-[9998]" onClick={() => setIsOpen(false)}>
+          <div ref={portalRef} className="fixed inset-0 z-[9998]" onClick={() => setIsOpen(false)}>
             <div
               className="absolute z-[9999] animate-in fade-in zoom-in-95 duration-200"
               style={{
