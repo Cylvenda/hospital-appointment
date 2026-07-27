@@ -14,7 +14,10 @@ import { useAuthUserStore } from "@/store/auth/userAuth.store"
 import { toast } from "react-toastify"
 import { useAppointmentStore } from "@/store/appointments/appointment.store"
 import { usePaymentStore } from "@/store/payments/payment.store"
+import { PaymentTemporarilyUnavailableError } from "@/store/payments/payment.store"
 import Image from "next/image"
+import { AlertCircleIcon, Clock01Icon } from "@hugeicons/core-free-icons"
+import { HugeiconsIcon } from "@hugeicons/react"
 
 type Props = {
      appointmentId: string
@@ -56,6 +59,7 @@ export const PayingForAppointment = ({ appointmentId, fee, disabled }: Props) =>
      const [phone, setPhone] = useState("")
      const [loading, setLoading] = useState(false)
      const [paymentUuid, setPaymentUuid] = useState<string | null>(null)
+     const [paymentUnavailable, setPaymentUnavailable] = useState(false)
 
      useEffect(() => {
           if (open && user?.phone) {
@@ -108,6 +112,7 @@ export const PayingForAppointment = ({ appointmentId, fee, disabled }: Props) =>
 
           try {
                setLoading(true)
+               setPaymentUnavailable(false)
                const formattedPhone = normalizeTzPhone(phone)
                const newPaymentUuid = await createPayment(appointmentId, formattedPhone)
 
@@ -119,6 +124,10 @@ export const PayingForAppointment = ({ appointmentId, fee, disabled }: Props) =>
                setPhone("")
                setOpen(false)
           } catch (error: unknown) {
+               if (error instanceof PaymentTemporarilyUnavailableError) {
+                    setPaymentUnavailable(true)
+                    return
+               }
                const message =
                     error instanceof Error
                          ? error.message
@@ -151,8 +160,35 @@ export const PayingForAppointment = ({ appointmentId, fee, disabled }: Props) =>
                          </div>
 
                          <div className="p-6 space-y-5">
+                              {paymentUnavailable && (
+                                   <div
+                                        role="alert"
+                                        className="rounded-xl border border-amber-300 bg-amber-50 p-4 text-amber-950 shadow-sm dark:border-amber-800 dark:bg-amber-950/40 dark:text-amber-100"
+                                   >
+                                        <div className="flex items-start gap-3">
+                                             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-amber-100 text-amber-700 dark:bg-amber-900 dark:text-amber-300">
+                                                  <HugeiconsIcon icon={AlertCircleIcon} className="h-5 w-5" />
+                                             </div>
+                                             <div className="space-y-2">
+                                                  <p className="font-semibold">
+                                                       Payment is temporarily unavailable
+                                                  </p>
+                                                  <p className="text-sm leading-relaxed text-amber-800 dark:text-amber-200">
+                                                       We could not connect to the payment service right now.
+                                                       Your appointment is still saved and no money has been
+                                                       charged.
+                                                  </p>
+                                                  <div className="flex items-center gap-2 rounded-lg bg-white/60 px-3 py-2 text-xs font-medium dark:bg-black/10">
+                                                       <HugeiconsIcon icon={Clock01Icon} className="h-4 w-4 shrink-0" />
+                                                       Please close this window and try paying again later.
+                                                  </div>
+                                             </div>
+                                        </div>
+                                   </div>
+                              )}
 
                               {/* PAYMENT MESSAGE */}
+                              {!paymentUnavailable && (
                               <div className="text-sm text-muted-foreground leading-relaxed space-y-2">
                                    <p>
                                         When you continue, you will receive a{" "}
@@ -177,9 +213,10 @@ export const PayingForAppointment = ({ appointmentId, fee, disabled }: Props) =>
                                         </span>
                                    </div>
                               </div>
+                              )}
 
                               {/* SUPPORTED NETWORKS */}
-                              <div className="space-y-3">
+                              {!paymentUnavailable && <div className="space-y-3">
                                    <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
                                         Supported Networks
                                    </p>
@@ -205,10 +242,10 @@ export const PayingForAppointment = ({ appointmentId, fee, disabled }: Props) =>
                                              </div>
                                         ))}
                                    </div>
-                              </div>
+                              </div>}
 
                               {/* NOTE */}
-                              <div className="rounded-lg border bg-muted/40 dark:bg-muted/10 p-3 text-xs leading-relaxed text-muted-foreground">
+                              {!paymentUnavailable && <div className="rounded-lg border bg-muted/40 dark:bg-muted/10 p-3 text-xs leading-relaxed text-muted-foreground">
                                    <p>
                                         Only{" "}
                                         <span className="font-medium text-foreground">
@@ -220,10 +257,10 @@ export const PayingForAppointment = ({ appointmentId, fee, disabled }: Props) =>
                                    <p className="mt-1">
                                         Credit/Debit card support will be available soon.
                                    </p>
-                              </div>
+                              </div>}
 
                               {/* PHONE INPUT */}
-                              <div className="space-y-2">
+                              {!paymentUnavailable && <div className="space-y-2">
                                    <Input
                                         placeholder="0712345678 or +255712345678"
                                         value={phone}
@@ -238,7 +275,7 @@ export const PayingForAppointment = ({ appointmentId, fee, disabled }: Props) =>
                                              Enter valid Tanzanian number
                                         </p>
                                    )}
-                              </div>
+                              </div>}
 
                               {/* ACTIONS */}
                               <div className="flex gap-2 pt-2 justify-end w-full">
@@ -248,16 +285,16 @@ export const PayingForAppointment = ({ appointmentId, fee, disabled }: Props) =>
                                         disabled={loading}
                                         className="w-fit rounded-md"
                                    >
-                                        Cancel
+                                        {paymentUnavailable ? "Close" : "Cancel"}
                                    </Button>
 
-                                   <Button
+                                   {!paymentUnavailable && <Button
                                         onClick={handlePay}
                                         disabled={!isValidPhone || loading || disabled}
                                         className="w-fit rounded-md"
                                    >
                                         {loading ? "Processing..." : "Pay Now"}
-                                   </Button>
+                                   </Button>}
                               </div>
                          </div>
                     </DialogContent>
@@ -305,4 +342,3 @@ export const PayingForAppointment = ({ appointmentId, fee, disabled }: Props) =>
           </>
      )
 }
-
