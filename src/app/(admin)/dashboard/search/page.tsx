@@ -1,8 +1,5 @@
-"use client"
-
-import { UnifiedSearch } from "@/components/unified-search"
 import { Metadata } from "next"
-import { AdminSearchHeader } from "./admin-search-header"
+import { SearchClient } from "./search-client"
 
 export const metadata: Metadata = {
      title: "Search | Admin Dashboard",
@@ -12,8 +9,7 @@ export const metadata: Metadata = {
 export default function SearchPage() {
      return (
           <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
-               <AdminSearchHeader />
-               <UnifiedSearch />
+               <SearchClient />
           </div>
      )
 }
