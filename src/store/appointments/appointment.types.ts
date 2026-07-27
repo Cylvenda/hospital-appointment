@@ -25,7 +25,7 @@ export type Appointment = {
      endTime: string | null
      doctor: string | null
      doctorId: string | null
-     paymentStatus: "pending" | "failed" | "completed" | null
+     paymentStatus: "pending" | "success" | "failed" | "cancelled" | "expired" | null
      note: string
      diagnosis: string | null
      notes: string | null
@@ -55,7 +55,7 @@ export type AppointmentApi = {
      fee: string
      doctor_name: string | null
      doctor_uuid: string | null
-     payment_status: "pending" | "failed" | "completed" | null
+     payment_status: "pending" | "success" | "failed" | "cancelled" | "expired" | null
      illness_category: string
      illness_category_uuid: string
      description: string | null

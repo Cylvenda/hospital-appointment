@@ -99,7 +99,7 @@ function localDateKey(date = new Date()) {
 function isAwaitingPayment(appointment: Appointment) {
   return (
     appointment.status === "pending" &&
-    appointment.paymentStatus !== "completed"
+    appointment.paymentStatus !== "success"
   )
 }
 

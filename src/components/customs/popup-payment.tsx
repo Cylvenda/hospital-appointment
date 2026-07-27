@@ -13,6 +13,7 @@ import { Input } from "../ui/input"
 import { useAuthUserStore } from "@/store/auth/userAuth.store"
 import { toast } from "react-toastify"
 import { useAppointmentStore } from "@/store/appointments/appointment.store"
+import { usePaymentStore } from "@/store/payments/payment.store"
 import Image from "next/image"
 
 type Props = {
@@ -48,12 +49,13 @@ function normalizeTzPhone(phone: string): string {
 
 export const PayingForAppointment = ({ appointmentId, fee, disabled }: Props) => {
      const { user } = useAuthUserStore()
-     const { PayingAppointment } = useAppointmentStore()
+     const { createPayment, getPaymentStatus } = usePaymentStore()
 
      const [waiting, setWaiting] = useState(false)
      const [open, setOpen] = useState(false)
      const [phone, setPhone] = useState("")
      const [loading, setLoading] = useState(false)
+     const [paymentUuid, setPaymentUuid] = useState<string | null>(null)
 
      useEffect(() => {
           if (open && user?.phone) {
@@ -63,21 +65,59 @@ export const PayingForAppointment = ({ appointmentId, fee, disabled }: Props) =>
 
      const isValidPhone = validateTzPhone(phone)
 
+     useEffect(() => {
+          if (!waiting || !paymentUuid) return
+          let attempts = 0
+          const maxAttempts = 30
+
+          const interval = setInterval(async () => {
+               attempts++
+               try {
+                    const status = await getPaymentStatus(paymentUuid)
+                    if (
+                         status === "success" ||
+                         status === "failed" ||
+                         status === "cancelled" ||
+                         status === "expired"
+                    ) {
+                         clearInterval(interval)
+                         useAppointmentStore.getState().initialize()
+                         if (status === "success") {
+                              toast.success("Payment confirmed successfully")
+                         } else if (status === "failed") {
+                              toast.error("Payment failed. You can retry.")
+                         } else {
+                              toast.success(`Payment ${status}`)
+                         }
+                         setWaiting(false)
+                    }
+               } catch {
+                    // ignore transient poll errors
+               }
+               if (attempts >= maxAttempts) {
+                    clearInterval(interval)
+                    setWaiting(false)
+               }
+          }, 10000)
+
+          return () => clearInterval(interval)
+     }, [waiting, paymentUuid, getPaymentStatus])
+
      const handlePay = async () => {
           if (!isValidPhone) return
 
           try {
                setLoading(true)
-
                const formattedPhone = normalizeTzPhone(phone)
+               const newPaymentUuid = await createPayment(appointmentId, formattedPhone)
 
-               await PayingAppointment(appointmentId, formattedPhone)
-
-               toast.success("Payment Initiated Successfully check your phone to complete payment")
+               if (newPaymentUuid) {
+                    setPaymentUuid(newPaymentUuid)
+                    setWaiting(true)
+               }
 
                setPhone("")
                setOpen(false)
-               setWaiting(true)
           } catch (error: unknown) {
                const message =
                     error instanceof Error
@@ -100,7 +140,6 @@ export const PayingForAppointment = ({ appointmentId, fee, disabled }: Props) =>
                     </DialogTrigger>
 
                     <DialogContent className="sm:max-w-md max-w-3xl! p-0 overflow-hidden rounded-xl border shadow-lg">
-
                          {/* HEADER (Card style) */}
                          <div className="bg-linear-to-r from-blue-600 to-indigo-600 text-white p-5">
                               <DialogTitle className="text-lg font-semibold">
@@ -227,7 +266,6 @@ export const PayingForAppointment = ({ appointmentId, fee, disabled }: Props) =>
 
                <Dialog open={waiting} onOpenChange={setWaiting}>
                     <DialogContent className="sm:max-w-md rounded-xl p-6 text-center space-y-4">
-
                          {/* ICON / LOADER */}
                          <div className="flex justify-center">
                               <div className="h-12 w-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
@@ -267,3 +305,4 @@ export const PayingForAppointment = ({ appointmentId, fee, disabled }: Props) =>
           </>
      )
 }
+

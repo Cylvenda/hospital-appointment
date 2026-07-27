@@ -92,7 +92,7 @@ export function StaffWorkflowDashboard({ role }: { role: StaffRole }) {
     const awaitingPayment = appointments.filter(
       (appointment) =>
         appointment.status === "pending" &&
-        appointment.paymentStatus !== "completed"
+        appointment.paymentStatus !== "success"
     )
     const todayAppointments = appointments.filter(
       (appointment) => toDateKey(appointment.date) === today

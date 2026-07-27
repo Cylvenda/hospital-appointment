@@ -23,7 +23,10 @@ export const API_ENDPOINTS = {
      // Appointments
      APPOINTMENTS: "appointments/",
      APPOINTMENT_DOCTORS: "appointments/doctors/",
-     APPOINTMENT_PAYING: "appointments/{uuid}/pay/",
+      APPOINTMENT_PAYING: "appointments/{uuid}/pay/",
+      PAYMENTS_CREATE: "payments/create/",
+      PAYMENTS_WEBHOOK: "payments/webhook/",
+      PAYMENT_STATUS: "payments/{uuid}/status/",
      DOCTOR_SCHEDULES: "doctor-schedules/",
      DOCTOR_UNAVAILABLE_DATES: "doctor-unavailable-dates/",
      ILLNESS_CATEGORIES: "illness_category/",

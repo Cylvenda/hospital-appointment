@@ -84,7 +84,7 @@ export default function AppointmentDisplay({
 
      const canCancel =
           isPending &&
-          appointment.paymentStatus !== "completed"
+          appointment.paymentStatus !== "success"
 
      const canUpdate = 
           isPending && 
@@ -114,7 +114,7 @@ export default function AppointmentDisplay({
                                              <HugeiconsIcon icon={statusIcon[statusMeta.tone]} className="mr-1.5 h-3 w-3" />
                                              {statusMeta.label}
                                         </Badge>
-                                        {appointment.paymentStatus === "completed" && (
+                                        {     appointment.paymentStatus === "success" && (
                                              <Badge className="rounded-full border-0 bg-emerald-500 px-2.5 py-0.5 text-[10px] font-black uppercase tracking-[0.2em] text-white">
                                                   {t("staffAppointmentCard.paid")}
                                              </Badge>

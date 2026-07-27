@@ -140,7 +140,7 @@ function isSameLocalDate(value: string | null | undefined, today = new Date()): 
 }
 
 function hasPaymentCompleted(appointment: Appointment): boolean {
-  return appointment.paymentStatus === "completed"
+  return appointment.paymentStatus === "success"
 }
 
 export function hasAppointmentStatus(

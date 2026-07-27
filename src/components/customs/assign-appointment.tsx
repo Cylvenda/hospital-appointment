@@ -87,7 +87,7 @@ export default function AssignAppointment({
   const canCheckIn = appointment.status === "confirmed" && isToday
   const canMarkPaid =
     appointment.status === "pending" &&
-    appointment.paymentStatus !== "completed"
+    appointment.paymentStatus !== "success"
   const canReschedule =
     appointment.status === "confirmed" && Boolean(appointment.doctorId)
   const canCancel = ["pending", "confirmed"].includes(appointment.status)
@@ -160,12 +160,12 @@ export default function AssignAppointment({
                 <Badge variant="outline">{status.label}</Badge>
                 <Badge
                   className={
-                    appointment.paymentStatus === "completed"
+                    appointment.paymentStatus === "success"
                       ? "bg-emerald-600"
                       : "bg-amber-500"
                   }
                 >
-                  {appointment.paymentStatus === "completed"
+                  {appointment.paymentStatus === "success"
                     ? t("staffAppointmentCard.paid")
                     : t("staffAppointmentCard.paymentPending")}
                 </Badge>

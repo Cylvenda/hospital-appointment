@@ -21,15 +21,46 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://dpams.vercel.app"),
   title: {
     default: "Digital Patient Pre-Registration and Appointment Management System",
     template: "%s | DPAMS",
   },
-  icons: {
-    icon: "/meeet.webp",
-  },
   description:
     "A secure and efficient system for managing patient appointments, doctors, and hospital workflows.",
+  icons: {
+    icon: "/meeet.webp",
+    apple: "/meeet.webp",
+    other: [
+      { rel: "icon", type: "image/webp", sizes: "32x32", url: "/meeet.webp" },
+      { rel: "icon", type: "image/webp", sizes: "16x16", url: "/meeet.webp" },
+    ],
+  },
+  alternates: { canonical: "/" },
+  openGraph: {
+    title: "Digital Patient Pre-Registration and Appointment Management System",
+    description:
+      "A secure and efficient system for managing patient appointments, doctors, and hospital workflows.",
+    url: "https://dpams.vercel.app",
+    siteName: "DPAMS",
+    images: [
+      {
+        url: "/meeet.webp",
+        width: 1200,
+        height: 630,
+        alt: "DPAMS Preview",
+      },
+    ],
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "DPAMS - Digital Patient Pre-Registration and Appointment Management System",
+    description:
+      "A secure and efficient system for managing patient appointments, doctors, and hospital workflows.",
+    images: ["/meeet.webp"],
+  },
 };
 
 export default function RootLayout({

@@ -2,7 +2,7 @@ import type { AppointmentStatus } from "@/store/appointments/appointment.types"
 import { getTranslationValue } from "@/lib/i18n"
 import { useLanguageStore } from "@/store/language/language.store"
 
-export type AppointmentPaymentStatus = "pending" | "failed" | "completed" | null
+export type AppointmentPaymentStatus = "pending" | "failed" | "success" | "cancelled" | "expired" | null
 export type AppointmentAudience =
   | "patient"
   | "doctor"
@@ -124,7 +124,7 @@ export function getAppointmentStatusMeta(
   paymentStatus: AppointmentPaymentStatus = null,
   audience: AppointmentAudience = "default"
 ): AppointmentStatusMeta {
-  if (status === "pending" && paymentStatus === "completed") {
+  if (status === "pending" && paymentStatus === "success") {
     return {
       label: translate("appointmentStatus.confirmingBookingLabel"),
       summary: translate(
