@@ -10,16 +10,17 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
                <Card className="w-full max-w-6xl grid grid-cols-1 md:grid-cols-2 overflow-hidden rounded-2xl shadow-xl border-0">
 
 
-                    {/* RIGHT SIDE (IMAGE) */}
-                    <div className="relative left-4  hidden md:block">
-                         <Image
-                              src="/meeet.webp"
-                              alt="Meeting Background"
-                              fill
-                              className="rounded-2xl dark:invert dark:hue-rotate-180 dark:opacity-90 dark:brightness-95 transition-all duration-300"
-                              priority
-                         />
-                    </div>
+                     {/* RIGHT SIDE (IMAGE) */}
+                     <div className="relative left-4  hidden md:block">
+                          <Image
+                               src="/meeet.webp"
+                               alt="Meeting Background"
+                               fill
+                               sizes="(max-width: 768px) 100vw, 50vw"
+                               className="rounded-2xl dark:invert dark:hue-rotate-180 dark:opacity-90 dark:brightness-95 transition-all duration-300"
+                               priority
+                          />
+                     </div>
 
                     {/* LEFT SIDE (FORM) */}
                     <div className="flex items-center justify-center p-10">

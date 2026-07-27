@@ -12,7 +12,6 @@ function normalizeApiRoot(value: string) {
 }
 
 function buildBackendUrl(pathSegments: string[], request: NextRequest) {
-     // Filter out empty segments to avoid double slashes when joining
      const cleanSegments = pathSegments.filter(Boolean)
      const pathname = cleanSegments.join("/")
      const url = new URL(`${pathname}/`, BACKEND_API_ROOT)
@@ -34,6 +33,22 @@ function allowsResponseBody(status: number) {
      return ![204, 205, 304].includes(status)
 }
 
+function strToArrayBuffer(text: string): ArrayBuffer {
+     return new TextEncoder().encode(text).buffer
+}
+
+function parseCookies(cookieHeader: string | null): Record<string, string> {
+     const result: Record<string, string> = {}
+     if (!cookieHeader) return result
+     cookieHeader.split(";").forEach((cookie) => {
+          const [name, ...rest] = cookie.split("=")
+          if (name) {
+               result[name.trim()] = decodeURIComponent(rest.join("=").trim())
+          }
+     })
+     return result
+}
+
 async function proxy(request: NextRequest, context: { params: Promise<{ path: string[] }> }) {
      const { path } = await context.params
      const targetUrl = buildBackendUrl(path, request)
@@ -49,15 +64,39 @@ async function proxy(request: NextRequest, context: { params: Promise<{ path: st
      }
      headers.set("accept", "application/json")
 
-     const backendResponse = await fetch(targetUrl, {
-          method: request.method,
-          headers,
-          body:
-               request.method === "GET" || request.method === "HEAD"
-                    ? undefined
-                    : await request.arrayBuffer(),
-          cache: "no-store",
-     })
+     const isRefresh = path.join("/") === "me/auth/token/refresh"
+
+      let body: ArrayBuffer | undefined
+      if (request.method === "GET" || request.method === "HEAD") {
+           body = undefined
+      } else {
+           const rawText = await request.text()
+           if (isRefresh && rawContentTypeIncludesJson(contentType)) {
+                const cookies = parseCookies(cookieHeader)
+                const refreshToken = cookies.refresh
+                if (refreshToken) {
+                     let payload: Record<string, unknown> = {}
+                     try {
+                          payload = JSON.parse(rawText) as Record<string, unknown>
+                     } catch {}
+                     if (!payload.refresh) {
+                          payload.refresh = refreshToken
+                     }
+                     body = strToArrayBuffer(JSON.stringify(payload))
+                } else {
+                     body = rawText ? strToArrayBuffer(rawText) : undefined
+                }
+           } else {
+                body = rawText ? strToArrayBuffer(rawText) : undefined
+           }
+      }
+
+      const backendResponse = await fetch(targetUrl, {
+           method: request.method,
+           headers,
+           body,
+           cache: "no-store",
+      })
 
      const rawContentType = backendResponse.headers.get("content-type") || "application/json"
      const responseText = await backendResponse.text()
@@ -72,9 +111,8 @@ async function proxy(request: NextRequest, context: { params: Promise<{ path: st
                  status: backendResponse.status,
             })
 
-      const isLogin = path.join("/") === "me/auth/login"
-      const isRefresh = path.join("/") === "me/auth/token/refresh"
-      const isLogout = path.join("/") === "me/auth/logout"
+     const isLogin = path.join("/") === "me/auth/login"
+     const isLogout = path.join("/") === "me/auth/logout"
 
      let parsedBody: Record<string, unknown> | null = null
      if (rawContentType.includes("application/json") && responseText) {
@@ -106,6 +144,10 @@ async function proxy(request: NextRequest, context: { params: Promise<{ path: st
      }
 
      return response
+}
+
+function rawContentTypeIncludesJson(contentType: string | null) {
+     return (contentType || "").includes("application/json")
 }
 
 export async function GET(
