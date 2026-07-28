@@ -13,12 +13,12 @@ import { authUserService } from "@/api/services/auth.service"
 import { useRouter, useSearchParams } from "next/navigation"
 import { toast } from "react-toastify"
 import { Spinner } from "@/components/ui/spinner"
-import { LoginFormSchema } from "@/schema/user-form-schema"
+import { createLoginFormSchema } from "@/schema/user-form-schema"
 import { getDashboardPath } from "@/lib/role-dashboard"
 import { useTranslation } from "@/lib/i18n"
 
 
-type LoginFormValues = z.infer<typeof LoginFormSchema>
+type LoginFormValues = z.infer<ReturnType<typeof createLoginFormSchema>>
 
 function LoginForm() {
      const { t } = useTranslation()
@@ -29,7 +29,7 @@ function LoginForm() {
      const activationSent = searchParams.get("activation") === "sent"
 
      const form = useForm<LoginFormValues>({
-          resolver: zodResolver(LoginFormSchema),
+          resolver: zodResolver(createLoginFormSchema(t)),
           defaultValues: {
                email: "",
                password: "",

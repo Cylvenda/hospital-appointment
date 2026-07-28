@@ -36,6 +36,7 @@ import { useAppointmentStore } from "@/store/appointments/appointment.store"
 import { PasswordInput } from "@/components/password-input"
 import { Switch } from "@/components/ui/switch"
 import { filterAppointmentsForQueue } from "@/lib/appointment-queues"
+import { useTranslation } from "@/lib/i18n"
 import { getBackendFieldErrors } from "@/lib/backend-errors"
 
 type FormErrors = {
@@ -68,6 +69,7 @@ const emptyReceptionistForm = {
 type SheetMode = "view" | "edit" | null
 
 export default function ReceptionistPage() {
+  const { t } = useTranslation()
   const { overview, users, fetchOverview, fetchUsers, createUser, updateUser, deleteUser } = useAdminStore()
   const { appointments, initialize } = useAppointmentStore()
   const [sheetOpen, setSheetOpen] = useState(false)
@@ -132,7 +134,7 @@ export default function ReceptionistPage() {
         role: "receptionist",
         is_active: true,
       })
-      toast.success("Receptionist added successfully.")
+      toast.success(t("i18nAudit.receptionistManagement.added"))
       setForm(emptyReceptionistForm)
       setCreateErrors({})
       setSheetOpen(false)
@@ -147,7 +149,7 @@ export default function ReceptionistPage() {
       if (Object.keys(backendErrors).length > 0) {
         setCreateErrors(backendErrors)
       } else {
-        toast.error("Failed to add receptionist.")
+        toast.error(t("i18nAudit.receptionistManagement.addFailed"))
       }
     } finally {
       setIsSubmitting(false)
@@ -210,13 +212,13 @@ export default function ReceptionistPage() {
 
     try {
       await deleteUser(deleteTarget.uuid)
-      toast.success("Receptionist deleted successfully")
+      toast.success(t("i18nAudit.receptionistManagement.deleted"))
       if (activeUser?.uuid === deleteTarget.uuid) {
         closeSheet()
       }
       closeDeletePopup()
     } catch {
-      toast.error("Failed to delete receptionist")
+      toast.error(t("i18nAudit.receptionistManagement.deleteFailed"))
       closeDeletePopup()
     }
   }
@@ -237,7 +239,7 @@ export default function ReceptionistPage() {
         phone: editForm.phone,
         is_active: editForm.is_active,
       })
-      toast.success("Receptionist updated successfully")
+      toast.success(t("i18nAudit.receptionistManagement.updated"))
       closeSheet()
     } catch (error: unknown) {
       const backendErrors = getBackendFieldErrors(error, [
@@ -249,7 +251,7 @@ export default function ReceptionistPage() {
       if (Object.keys(backendErrors).length > 0) {
         setErrors(backendErrors)
       } else {
-        toast.error("Failed to update receptionist")
+        toast.error(t("i18nAudit.receptionistManagement.updateFailed"))
       }
     } finally {
       setEditSubmitting(false)
@@ -259,27 +261,27 @@ export default function ReceptionistPage() {
   return (
     <div className="w-full space-y-6 p-4 md:p-6">
       <div className="space-y-1">
-        <h1 className="font-heading text-2xl font-semibold">Receptionist Desk</h1>
+        <h1 className="font-heading text-2xl font-semibold">{t("i18nAudit.receptionistManagement.title")}</h1>
         <p className="text-sm text-muted-foreground">
-          Track front-desk workload, check-ins, and operational handoffs.
+          {t("i18nAudit.receptionistManagement.description")}
         </p>
       </div>
 
       <div className="grid gap-4 md:grid-cols-4">
         <div className="rounded-4xl border border-sidebar-border bg-card p-5 shadow-sm">
-          <p className="text-sm text-muted-foreground">Today's Check-ins</p>
+          <p className="text-sm text-muted-foreground">{t("i18nAudit.receptionistManagement.todaysCheckIns")}</p>
           <p className="mt-2 text-3xl font-semibold">{overview?.approved_appointments ?? 0}</p>
         </div>
         <div className="rounded-4xl border border-sidebar-border bg-card p-5 shadow-sm">
-          <p className="text-sm text-muted-foreground">Pending Confirmations</p>
+          <p className="text-sm text-muted-foreground">{t("i18nAudit.receptionistManagement.pendingConfirmations")}</p>
           <p className="mt-2 text-3xl font-semibold">{overview?.pending_appointments ?? 0}</p>
         </div>
         <div className="rounded-4xl border border-sidebar-border bg-card p-5 shadow-sm">
-          <p className="text-sm text-muted-foreground">Walk-ins Today</p>
+          <p className="text-sm text-muted-foreground">{t("i18nAudit.receptionistManagement.walkInsToday")}</p>
           <p className="mt-2 text-3xl font-semibold">{filterAppointmentsForQueue(appointments, "receptionist", "awaiting-payment").length}</p>
         </div>
         <div className="rounded-4xl border border-sidebar-border bg-card p-5 shadow-sm">
-          <p className="text-sm text-muted-foreground">Open Desks</p>
+          <p className="text-sm text-muted-foreground">{t("i18nAudit.receptionistManagement.openDesks")}</p>
           <p className="mt-2 text-3xl font-semibold">{receptionists.length}</p>
         </div>
       </div>
@@ -295,12 +297,12 @@ export default function ReceptionistPage() {
             value={search}
             onChange={(event) => setSearch(event.target.value)}
             className="h-11 rounded-2xl border-2 border-sidebar-border pl-11"
-            placeholder="Search receptionists..."
+            placeholder={t("i18nAudit.receptionistManagement.search")}
           />
         </div>
         <Button className="rounded-md" onClick={() => setSheetOpen(true)}>
           <HugeiconsIcon icon={PlusSignIcon} strokeWidth={1.8} />
-          Add Receptionist
+          {t("i18nAudit.receptionistManagement.add")}
         </Button>
       </div>
 
@@ -309,20 +311,20 @@ export default function ReceptionistPage() {
           <TableHeader className="bg-muted/50">
             <TableRow className="hover:bg-transparent">
               <TableHead className="w-12">#</TableHead>
-              <TableHead>Name</TableHead>
-              <TableHead>Email</TableHead>
-              <TableHead>Phone</TableHead>
-              <TableHead>Desk</TableHead>
-              <TableHead>Shift</TableHead>
-              <TableHead>Patients Handled</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
+              <TableHead>{t("common.name")}</TableHead>
+              <TableHead>{t("common.email")}</TableHead>
+              <TableHead>{t("common.phone")}</TableHead>
+              <TableHead>{t("i18nAudit.receptionistManagement.desk")}</TableHead>
+              <TableHead>{t("i18nAudit.receptionistManagement.shift")}</TableHead>
+              <TableHead>{t("i18nAudit.receptionistManagement.patientsHandled")}</TableHead>
+              <TableHead className="text-right">{t("common.actions")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {receptionists.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={8} className="h-24 text-center">
-                  No receptionists found.
+                  {t("i18nAudit.receptionistManagement.noneFound")}
                 </TableCell>
               </TableRow>
             ) : (
@@ -346,8 +348,8 @@ export default function ReceptionistPage() {
                       {user.phone}
                     </div>
                   </TableCell>
-                  <TableCell>Front Desk {String.fromCharCode(65 + index)}</TableCell>
-                  <TableCell>Active shift</TableCell>
+                  <TableCell>{t("i18nAudit.receptionistManagement.frontDesk", { desk: String.fromCharCode(65 + index) })}</TableCell>
+                  <TableCell>{t("i18nAudit.receptionistManagement.activeShift")}</TableCell>
                   <TableCell>
                     {filterAppointmentsForQueue(appointments, "receptionist", "today").length}
                   </TableCell>
@@ -389,14 +391,14 @@ export default function ReceptionistPage() {
       <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
         <SheetContent side="right" className="w-full sm:max-w-2xl">
           <SheetHeader className="border-b border-sidebar-border">
-            <SheetTitle>Add Receptionist</SheetTitle>
-            <SheetDescription>Create a receptionist account in the database.</SheetDescription>
+            <SheetTitle>{t("i18nAudit.receptionistManagement.add")}</SheetTitle>
+            <SheetDescription>{t("i18nAudit.receptionistManagement.createDescription")}</SheetDescription>
           </SheetHeader>
 
             <div className="space-y-4 p-6">
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">First Name</label>
+                  <label className="text-sm font-medium">{t("i18nAudit.receptionistManagement.firstName")}</label>
                   <Input
                     value={form.first_name}
                     onChange={(event) => {
@@ -413,7 +415,7 @@ export default function ReceptionistPage() {
                   )}
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">Last Name</label>
+                  <label className="text-sm font-medium">{t("i18nAudit.receptionistManagement.lastName")}</label>
                   <Input
                     value={form.last_name}
                     onChange={(event) => {
@@ -433,7 +435,7 @@ export default function ReceptionistPage() {
 
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">Email</label>
+                  <label className="text-sm font-medium">{t("common.email")}</label>
                   <Input
                     value={form.email}
                     onChange={(event) => {
@@ -450,7 +452,7 @@ export default function ReceptionistPage() {
                   )}
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">Phone</label>
+                  <label className="text-sm font-medium">{t("common.phone")}</label>
                   <Input
                     value={form.phone}
                     onChange={(event) => {
@@ -469,10 +471,10 @@ export default function ReceptionistPage() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="password">Initial Password</Label>
+                <Label htmlFor="password">{t("i18nAudit.receptionistManagement.initialPassword")}</Label>
                 <PasswordInput
                   id="password"
-                  placeholder="Minimum 8 characters"
+                  placeholder={t("i18nAudit.receptionistManagement.minimumPassword")}
                   className={`rounded-xl h-11 ${createErrors.password ? "border-red-500" : ""}`}
                   required
                   value={form.password}
@@ -488,20 +490,20 @@ export default function ReceptionistPage() {
                   <p className="text-sm text-red-500">{createErrors.password}</p>
                 )}
                 <p className="text-[10px] text-muted-foreground mt-1">
-                  The receptionist will be prompted to change this password on their first login.
+                  {t("i18nAudit.receptionistManagement.passwordHelp")}
                 </p>
               </div>
             </div>
 
           <SheetFooter className="border-t border-sidebar-border">
             <Button variant="outline" onClick={() => setSheetOpen(false)}>
-              Cancel
+              {t("common.cancel")}
             </Button>
             <Button
               onClick={handleCreateReceptionist}
               disabled={!isFormValid || isSubmitting}
             >
-              {isSubmitting ? "Saving..." : "Save Receptionist"}
+              {isSubmitting ? t("profile.saving") : t("i18nAudit.receptionistManagement.save")}
             </Button>
           </SheetFooter>
         </SheetContent>
@@ -511,24 +513,24 @@ export default function ReceptionistPage() {
         <SheetContent side="right" className="w-full sm:max-w-xl">
           <SheetHeader className="border-b border-sidebar-border">
             <SheetTitle>
-              {sheetMode === "view" ? "Receptionist Details" : "Edit Receptionist"}
+              {sheetMode === "view" ? t("i18nAudit.receptionistManagement.details") : t("i18nAudit.receptionistManagement.edit")}
             </SheetTitle>
             <SheetDescription>
               {sheetMode === "view"
-                ? "Review receptionist profile information."
-                : "Update receptionist account details."}
+                ? t("i18nAudit.receptionistManagement.review")
+                : t("i18nAudit.receptionistManagement.update")}
             </SheetDescription>
           </SheetHeader>
 
           <div className="flex-1 space-y-5 overflow-y-auto p-6">
             <div className="space-y-2">
-              <Label htmlFor="uuid">ID</Label>
+              <Label htmlFor="uuid">{t("adminUsers.id")}</Label>
               <Input id="uuid" value={editForm.uuid} disabled />
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-2">
-                <Label htmlFor="first_name">First Name</Label>
+                <Label htmlFor="first_name">{t("i18nAudit.receptionistManagement.firstName")}</Label>
                 <Input
                   id="first_name"
                   value={editForm.first_name}
@@ -542,7 +544,7 @@ export default function ReceptionistPage() {
                 )}
               </div>
               <div className="space-y-2">
-                <Label htmlFor="last_name">Last Name</Label>
+                <Label htmlFor="last_name">{t("i18nAudit.receptionistManagement.lastName")}</Label>
                 <Input
                   id="last_name"
                   value={editForm.last_name}
@@ -558,7 +560,7 @@ export default function ReceptionistPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">{t("common.email")}</Label>
               <Input
                 id="email"
                 type="email"
@@ -574,7 +576,7 @@ export default function ReceptionistPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="phone">Phone</Label>
+              <Label htmlFor="phone">{t("common.phone")}</Label>
               <Input
                 id="phone"
                 value={editForm.phone}
@@ -591,9 +593,9 @@ export default function ReceptionistPage() {
             {sheetMode === "edit" && (
               <div className="flex items-center justify-between rounded-3xl border border-sidebar-border bg-muted/20 p-4">
                 <div>
-                  <p className="text-sm font-medium">Status</p>
+                  <p className="text-sm font-medium">{t("common.status")}</p>
                   <p className="text-xs text-muted-foreground">
-                    {editForm.is_active ? "Active" : "Inactive"}
+                    {editForm.is_active ? t("adminPatients.active") : t("adminPatients.inactive")}
                   </p>
                 </div>
                 <Switch
@@ -606,13 +608,13 @@ export default function ReceptionistPage() {
             )}
           </div>
 
-          <SheetFooter className="border-t border-sidebar-border flex flex-row justify-between">
+          <SheetFooter className="flex flex-col-reverse items-stretch justify-between border-t border-sidebar-border sm:flex-row sm:items-center">
             <Button variant="outline" onClick={closeSheet}>
-              Close
+              {t("common.close")}
             </Button>
             {sheetMode === "edit" && (
               <Button onClick={handleSaveEdit} disabled={editSubmitting}>
-                {editSubmitting ? "Saving..." : "Save Changes"}
+                {editSubmitting ? t("profile.saving") : t("adminPatients.saveChanges")}
               </Button>
             )}
           </SheetFooter>
@@ -625,34 +627,31 @@ export default function ReceptionistPage() {
       >
         <SheetContent side="bottom" className="mx-auto my-auto w-full rounded-t-4xl sm:max-w-xl">
           <SheetHeader className="border-b border-sidebar-border">
-            <SheetTitle>Delete Receptionist</SheetTitle>
+            <SheetTitle>{t("i18nAudit.receptionistManagement.deleteTitle")}</SheetTitle>
             <SheetDescription>
-              This action cannot be undone. The receptionist account will be permanently removed.
+              {t("i18nAudit.receptionistManagement.deleteDescription")}
             </SheetDescription>
           </SheetHeader>
           <div className="space-y-4 p-6">
             <div className="rounded-3xl border border-rose-200 bg-rose-50/70 p-4 text-sm text-rose-700 dark:border-rose-500/20 dark:bg-rose-500/10 dark:text-rose-300">
               {deleteTarget ? (
-                <p>
-                  You are about to delete{" "}
-                  <span className="font-semibold">
-                    {deleteTarget.first_name} {deleteTarget.last_name}
-                  </span>{" "}
-                  with ID <span className="font-mono">{deleteTarget.uuid}</span>.
-                </p>
+                <p>{t("i18nAudit.receptionistManagement.aboutToDelete", {
+                  name: `${deleteTarget.first_name} ${deleteTarget.last_name}`,
+                  id: deleteTarget.uuid,
+                })}</p>
               ) : null}
             </div>
             <p className="text-sm text-muted-foreground">
-              You can close this popup if you want to keep the record.
+              {t("i18nAudit.receptionistManagement.keepRecord")}
             </p>
           </div>
           <SheetFooter className="border-t border-sidebar-border">
             <Button variant="outline" onClick={closeDeletePopup}>
-              Cancel
+              {t("common.cancel")}
             </Button>
             <Button variant="destructive" onClick={confirmDelete}>
               <HugeiconsIcon icon={Delete02Icon} strokeWidth={1.8} />
-              Delete
+              {t("common.delete")}
             </Button>
           </SheetFooter>
         </SheetContent>

@@ -28,6 +28,21 @@ export const metadata: Metadata = {
   },
   description:
     "A secure and efficient system for managing patient appointments, doctors, and hospital workflows.",
+  applicationName: "DPAMS",
+  keywords: [
+    "DPAMS",
+    "patient registration",
+    "hospital appointments",
+    "healthcare management",
+    "Tanzania healthcare",
+  ],
+  authors: [{ name: "DPAMS" }],
+  creator: "DPAMS",
+  publisher: "DPAMS",
+  robots: {
+    index: true,
+    follow: true,
+  },
   icons: {
     icon: "/meeet.webp",
     apple: "/meeet.webp",
@@ -45,10 +60,11 @@ export const metadata: Metadata = {
     siteName: "DPAMS",
     images: [
       {
-        url: "/meeet.webp",
+        url: "/opengraph-image",
         width: 1200,
         height: 630,
-        alt: "DPAMS Preview",
+        alt: "DPAMS patient registration and appointment management",
+        type: "image/png",
       },
     ],
     locale: "en_US",
@@ -59,7 +75,7 @@ export const metadata: Metadata = {
     title: "DPAMS - Digital Patient Pre-Registration and Appointment Management System",
     description:
       "A secure and efficient system for managing patient appointments, doctors, and hospital workflows.",
-    images: ["/meeet.webp"],
+    images: ["/opengraph-image"],
   },
 };
 

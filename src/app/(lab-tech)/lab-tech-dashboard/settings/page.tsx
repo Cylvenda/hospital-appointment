@@ -4,8 +4,10 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { motion } from "framer-motion"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { Settings05Icon } from "@hugeicons/core-free-icons"
+import { useTranslation } from "@/lib/i18n"
 
 export default function SettingsPage() {
+  const { t } = useTranslation()
   return (
     <motion.div
       className="mx-auto w-full max-w-6xl space-y-8 p-4 md:p-8"
@@ -16,10 +18,10 @@ export default function SettingsPage() {
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-foreground flex items-center gap-2">
             <HugeiconsIcon icon={Settings05Icon} className="w-8 h-8 text-primary" />
-            Settings
+            {t("settings.title")}
           </h1>
           <p className="text-muted-foreground mt-1">
-            Configure laboratory system preferences.
+            {t("labTech.manageAccountDetails")}
           </p>
         </div>
       </div>
@@ -27,14 +29,14 @@ export default function SettingsPage() {
       <Card className="shadow-sm border-muted/40">
         <CardHeader className="bg-muted/10 pb-4 border-b border-muted/20">
           <CardTitle className="text-lg font-semibold flex items-center gap-2 text-primary">
-            System Preferences
+            {t("settings.account")}
           </CardTitle>
           <CardDescription>
-            Adjust system behaviors
+            {t("settings.patientDescription")}
           </CardDescription>
         </CardHeader>
         <CardContent className="p-12 text-center text-muted-foreground">
-          <p>Settings Editor Coming Soon</p>
+          <p>{t("labTech.profileEditorComingSoon")}</p>
         </CardContent>
       </Card>
     </motion.div>

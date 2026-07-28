@@ -1,7 +1,7 @@
 "use client"
 
 import { FieldInput, FormInput, PasswordInput } from "@/components/customs/form"
-import { RegisterFormSchema } from "@/schema/user-form-schema"
+import { createRegisterFormSchema } from "@/schema/user-form-schema"
 import { Button } from "@/components/ui/button"
 import { Spinner } from "@/components/ui/spinner"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -14,7 +14,7 @@ import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { useTranslation } from "@/lib/i18n"
 
-type RegisterFormValues = z.infer<typeof RegisterFormSchema>
+type RegisterFormValues = z.infer<ReturnType<typeof createRegisterFormSchema>>
 
 const Register = () => {
      const { t } = useTranslation()
@@ -22,7 +22,7 @@ const Register = () => {
      const router = useRouter()
 
      const form = useForm<RegisterFormValues>({
-          resolver: zodResolver(RegisterFormSchema),
+          resolver: zodResolver(createRegisterFormSchema(t)),
           defaultValues: {
                email: "",
                phone: "",

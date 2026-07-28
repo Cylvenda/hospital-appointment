@@ -1,3 +1,5 @@
+"use client"
+
 import Link from "next/link"
 import { motion } from "framer-motion"
 import { HugeiconsIcon } from "@hugeicons/react"
@@ -9,6 +11,7 @@ import type { EducationalContent } from "@/store/health-education/health-educati
 import { useHealthEducationStore } from "@/store/health-education/health-education.store"
 import { formatPublishedDate } from "@/lib/format-published-date"
 import Image from "next/image"
+import { useTranslation } from "@/lib/i18n"
 
 interface ArticleCardProps {
     article: EducationalContent
@@ -17,6 +20,15 @@ interface ArticleCardProps {
 
 export function ArticleCard({ article, isBookmarked = false }: ArticleCardProps) {
     const { toggleBookmark } = useHealthEducationStore()
+    const { t, language } = useTranslation()
+    const locale = language === "sw" ? "sw-TZ" : "en-US"
+    const publishedDate = formatPublishedDate(
+        article.publishedAt,
+        article.createdAt,
+        undefined,
+        locale,
+        t("healthEducation.recentlyPublished")
+    )
 
     const handleBookmark = async (e: React.MouseEvent) => {
         e.preventDefault()
@@ -61,9 +73,9 @@ export function ArticleCard({ article, isBookmarked = false }: ArticleCardProps)
                         <div className="flex flex-col gap-1 text-xs text-muted-foreground">
                             <span className="flex min-w-0 items-center gap-1">
                                 <HugeiconsIcon icon={Time01Icon} className="w-3 h-3 shrink-0" />
-                                Published on {formatPublishedDate(article.publishedAt, article.createdAt)}
+                                {t("healthEducation.publishedOn", { date: publishedDate })}
                             </span>
-                            <span className="truncate">Written by {article.authorName}</span>
+                            <span className="truncate">{t("healthEducation.writtenBy", { author: article.authorName })}</span>
                         </div>
                         <h3 className="font-semibold text-lg line-clamp-2 group-hover:text-primary transition-colors">
                             {article.title}
@@ -72,7 +84,7 @@ export function ArticleCard({ article, isBookmarked = false }: ArticleCardProps)
                             {article.summary}
                         </p>
                         <div className="mt-auto pt-2 flex items-center text-sm font-medium text-primary">
-                            Read Article
+                            {t("healthEducation.readArticle")}
                             <HugeiconsIcon icon={ArrowRight01Icon} className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
                         </div>
                     </CardContent>

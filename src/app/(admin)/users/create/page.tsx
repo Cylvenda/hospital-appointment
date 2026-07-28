@@ -25,6 +25,7 @@ import Link from "next/link";
 import { useAdminStore } from "@/store/admin/admin.store";
 import { PasswordInput } from "@/components/password-input";
 import { getBackendFieldErrors } from "@/lib/backend-errors";
+import { useTranslation } from "@/lib/i18n";
 
 type UserRole = "user" | "receptionist" | "doctor" | "lab_tech";
 
@@ -51,6 +52,7 @@ const emptyForm = {
 };
 
 export default function CreateUserPage() {
+  const { t } = useTranslation();
   const { createUser, createDoctor } = useAdminStore();
   const [form, setForm] = useState(emptyForm);
   const [errors, setErrors] = useState<FormErrors>({});
@@ -61,78 +63,78 @@ export default function CreateUserPage() {
 
     // First name validation
     if (!form.first_name.trim()) {
-      newErrors.first_name = "First name is required";
+      newErrors.first_name = t("i18nAudit.createUser.firstNameRequired");
     } else if (form.first_name.trim().length < 2) {
-      newErrors.first_name = "First name must be at least 2 characters";
+      newErrors.first_name = t("i18nAudit.createUser.firstNameShort");
     } else if (!/^[a-zA-Z\s'-]+$/.test(form.first_name.trim())) {
       newErrors.first_name =
-        "First name can only contain letters, spaces, hyphens, and apostrophes";
+        t("i18nAudit.createUser.firstNameInvalid");
     }
 
     // Last name validation
     if (!form.last_name.trim()) {
-      newErrors.last_name = "Last name is required";
+      newErrors.last_name = t("i18nAudit.createUser.lastNameRequired");
     } else if (form.last_name.trim().length < 2) {
-      newErrors.last_name = "Last name must be at least 2 characters";
+      newErrors.last_name = t("i18nAudit.createUser.lastNameShort");
     } else if (!/^[a-zA-Z\s'-]+$/.test(form.last_name.trim())) {
       newErrors.last_name =
-        "Last name can only contain letters, spaces, hyphens, and apostrophes";
+        t("i18nAudit.createUser.lastNameInvalid");
     }
 
     // Email validation
     if (!form.email.trim()) {
-      newErrors.email = "Email is required";
+      newErrors.email = t("i18nAudit.createUser.emailRequired");
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) {
-      newErrors.email = "Please enter a valid email address";
+      newErrors.email = t("i18nAudit.createUser.emailInvalid");
     }
 
     // Phone validation
     if (!form.phone.trim()) {
-      newErrors.phone = "Phone number is required";
+      newErrors.phone = t("i18nAudit.createUser.phoneRequired");
     } else if (!/^[\d\s\-\+\(\)]+$/.test(form.phone.trim())) {
       newErrors.phone =
-        "Phone number can only contain digits, spaces, and basic symbols";
+        t("i18nAudit.createUser.phoneInvalid");
     } else if (form.phone.replace(/\D/g, "").length < 10) {
-      newErrors.phone = "Phone number must contain at least 10 digits";
+      newErrors.phone = t("i18nAudit.createUser.phoneShort");
     }
 
     // Password validation
     if (!form.password) {
-      newErrors.password = "Password is required";
+      newErrors.password = t("i18nAudit.createUser.passwordRequired");
     } else if (form.password.length < 8) {
-      newErrors.password = "Password must be at least 8 characters long";
+      newErrors.password = t("i18nAudit.createUser.passwordShort");
     } else if (!/(?=.*[a-z])/.test(form.password)) {
       newErrors.password =
-        "Password must contain at least one lowercase letter";
+        t("i18nAudit.createUser.passwordLowercase");
     } else if (!/(?=.*[A-Z])/.test(form.password)) {
       newErrors.password =
-        "Password must contain at least one uppercase letter";
+        t("i18nAudit.createUser.passwordUppercase");
     } else if (!/(?=.*\d)/.test(form.password)) {
-      newErrors.password = "Password must contain at least one number";
+      newErrors.password = t("i18nAudit.createUser.passwordNumber");
     } else if (!/(?=.*[@$!%*?&])/.test(form.password)) {
       newErrors.password =
-        "Password must contain at least one special character (@$!%*?&)";
+        t("i18nAudit.createUser.passwordSpecial");
     }
 
     // Confirm password validation
     if (!form.confirm_password) {
-      newErrors.confirm_password = "Please confirm your password";
+      newErrors.confirm_password = t("i18nAudit.createUser.confirmRequired");
     } else if (form.password !== form.confirm_password) {
-      newErrors.confirm_password = "Passwords do not match";
+      newErrors.confirm_password = t("i18nAudit.createUser.passwordMismatch");
     }
 
     // Role validation
     if (!form.role) {
-      newErrors.role = "Please select a user role";
+      newErrors.role = t("i18nAudit.createUser.roleRequired");
     }
 
     // License number validation (only for doctors)
     if (form.role === "doctor") {
       if (!form.license_number.trim()) {
-        newErrors.license_number = "License number is required for doctors";
+        newErrors.license_number = t("i18nAudit.createUser.licenseRequired");
       } else if (form.license_number.trim().length < 5) {
         newErrors.license_number =
-          "License number must be at least 5 characters";
+          t("i18nAudit.createUser.licenseShort");
       }
     }
 
@@ -144,7 +146,7 @@ export default function CreateUserPage() {
     e.preventDefault();
 
     if (!validateForm()) {
-      toast.error("Please fix the errors in the form");
+      toast.error(t("i18nAudit.createUser.fixErrors"));
       return;
     }
 
@@ -162,7 +164,7 @@ export default function CreateUserPage() {
           license_number: form.license_number.trim(),
           is_available: true,
         });
-        toast.success("Doctor created successfully!");
+        toast.success(t("i18nAudit.createUser.created", { role: t("roleLabels.doctor") }));
       } else {
         await createUser({
           first_name: form.first_name.trim(),
@@ -174,7 +176,7 @@ export default function CreateUserPage() {
           is_active: true,
         });
         toast.success(
-          `${form.role.charAt(0).toUpperCase() + form.role.slice(1)} created successfully!`,
+          t("i18nAudit.createUser.created", { role: t(`roleLabels.${form.role}`) }),
         );
       }
 
@@ -194,7 +196,7 @@ export default function CreateUserPage() {
       if (Object.keys(backendErrors).length > 0) {
         setErrors((prev) => ({ ...prev, ...backendErrors }));
       } else {
-        toast.error(`Failed to create ${form.role}. Please try again.`);
+        toast.error(t("i18nAudit.createUser.createFailed", { role: t(`roleLabels.${form.role}`) }));
       }
     } finally {
       setIsSubmitting(false);
@@ -221,9 +223,9 @@ export default function CreateUserPage() {
     if (/\d/.test(password)) score++;
     if (/[@$!%*?&]/.test(password)) score++;
 
-    if (score <= 2) return { score, label: "Weak", color: "text-red-500" };
-    if (score <= 4) return { score, label: "Medium", color: "text-yellow-500" };
-    return { score, label: "Strong", color: "text-green-500" };
+    if (score <= 2) return { score, label: t("i18nAudit.createUser.weak"), color: "text-red-500" };
+    if (score <= 4) return { score, label: t("i18nAudit.createUser.medium"), color: "text-yellow-500" };
+    return { score, label: t("i18nAudit.createUser.strong"), color: "text-green-500" };
   };
 
   const passwordStrength = getPasswordStrength(form.password);
@@ -234,14 +236,13 @@ export default function CreateUserPage() {
         <Button variant="outline" size="sm" asChild>
           <Link href="/users">
             <HugeiconsIcon icon={ArrowLeftIcon} strokeWidth={1.8} />
-            Back to Users
+            {t("i18nAudit.createUser.back")}
           </Link>
         </Button>
         <div>
-          <h1 className="text-3xl font-bold">Create New User</h1>
+          <h1 className="text-3xl font-bold">{t("i18nAudit.createUser.title")}</h1>
           <p className="text-muted-foreground">
-            Add a new user, receptionist, lab technician, or doctor to the
-            system
+            {t("i18nAudit.createUser.description")}
           </p>
         </div>
       </div>
@@ -250,29 +251,29 @@ export default function CreateUserPage() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <HugeiconsIcon icon={UserPlus} strokeWidth={1.8} />
-            User Information
+            {t("i18nAudit.createUser.information")}
           </CardTitle>
           <CardDescription>
-            Fill in the details below to create a new user account
+            {t("i18nAudit.createUser.informationDescription")}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Role Selection */}
             <div className="space-y-2">
-              <Label htmlFor="role">User Role *</Label>
+              <Label htmlFor="role">{t("i18nAudit.createUser.role")}</Label>
               <Select
                 value={form.role}
                 onValueChange={(value) => handleInputChange("role", value)}
               >
                 <SelectTrigger className={errors.role ? "border-red-500" : ""}>
-                  <SelectValue placeholder="Select user role" />
+                  <SelectValue placeholder={t("i18nAudit.createUser.selectRole")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="user">Regular User</SelectItem>
-                  <SelectItem value="receptionist">Receptionist</SelectItem>
-                  <SelectItem value="doctor">Doctor</SelectItem>
-                  <SelectItem value="lab_tech">Lab Technician</SelectItem>
+                  <SelectItem value="user">{t("i18nAudit.createUser.regularUser")}</SelectItem>
+                  <SelectItem value="receptionist">{t("roleLabels.receptionist")}</SelectItem>
+                  <SelectItem value="doctor">{t("roleLabels.doctor")}</SelectItem>
+                  <SelectItem value="lab_tech">{t("roleLabels.lab_tech")}</SelectItem>
                 </SelectContent>
               </Select>
               {errors.role && (
@@ -283,7 +284,7 @@ export default function CreateUserPage() {
             {/* Name Fields */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="first_name">First Name *</Label>
+                <Label htmlFor="first_name">{t("i18nAudit.createUser.firstName")}</Label>
                 <Input
                   id="first_name"
                   value={form.first_name}
@@ -291,7 +292,7 @@ export default function CreateUserPage() {
                     handleInputChange("first_name", e.target.value)
                   }
                   className={errors.first_name ? "border-red-500" : ""}
-                  placeholder="Enter first name"
+                  placeholder={t("i18nAudit.createUser.enterFirstName")}
                 />
                 {errors.first_name && (
                   <p className="text-sm text-red-500">{errors.first_name}</p>
@@ -299,7 +300,7 @@ export default function CreateUserPage() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="last_name">Last Name *</Label>
+                <Label htmlFor="last_name">{t("i18nAudit.createUser.lastName")}</Label>
                 <Input
                   id="last_name"
                   value={form.last_name}
@@ -307,7 +308,7 @@ export default function CreateUserPage() {
                     handleInputChange("last_name", e.target.value)
                   }
                   className={errors.last_name ? "border-red-500" : ""}
-                  placeholder="Enter last name"
+                  placeholder={t("i18nAudit.createUser.enterLastName")}
                 />
                 {errors.last_name && (
                   <p className="text-sm text-red-500">{errors.last_name}</p>
@@ -318,7 +319,7 @@ export default function CreateUserPage() {
             {/* Contact Information */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="email">Email Address *</Label>
+                <Label htmlFor="email">{t("i18nAudit.createUser.email")}</Label>
                 <Input
                   id="email"
                   type="email"
@@ -333,7 +334,7 @@ export default function CreateUserPage() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="phone">Phone Number *</Label>
+                <Label htmlFor="phone">{t("i18nAudit.createUser.phone")}</Label>
                 <Input
                   id="phone"
                   value={form.phone}
@@ -350,7 +351,7 @@ export default function CreateUserPage() {
             {/* Password Fields */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="password">Password *</Label>
+                <Label htmlFor="password">{t("i18nAudit.createUser.password")}</Label>
                 <PasswordInput
                   id="password"
                   value={form.password}
@@ -358,7 +359,7 @@ export default function CreateUserPage() {
                     handleInputChange("password", e.target.value)
                   }
                   className={errors.password ? "border-red-500" : ""}
-                  placeholder="Enter password"
+                  placeholder={t("i18nAudit.createUser.enterPassword")}
                   required
                 />
                 {errors.password && (
@@ -392,7 +393,7 @@ export default function CreateUserPage() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="confirm_password">Confirm Password *</Label>
+                <Label htmlFor="confirm_password">{t("i18nAudit.createUser.confirmPassword")}</Label>
                 <PasswordInput
                   id="confirm_password"
                   value={form.confirm_password}
@@ -400,7 +401,7 @@ export default function CreateUserPage() {
                     handleInputChange("confirm_password", e.target.value)
                   }
                   className={errors.confirm_password ? "border-red-500" : ""}
-                  placeholder="Confirm password"
+                  placeholder={t("i18nAudit.createUser.confirmPasswordPlaceholder")}
                   required
                 />
                 {errors.confirm_password && (
@@ -414,7 +415,7 @@ export default function CreateUserPage() {
             {/* License Number (only for doctors) */}
             {form.role === "doctor" && (
               <div className="space-y-2">
-                <Label htmlFor="license_number">License Number *</Label>
+                <Label htmlFor="license_number">{t("i18nAudit.createUser.license")}</Label>
                 <Input
                   id="license_number"
                   value={form.license_number}
@@ -422,7 +423,7 @@ export default function CreateUserPage() {
                     handleInputChange("license_number", e.target.value)
                   }
                   className={errors.license_number ? "border-red-500" : ""}
-                  placeholder="Enter medical license number"
+                  placeholder={t("i18nAudit.createUser.enterLicense")}
                 />
                 {errors.license_number && (
                   <p className="text-sm text-red-500">
@@ -434,7 +435,7 @@ export default function CreateUserPage() {
 
             {/* Password Requirements */}
             <div className="bg-muted/50 p-4 rounded-lg">
-              <h4 className="font-medium mb-2">Password Requirements:</h4>
+              <h4 className="font-medium mb-2">{t("i18nAudit.createUser.requirements")}</h4>
               <ul className="text-sm text-muted-foreground space-y-1">
                 <li className="flex items-center gap-2">
                   <span
@@ -444,7 +445,7 @@ export default function CreateUserPage() {
                   >
                     •
                   </span>
-                  At least 8 characters long
+                  {t("i18nAudit.createUser.eightCharacters")}
                 </li>
                 <li className="flex items-center gap-2">
                   <span
@@ -454,7 +455,7 @@ export default function CreateUserPage() {
                   >
                     •
                   </span>
-                  Contains lowercase letter
+                  {t("i18nAudit.createUser.lowercase")}
                 </li>
                 <li className="flex items-center gap-2">
                   <span
@@ -464,7 +465,7 @@ export default function CreateUserPage() {
                   >
                     •
                   </span>
-                  Contains uppercase letter
+                  {t("i18nAudit.createUser.uppercase")}
                 </li>
                 <li className="flex items-center gap-2">
                   <span
@@ -472,7 +473,7 @@ export default function CreateUserPage() {
                   >
                     •
                   </span>
-                  Contains number
+                  {t("i18nAudit.createUser.number")}
                 </li>
                 <li className="flex items-center gap-2">
                   <span
@@ -482,7 +483,7 @@ export default function CreateUserPage() {
                   >
                     •
                   </span>
-                  Contains special character (@$!%*?&)
+                  {t("i18nAudit.createUser.special")}
                 </li>
               </ul>
             </div>
@@ -495,8 +496,8 @@ export default function CreateUserPage() {
                 className="flex-1"
               >
                 {isSubmitting
-                  ? "Creating User..."
-                  : `Create ${form.role ? form.role.charAt(0).toUpperCase() + form.role.slice(1) : "User"}`}
+                  ? t("i18nAudit.createUser.creating")
+                  : t("i18nAudit.createUser.create", { role: t(`roleLabels.${form.role || "user"}`) })}
               </Button>
               <Button
                 type="button"
@@ -507,7 +508,7 @@ export default function CreateUserPage() {
                 }}
                 disabled={isSubmitting}
               >
-                Clear Form
+                {t("i18nAudit.createUser.clear")}
               </Button>
             </div>
           </form>

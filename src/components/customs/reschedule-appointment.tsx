@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { toast } from "react-toastify"
+import { useTranslation } from "@/lib/i18n"
 import { appointmentService } from "@/api/services/appointment.service"
 import type {
   Appointment,
@@ -25,6 +26,7 @@ import {
 } from "@/components/ui/select"
 
 export function RescheduleAppointment({ appointment }: { appointment: Appointment }) {
+  const { t } = useTranslation()
   const [open, setOpen] = useState(false)
   const [days, setDays] = useState<AvailableAppointmentDay[]>([])
   const [slots, setSlots] = useState<AvailableAppointmentSlot[]>([])
@@ -38,8 +40,8 @@ export function RescheduleAppointment({ appointment }: { appointment: Appointmen
     void appointmentService
       .listAvailableDays(appointment.doctorId)
       .then((response) => setDays(response.data))
-      .catch(() => toast.error("Unable to load available days."))
-  }, [appointment.doctorId, open])
+      .catch(() => toast.error(t("sharedAudit.availableDaysError")))
+  }, [appointment.doctorId, open, t])
 
   useEffect(() => {
     setSlots([])
@@ -48,8 +50,8 @@ export function RescheduleAppointment({ appointment }: { appointment: Appointmen
     void appointmentService
       .listAvailableSlots(appointment.doctorId, date)
       .then((response) => setSlots(response.data))
-      .catch(() => toast.error("Unable to load available slots."))
-  }, [appointment.doctorId, date])
+      .catch(() => toast.error(t("sharedAudit.availableSlotsError")))
+  }, [appointment.doctorId, date, t])
 
   const save = async () => {
     if (!date || !startTime) return
@@ -62,9 +64,9 @@ export function RescheduleAppointment({ appointment }: { appointment: Appointmen
       )
       await fetchAppointments()
       setOpen(false)
-      toast.success("Appointment rescheduled.")
+      toast.success(t("sharedAudit.appointmentRescheduled"))
     } catch {
-      toast.error("Appointment could not be rescheduled.")
+      toast.error(t("sharedAudit.appointmentRescheduleError"))
     } finally {
       setSaving(false)
     }
@@ -73,16 +75,16 @@ export function RescheduleAppointment({ appointment }: { appointment: Appointmen
   return (
     <>
       <Button variant="outline" onClick={() => setOpen(true)}>
-        Reschedule
+        {t("sharedAudit.reschedule")}
       </Button>
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Reschedule appointment</DialogTitle>
+            <DialogTitle>{t("sharedAudit.rescheduleAppointment")}</DialogTitle>
           </DialogHeader>
           <Select value={date} onValueChange={setDate}>
             <SelectTrigger>
-              <SelectValue placeholder="Select available day" />
+              <SelectValue placeholder={t("sharedAudit.selectAvailableDay")} />
             </SelectTrigger>
             <SelectContent>
               {days.map((day) => (
@@ -94,7 +96,7 @@ export function RescheduleAppointment({ appointment }: { appointment: Appointmen
           </Select>
           <Select value={startTime} onValueChange={setStartTime} disabled={!date}>
             <SelectTrigger>
-              <SelectValue placeholder="Select available time" />
+              <SelectValue placeholder={t("sharedAudit.selectAvailableTime")} />
             </SelectTrigger>
             <SelectContent>
               {slots.map((slot) => (

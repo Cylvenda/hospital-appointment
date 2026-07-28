@@ -12,12 +12,14 @@ import {
 } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
+import { useTranslation } from "@/lib/i18n"
 
 type Props = {
      onConfirm: (reason: string) => void
 }
 
 export const CancelAppointment = ({ onConfirm }: Props) => {
+     const { t } = useTranslation()
      const [open, setOpen] = useState(false)
      const [reason, setReason] = useState("")
 
@@ -32,7 +34,7 @@ export const CancelAppointment = ({ onConfirm }: Props) => {
           <Dialog open={open} onOpenChange={setOpen}>
                <DialogTrigger asChild>
                     <Button variant="destructive" className="rounded-md">
-                         Cancel Appointment
+                         {t("sharedAudit.cancelAppointment")}
                     </Button>
                </DialogTrigger>
 
@@ -40,30 +42,28 @@ export const CancelAppointment = ({ onConfirm }: Props) => {
                     {/* HEADER */}
                     <DialogHeader className="space-y-2">
                          <DialogTitle className="text-xl font-semibold text-red-600">
-                              Cancel Appointment
+                              {t("sharedAudit.cancelAppointment")}
                          </DialogTitle>
 
                          <DialogDescription className="leading-6 text-muted-foreground">
-                              You are about to cancel this appointment. This action may affect your
-                              booking history and doctor scheduling availability.
+                              {t("sharedAudit.cancelDescription")}
                          </DialogDescription>
                     </DialogHeader>
 
                     {/* INFO BOX */}
                     <div className="rounded-xl border border-red-700 bg-red-200 p-4 text-sm space-y-1">
                          <p className="font-medium text-foreground">
-                              Why we ask for a reason
+                              {t("sharedAudit.cancelReasonTitle")}
                          </p>
                          <p className="text-muted-foreground">
-                              Your feedback helps us improve scheduling efficiency and reduce
-                              missed appointments for other patients.
+                              {t("sharedAudit.cancelReasonHelp")}
                          </p>
                     </div>
 
                     {/* TEXTAREA */}
                     <div className="space-y-2">
                          <Textarea
-                              placeholder="Please briefly explain why you are cancelling..."
+                              placeholder={t("sharedAudit.cancelReasonPlaceholder")}
                               value={reason}
                               onChange={(e) => setReason(e.target.value)}
                               className="min-h-27.5 rounded-lg"
@@ -71,7 +71,7 @@ export const CancelAppointment = ({ onConfirm }: Props) => {
 
                          {!reason.trim() && (
                               <p className="text-xs text-muted-foreground">
-                                   A reason is required to continue
+                                   {t("sharedAudit.cancelReasonRequired")}
                               </p>
                          )}
                     </div>
@@ -83,7 +83,7 @@ export const CancelAppointment = ({ onConfirm }: Props) => {
                               onClick={() => setOpen(false)}
                               className="rounded-md"
                          >
-                              Keep Appointment
+                              {t("sharedAudit.keepAppointment")}
                          </Button>
 
                          <Button
@@ -92,7 +92,7 @@ export const CancelAppointment = ({ onConfirm }: Props) => {
                               disabled={!reason.trim()}
                               className="rounded-md"
                          >
-                              Confirm Cancellation
+                              {t("sharedAudit.confirmCancellation")}
                          </Button>
                     </DialogFooter>
                </DialogContent>

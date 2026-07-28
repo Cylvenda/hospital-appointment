@@ -9,8 +9,10 @@ import { filterAppointmentsForQueue } from "@/lib/appointment-queues"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { RefreshIcon, Loading, Medicine01Icon } from "@hugeicons/core-free-icons"
 import { cn } from "@/lib/utils"
+import { useTranslation } from "@/lib/i18n"
 
 export default function DoctorPendingAppointmentsPage() {
+  const { t } = useTranslation()
   const {
     appointments,
     loading,
@@ -36,7 +38,7 @@ export default function DoctorPendingAppointmentsPage() {
       <div className="w-full h-[400px] flex items-center justify-center">
          <div className="flex flex-col items-center gap-4">
               <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin" />
-              <p className="text-sm font-bold text-muted-foreground animate-pulse">Syncing your queue...</p>
+              <p className="text-sm font-bold text-muted-foreground animate-pulse">{t("doctorAppointmentLists.syncingQueue")}</p>
          </div>
       </div>
     )
@@ -50,13 +52,13 @@ export default function DoctorPendingAppointmentsPage() {
         </div>
         <div className="space-y-1">
              <p className="text-lg font-bold text-rose-900">
-               {error || "Failed to load your schedule."}
+               {error || t("doctorAppointmentLists.loadScheduleError")}
              </p>
-             <p className="text-sm text-rose-700/60">Please try again later.</p>
+             <p className="text-sm text-rose-700/60">{t("doctorAppointmentLists.tryLater")}</p>
         </div>
         <Button onClick={() => void initialize()} variant="outline" className="rounded-2xl border-rose-200 text-rose-700 hover:bg-rose-100">
           <HugeiconsIcon icon={RefreshIcon} className="mr-2 w-4 h-4" />
-          Retry Sync
+          {t("doctorAppointmentLists.retrySync")}
         </Button>
       </div>
     )
@@ -66,14 +68,14 @@ export default function DoctorPendingAppointmentsPage() {
     <div className="w-full max-w-8xl space-y-6 p-4 md:p-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-black tracking-tight italic sm:text-3xl">Assigned Patients</h1>
+          <h1 className="text-2xl font-black tracking-tight italic sm:text-3xl">{t("doctorAppointmentLists.assignedTitle")}</h1>
           <p className="mt-1 max-w-2xl text-sm font-medium text-muted-foreground sm:text-base">
-            Appointments assigned to you and waiting for clinical review.
+            {t("doctorAppointmentLists.assignedDescription")}
           </p>
         </div>
         <div className="flex items-center gap-3 rounded-2xl border border-muted-foreground/10 bg-muted/30 px-4 py-2.5">
              <div className="text-right">
-                  <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground opacity-60">Ready Now</p>
+                  <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground opacity-60">{t("doctorAppointmentLists.readyNow")}</p>
                   <p className="text-lg font-black">{pendingAppointments.length}</p>
              </div>
              <div className="mx-1 h-7 w-px bg-muted-foreground/10" />
@@ -100,9 +102,9 @@ export default function DoctorPendingAppointmentsPage() {
                     <HugeiconsIcon icon={Loading} className="h-7 w-7" />
                </div>
                <div className="space-y-1">
-                    <p className="text-xl font-black text-foreground">Queue is Clear</p>
+                    <p className="text-xl font-black text-foreground">{t("doctorAppointmentLists.queueClear")}</p>
                     <p className="mx-auto max-w-xs text-sm font-medium text-muted-foreground">
-                      No assigned appointments are ready for assessment right now.
+                      {t("doctorAppointmentLists.queueClearDescription")}
                     </p>
                </div>
              </motion.div>

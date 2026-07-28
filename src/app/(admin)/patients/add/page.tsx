@@ -18,8 +18,10 @@ import { toast } from "react-toastify"
 import Link from "next/link"
 import { useAdminStore } from "@/store/admin/admin.store"
 import { PasswordInput } from "@/components/password-input"
+import { useTranslation } from "@/lib/i18n"
 
 export default function AddPatientPage() {
+  const { t } = useTranslation()
   const router = useRouter()
   const { createUser } = useAdminStore()
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -41,10 +43,10 @@ export default function AddPatientPage() {
         role: "patient",
         is_active: true,
       })
-      toast.success("Patient registered successfully!")
+      toast.success(t("accountCreation.patientCreated"))
       router.push("/admin/patients")
     } catch {
-      toast.error("Failed to register patient. Please check your details.")
+      toast.error(t("accountCreation.patientCreateError"))
     } finally {
       setIsSubmitting(false)
     }
@@ -59,8 +61,8 @@ export default function AddPatientPage() {
           </Link>
         </Button>
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Register Patient</h1>
-          <p className="text-muted-foreground text-sm">Add a new patient record to the clinic database.</p>
+          <h1 className="text-3xl font-bold tracking-tight">{t("accountCreation.patientTitle")}</h1>
+          <p className="text-muted-foreground text-sm">{t("accountCreation.patientDescription")}</p>
         </div>
       </div>
 
@@ -68,20 +70,20 @@ export default function AddPatientPage() {
         <CardHeader className="bg-primary/5 border-b border-primary/10">
           <CardTitle className="flex items-center gap-2">
             <HugeiconsIcon icon={Person} className="w-5 h-5 text-primary" />
-            Patient Details
+            {t("accountCreation.patientDetails")}
           </CardTitle>
           <CardDescription>
-            Enter the patient&apos;s contact and account information.
+            {t("accountCreation.patientDetailsDescription")}
           </CardDescription>
         </CardHeader>
-        <CardContent className="p-8">
+        <CardContent className="p-4 sm:p-6 md:p-8">
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
-                <Label htmlFor="first_name">First Name</Label>
+                <Label htmlFor="first_name">{t("accountCreation.firstName")}</Label>
                 <Input
                   id="first_name"
-                  placeholder="e.g. Michael"
+                  placeholder={t("accountCreation.firstNameExample")}
                   className="rounded-xl h-11"
                   required
                   value={form.first_name}
@@ -89,10 +91,10 @@ export default function AddPatientPage() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="last_name">Last Name</Label>
+                <Label htmlFor="last_name">{t("accountCreation.lastName")}</Label>
                 <Input
                   id="last_name"
-                  placeholder="e.g. Jordan"
+                  placeholder={t("accountCreation.lastNameExample")}
                   className="rounded-xl h-11"
                   required
                   value={form.last_name}
@@ -102,7 +104,7 @@ export default function AddPatientPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="email">Email Address</Label>
+              <Label htmlFor="email">{t("accountCreation.email")}</Label>
               <Input
                 id="email"
                 type="email"
@@ -115,7 +117,7 @@ export default function AddPatientPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="phone">Phone Number</Label>
+              <Label htmlFor="phone">{t("accountCreation.phone")}</Label>
               <Input
                 id="phone"
                 placeholder="+1 234 567 890"
@@ -127,10 +129,10 @@ export default function AddPatientPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="password">Initial Password</Label>
+              <Label htmlFor="password">{t("accountCreation.password")}</Label>
               <PasswordInput
                 id="password"
-                placeholder="Minimum 8 characters"
+                placeholder={t("accountCreation.minimumPassword")}
                 className="rounded-xl h-11"
                 required
                 value={form.password}
@@ -147,12 +149,12 @@ export default function AddPatientPage() {
                 {isSubmitting ? (
                   <span className="flex items-center gap-2">
                     <HugeiconsIcon icon={RefreshIcon} className="w-5 h-5 animate-spin" />
-                    Registering...
+                    {t("accountCreation.registering")}
                   </span>
                 ) : (
                   <span className="flex items-center gap-2">
                     <HugeiconsIcon icon={CheckCircle} className="w-5 h-5" />
-                    Add Patient Record
+                    {t("accountCreation.addPatient")}
                   </span>
                 )}
               </Button>

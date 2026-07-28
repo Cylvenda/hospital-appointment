@@ -5,8 +5,10 @@ import { toast } from "react-toastify"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { useAuthUserStore } from "@/store/auth/userAuth.store"
+import { useTranslation } from "@/lib/i18n"
 
 export default function ReceptionistProfilePage() {
+  const { t } = useTranslation()
   const user = useAuthUserStore((state) => state.user)
   const updateProfile = useAuthUserStore((state) => state.updateProfile)
   const [draft, setDraft] = useState<{
@@ -26,26 +28,26 @@ export default function ReceptionistProfilePage() {
 
     if (updated) {
       setDraft({})
-      toast.success("Profile updated successfully.")
+      toast.success(t("staffProfile.updated"))
       return
     }
 
-    toast.error("Failed to update profile.")
+    toast.error(t("staffProfile.updateError"))
   }
 
   return (
     <div className="w-full max-w-8xl space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold">Profile</h1>
+        <h1 className="text-2xl font-semibold">{t("staffProfile.title")}</h1>
         <p className="text-sm text-muted-foreground">
-          Update receptionist contact details and account information.
+          {t("staffProfile.receptionistDescription")}
         </p>
       </div>
 
       <div className="rounded-4xl border border-sidebar-border bg-card p-6 shadow-sm">
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-2">
-            <label className="text-sm font-medium">First Name</label>
+            <label className="text-sm font-medium">{t("staffProfile.firstName")}</label>
             <Input
               value={draft.first_name ?? user?.first_name ?? ""}
               onChange={(event) =>
@@ -54,7 +56,7 @@ export default function ReceptionistProfilePage() {
             />
           </div>
           <div className="space-y-2">
-            <label className="text-sm font-medium">Last Name</label>
+            <label className="text-sm font-medium">{t("staffProfile.lastName")}</label>
             <Input
               value={draft.last_name ?? user?.last_name ?? ""}
               onChange={(event) =>
@@ -63,7 +65,7 @@ export default function ReceptionistProfilePage() {
             />
           </div>
           <div className="space-y-2">
-            <label className="text-sm font-medium">Email</label>
+            <label className="text-sm font-medium">{t("staffProfile.email")}</label>
             <Input
               value={draft.email ?? user?.email ?? ""}
               onChange={(event) =>
@@ -72,7 +74,7 @@ export default function ReceptionistProfilePage() {
             />
           </div>
           <div className="space-y-2">
-            <label className="text-sm font-medium">Phone</label>
+            <label className="text-sm font-medium">{t("staffProfile.phone")}</label>
             <Input
               value={draft.phone ?? user?.phone ?? ""}
               onChange={(event) =>
@@ -83,7 +85,7 @@ export default function ReceptionistProfilePage() {
         </div>
 
         <div className="mt-5 flex justify-end">
-          <Button onClick={() => void handleSave()}>Save Changes</Button>
+          <Button onClick={() => void handleSave()}>{t("staffProfile.saveChanges")}</Button>
         </div>
       </div>
     </div>

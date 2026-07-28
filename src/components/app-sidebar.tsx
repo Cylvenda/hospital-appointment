@@ -25,7 +25,6 @@ import {
 import { Separator } from "./ui/separator"
 import { useAuthUserStore } from "@/store/auth/userAuth.store"
 import { useTranslation } from "@/lib/i18n"
-import { formatRoleLabel } from "@/lib/format-role"
 
 const navMain = [
   {
@@ -164,11 +163,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { t } = useTranslation()
   const user = useAuthUserStore((state) => state.user)
   const displayName =
-    `${user?.first_name ?? ""} ${user?.last_name ?? ""}`.trim() || "User"
+    `${user?.first_name ?? ""} ${user?.last_name ?? ""}`.trim() || t("roleLabels.user")
   const roleLabel = user?.role
     ? user.role === "admin"
-      ? "ICT Officer"
-      : formatRoleLabel(user.role)
+      ? t("roleLabels.admin")
+      : t(`roleLabels.${user.role}`)
     : t("nav.authenticatedUser")
 
   return (

@@ -2,6 +2,7 @@ import enMessages from "../messages/en.json"
 import swMessages from "../messages/sw.json"
 import { useLanguageStore } from "@/store/language/language.store"
 import type { Language } from "@/store/language/language.store"
+import { useCallback } from "react"
 
 const messages = {
   en: enMessages,
@@ -70,9 +71,11 @@ export function getTranslationValue(
 export function useTranslation() {
   const { language } = useLanguageStore()
 
-  const t = (key: string, params?: Record<string, string | number>) => {
-    return getTranslationValue(key, language, params)
-  }
+  const t = useCallback(
+    (key: string, params?: Record<string, string | number>) =>
+      getTranslationValue(key, language, params),
+    [language]
+  )
 
   return { t, language }
 }

@@ -1,14 +1,18 @@
+"use client"
+
 import * as React from "react"
 import { Slot } from "radix-ui"
 
 import { cn } from "@/lib/utils"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { ArrowRight01Icon, MoreHorizontalCircle01Icon } from "@hugeicons/core-free-icons"
+import { useTranslation } from "@/lib/i18n"
 
 function Breadcrumb({ className, ...props }: React.ComponentProps<"nav">) {
+  const { t } = useTranslation()
   return (
     <nav
-      aria-label="breadcrumb"
+      aria-label={t("accessibility.breadcrumb")}
       data-slot="breadcrumb"
       className={cn(className)}
       {...props}
@@ -94,6 +98,7 @@ function BreadcrumbEllipsis({
   className,
   ...props
 }: React.ComponentProps<"span">) {
+  const { t } = useTranslation()
   return (
     <span
       data-slot="breadcrumb-ellipsis"
@@ -106,7 +111,7 @@ function BreadcrumbEllipsis({
       {...props}
     >
       <HugeiconsIcon icon={MoreHorizontalCircle01Icon} strokeWidth={2} />
-      <span className="sr-only">More</span>
+      <span className="sr-only">{t("accessibility.more")}</span>
     </span>
   )
 }

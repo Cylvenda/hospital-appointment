@@ -6,6 +6,7 @@ import { HugeiconsIcon } from "@hugeicons/react"
 import { Clock01Icon } from "@hugeicons/core-free-icons"
 import { Button } from "./button"
 import { cn } from "@/lib/utils"
+import { useTranslation } from "@/lib/i18n"
 
 interface TimePickerProps {
   value?: string // HH:MM (24-hour format)
@@ -24,11 +25,13 @@ const PERIODS = ["AM", "PM"]
 export function TimePicker({
   value,
   onChange,
-  placeholder = "Select time",
+  placeholder,
   className,
   disabled,
   format = "12h"
 }: TimePickerProps) {
+  const { t } = useTranslation()
+  const resolvedPlaceholder = placeholder ?? t("i18nAudit.timePicker.selectTime")
   const [isOpen, setIsOpen] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
   const is24h = format === "24h"
@@ -128,15 +131,15 @@ export function TimePicker({
         )}
       >
         <HugeiconsIcon icon={Clock01Icon} className="mr-2 h-4 w-4 text-muted-foreground" />
-        {getDisplayValue() || placeholder}
+        {getDisplayValue() || resolvedPlaceholder}
       </Button>
 
       {isOpen && (
-        <div className="absolute top-full left-0 mt-2 z-50 w-64 rounded-2xl border border-border bg-card p-4 shadow-xl animate-in fade-in zoom-in-95 duration-200">
+        <div className="absolute top-full left-0 z-50 mt-2 w-[min(16rem,calc(100vw-1rem))] rounded-2xl border border-border bg-card p-3 shadow-xl animate-in fade-in zoom-in-95 duration-200 sm:p-4">
           <div className="flex gap-2 justify-center">
             {/* Hours Column */}
             <div className="flex flex-col gap-1 items-center">
-              <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-1">Hour</span>
+              <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-1">{t("i18nAudit.timePicker.hour")}</span>
               <div className="h-40 overflow-y-auto w-16 scrollbar-none rounded-lg border border-border bg-muted/20 p-1 flex flex-col gap-0.5">
                 {(is24h ? HOURS_24 : HOURS_12).map(h => (
                   <button
@@ -144,7 +147,7 @@ export function TimePicker({
                     type="button"
                     onClick={() => selectHour(h)}
                     className={cn(
-                      "py-1 text-xs rounded font-medium transition-all text-center",
+                      "min-h-11 py-1 text-xs rounded font-medium transition-all text-center",
                       selectedHour === h
                         ? "bg-emerald-600 text-white font-bold"
                         : "hover:bg-emerald-500/10 text-foreground"
@@ -158,7 +161,7 @@ export function TimePicker({
 
             {/* Minutes Column */}
             <div className="flex flex-col gap-1 items-center">
-              <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-1">Min</span>
+              <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-1">{t("i18nAudit.timePicker.minute")}</span>
               <div className="h-40 overflow-y-auto w-16 scrollbar-none rounded-lg border border-border bg-muted/20 p-1 flex flex-col gap-0.5">
                 {MINUTES.map(m => (
                   <button
@@ -166,7 +169,7 @@ export function TimePicker({
                     type="button"
                     onClick={() => selectMinute(m)}
                     className={cn(
-                      "py-1 text-xs rounded font-medium transition-all text-center",
+                      "min-h-11 py-1 text-xs rounded font-medium transition-all text-center",
                       selectedMinute === m
                         ? "bg-emerald-600 text-white font-bold"
                         : "hover:bg-emerald-500/10 text-foreground"
@@ -181,7 +184,7 @@ export function TimePicker({
             {/* Period Column (AM/PM) - only for 12h format */}
             {!is24h && (
               <div className="flex flex-col gap-1 items-center">
-                <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-1">AM/PM</span>
+                <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-1">{t("i18nAudit.timePicker.period")}</span>
                 <div className="h-40 w-16 rounded-lg border border-border bg-muted/20 p-1 flex flex-col gap-1 justify-center">
                   {PERIODS.map(p => (
                     <button
@@ -189,7 +192,7 @@ export function TimePicker({
                       type="button"
                       onClick={() => selectPeriod(p)}
                       className={cn(
-                        "py-2 text-xs rounded font-bold transition-all text-center",
+                        "min-h-11 py-2 text-xs rounded font-bold transition-all text-center",
                         selectedPeriod === p
                           ? "bg-emerald-600 text-white font-bold shadow-sm"
                           : "hover:bg-emerald-500/10 text-foreground"

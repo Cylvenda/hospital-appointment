@@ -553,7 +553,7 @@ export default function Page() {
                 </div>
                 <div>
                   <p className="font-semibold tracking-[0.15em] text-primary uppercase">DPAMS</p>
-                  <p className="text-xs text-muted-foreground">Digital Patient Pre-Registration and Appointment Management</p>
+                  <p className="text-xs text-muted-foreground">{t("landing.tagline")}</p>
                 </div>
               </div>
               <p className="mt-4 max-w-sm text-sm text-muted-foreground leading-relaxed">

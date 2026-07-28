@@ -260,9 +260,9 @@ export function StaffWorkflowDashboard({ role }: { role: StaffRole }) {
 
       <div className="grid gap-6 xl:grid-cols-[1.5fr_1fr]">
         <Card className="overflow-hidden rounded-3xl">
-          <CardHeader className="flex flex-row items-center justify-between border-b">
+          <CardHeader className="flex flex-col items-start justify-between gap-3 border-b min-[420px]:flex-row min-[420px]:items-center">
             <div>
-              <CardTitle>Today’s patient movement</CardTitle>
+              <CardTitle>{t("sharedAudit.todaysPatientMovement")}</CardTitle>
               <p className="mt-1 text-sm text-muted-foreground">
                 {t("workflowDashboard.movementSummary")}
               </p>
@@ -326,7 +326,7 @@ export function StaffWorkflowDashboard({ role }: { role: StaffRole }) {
             <CardHeader>
               <CardTitle>{t("workflowDashboard.todayAtGlance")}</CardTitle>
             </CardHeader>
-            <CardContent className="grid grid-cols-2 gap-3">
+            <CardContent className="grid gap-3 min-[420px]:grid-cols-2">
               <div className="rounded-2xl bg-blue-500/10 p-4">
                 <p className="text-3xl font-black text-blue-700">
                   {workflow.todayAppointments.length}

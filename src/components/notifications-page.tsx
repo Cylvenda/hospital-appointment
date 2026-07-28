@@ -53,7 +53,7 @@ function getNotificationColor(type: string) {
      return notificationColors[type] || "bg-gray-500"
 }
 
-function formatTimeAgo(dateString: string, t: (key: string, params?: Record<string, string | number>) => string) {
+function formatTimeAgo(dateString: string, t: (key: string, params?: Record<string, string | number>) => string, locale: string) {
      try {
           const date = new Date(dateString)
           const now = new Date()
@@ -63,14 +63,15 @@ function formatTimeAgo(dateString: string, t: (key: string, params?: Record<stri
           if (diffInSeconds < 3600) return t("notifications.minutesAgo", { count: Math.floor(diffInSeconds / 60) })
           if (diffInSeconds < 86400) return t("notifications.hoursAgo", { count: Math.floor(diffInSeconds / 3600) })
           if (diffInSeconds < 604800) return t("notifications.daysAgo", { count: Math.floor(diffInSeconds / 86400) })
-          return date.toLocaleDateString()
+          return date.toLocaleDateString(locale)
      } catch {
           return t("notifications.justNow")
      }
 }
 
 export function NotificationsPage() {
-     const { t } = useTranslation()
+     const { t, language } = useTranslation()
+     const locale = language === "sw" ? "sw-TZ" : "en-US"
      const searchParams = useSearchParams()
      const { notifications, markAsRead, markAllAsRead, fetchNotifications } =
           useNotificationStore()
@@ -210,7 +211,8 @@ export function NotificationsPage() {
                                                                                 />
                                                                                 {formatTimeAgo(
                                                                                      notification.created_at,
-                                                                                     t
+                                                                                     t,
+                                                                                     locale
                                                                                 )}
                                                                            </span>
                                                                       </div>
@@ -274,7 +276,7 @@ export function NotificationsPage() {
                                                             <p className="mt-2 text-sm sm:text-base">
                                                                  {new Date(
                                                                       selectedNotification.created_at
-                                                                 ).toLocaleString()}
+                                                                 ).toLocaleString(locale)}
                                                             </p>
                                                        </div>
 

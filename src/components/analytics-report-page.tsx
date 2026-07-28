@@ -236,7 +236,7 @@ export function AnalyticsReportPage({ role }: { role: AnalyticsRole }) {
                   setEndDate("")
                 }
               }}
-              placeholder="Select start date"
+              placeholder={t("sharedAudit.startDate")}
               className="h-10 w-48"
             />
           </div>
@@ -247,7 +247,7 @@ export function AnalyticsReportPage({ role }: { role: AnalyticsRole }) {
             <DatePicker
               value={endDate}
               onChange={setEndDate}
-              placeholder="Select end date"
+              placeholder={t("sharedAudit.endDate")}
               className="h-10 w-48"
               min={startDate}
             />
@@ -258,7 +258,7 @@ export function AnalyticsReportPage({ role }: { role: AnalyticsRole }) {
             onClick={handleClearFilters}
             disabled={!startDate && !endDate}
           >
-            Clear
+            {t("sharedAudit.clear")}
           </Button>
         </CardContent>
       </Card>

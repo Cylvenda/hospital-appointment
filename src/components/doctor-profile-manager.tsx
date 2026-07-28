@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { toast } from "react-toastify"
+import { useTranslation } from "@/lib/i18n"
 import type { AdminDoctor } from "@/store/admin/admin.types"
 import { useAdminStore } from "@/store/admin/admin.store"
 import { Button } from "@/components/ui/button"
@@ -17,6 +18,7 @@ import {
 import { cn } from "@/lib/utils"
 
 export function DoctorProfileManager({ doctor }: { doctor: AdminDoctor }) {
+  const { t } = useTranslation()
   const [open, setOpen] = useState(false)
   const [saving, setSaving] = useState(false)
   const { illnessCategories, fetchIllnessCategories, updateDoctor } =
@@ -62,7 +64,7 @@ export function DoctorProfileManager({ doctor }: { doctor: AdminDoctor }) {
       !form.phone.trim() ||
       !form.license_number.trim()
     ) {
-      toast.error("Complete all required doctor details.")
+      toast.error(t("sharedAudit.doctorDetailsRequired"))
       return
     }
     setSaving(true)
@@ -75,10 +77,10 @@ export function DoctorProfileManager({ doctor }: { doctor: AdminDoctor }) {
         phone: form.phone.trim(),
         license_number: form.license_number.trim(),
       })
-      toast.success("Doctor profile and departments updated.")
+      toast.success(t("sharedAudit.doctorProfileUpdated"))
       setOpen(false)
     } catch {
-      toast.error("Doctor profile could not be updated.")
+      toast.error(t("sharedAudit.doctorProfileUpdateError"))
     } finally {
       setSaving(false)
     }
@@ -87,21 +89,21 @@ export function DoctorProfileManager({ doctor }: { doctor: AdminDoctor }) {
   return (
     <>
       <Button className="rounded-md" onClick={() => setOpen(true)}>
-        Edit Profile
+        {t("sharedAudit.editProfile")}
       </Button>
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
           <DialogHeader>
-            <DialogTitle>Edit doctor profile</DialogTitle>
+            <DialogTitle>{t("sharedAudit.editDoctorProfile")}</DialogTitle>
           </DialogHeader>
 
           <div className="grid gap-4 sm:grid-cols-2">
             {[
-              ["First name", "first_name"],
-              ["Last name", "last_name"],
-              ["Email", "email"],
-              ["Phone", "phone"],
-              ["License number", "license_number"],
+              [t("staffProfile.firstName"), "first_name"],
+              [t("staffProfile.lastName"), "last_name"],
+              [t("staffProfile.email"), "email"],
+              [t("staffProfile.phone"), "phone"],
+              [t("sharedAudit.licenseNumber"), "license_number"],
             ].map(([label, field]) => (
               <div
                 key={field}
@@ -127,9 +129,9 @@ export function DoctorProfileManager({ doctor }: { doctor: AdminDoctor }) {
 
           <div className="flex items-center justify-between rounded-xl border p-4">
             <div>
-              <p className="font-semibold">Active for booking</p>
+              <p className="font-semibold">{t("sharedAudit.activeForBooking")}</p>
               <p className="text-sm text-muted-foreground">
-                Inactive doctors are hidden from patient slot selection.
+                {t("sharedAudit.inactiveDoctorHelp")}
               </p>
             </div>
             <Switch
@@ -142,9 +144,9 @@ export function DoctorProfileManager({ doctor }: { doctor: AdminDoctor }) {
 
           <div className="space-y-3">
             <div>
-              <Label>Departments</Label>
+              <Label>{t("nav.departments")}</Label>
               <p className="text-sm text-muted-foreground">
-                Select one or more departments where this doctor can receive appointments.
+                {t("sharedAudit.departmentSelectionHelp")}
               </p>
             </div>
             <div className="grid gap-2 sm:grid-cols-2">

@@ -192,7 +192,7 @@ export default function AssignAppointment({
         <div className="grid gap-3 md:grid-cols-3">
           <div className="rounded-xl border bg-card p-4">
             <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-              Doctor
+              {t("sharedAudit.doctor")}
             </p>
             <p className="mt-2 font-semibold">
               {appointment.doctor || t("staffAppointmentCard.notAssigned")}

@@ -163,13 +163,13 @@ export default function UsersPage() {
 
     try {
       await deleteUser(deleteTarget.uuid)
-      toast.success("User deleted successfully")
+      toast.success(t("adminUsers.deleted"))
       if (activeUser?.uuid === deleteTarget.uuid) {
         closeSheet()
       }
       closeDeletePopup()
     } catch {
-      toast.error("Failed to delete user")
+      toast.error(t("adminUsers.deleteError"))
       closeDeletePopup()
     }
   }
@@ -190,7 +190,7 @@ export default function UsersPage() {
         phone: form.phone,
         is_active: form.is_active,
       })
-      toast.success("User updated successfully")
+      toast.success(t("adminUsers.updated"))
       closeSheet()
     } catch (error: unknown) {
       const backendErrors = getBackendFieldErrors(error, [
@@ -202,7 +202,7 @@ export default function UsersPage() {
       if (Object.keys(backendErrors).length > 0) {
         setErrors(backendErrors)
       } else {
-        toast.error("Failed to update user")
+        toast.error(t("adminUsers.updateError"))
       }
     } finally {
       setIsSubmitting(false)
@@ -270,19 +270,19 @@ export default function UsersPage() {
           <TableHeader className="bg-muted/50">
             <TableRow className="hover:bg-transparent">
               <TableHead className="w-12">#</TableHead>
-              <TableHead>Name</TableHead>
-              <TableHead>Email</TableHead>
-              <TableHead>Phone</TableHead>
-              <TableHead>Role</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
+              <TableHead>{t("adminUsers.name")}</TableHead>
+              <TableHead>{t("adminUsers.email")}</TableHead>
+              <TableHead>{t("adminUsers.phone")}</TableHead>
+              <TableHead>{t("adminUsers.role")}</TableHead>
+              <TableHead>{t("adminUsers.status")}</TableHead>
+              <TableHead className="text-right">{t("adminUsers.actions")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {users.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={7} className="h-24 text-center">
-                  No users found.
+                  {t("adminUsers.noneFound")}
                 </TableCell>
               </TableRow>
             ) : (
@@ -307,7 +307,7 @@ export default function UsersPage() {
                   <TableCell>
                     <span className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-medium capitalize ${roleClasses(user.role)}`}>
                       <HugeiconsIcon icon={UserIcon} strokeWidth={1.8} className="size-3.5" />
-                      {user.role}
+                      {t(`roleLabels.${user.role}`)}
                     </span>
                   </TableCell>
                   <TableCell>
@@ -318,7 +318,7 @@ export default function UsersPage() {
                           strokeWidth={1.8}
                           className="size-3.5"
                         />
-                        Active
+                        {t("adminUsers.active")}
                       </span>
                     ) : (
                       <span className="inline-flex items-center gap-2 rounded-full bg-rose-50 px-3 py-1 text-xs font-medium text-rose-700 ring-1 ring-rose-100 dark:bg-rose-500/15 dark:text-rose-300 dark:ring-rose-500/20">
@@ -370,24 +370,24 @@ export default function UsersPage() {
         <SheetContent side="right" className="w-full sm:max-w-xl">
           <SheetHeader className="border-b border-sidebar-border">
             <SheetTitle>
-              {sheetMode === "view" ? "User Details" : "Edit User"}
+              {sheetMode === "view" ? t("adminUsers.details") : t("adminUsers.editUser")}
             </SheetTitle>
             <SheetDescription>
               {sheetMode === "view"
-                ? "Review user profile information."
-                : "Update user account details."}
+                ? t("adminUsers.review")
+                : t("adminUsers.update")}
             </SheetDescription>
           </SheetHeader>
 
           <div className="flex-1 space-y-5 overflow-y-auto p-6">
             <div className="space-y-2">
-              <Label htmlFor="uuid">ID</Label>
+              <Label htmlFor="uuid">{t("adminUsers.id")}</Label>
               <Input id="uuid" value={form.uuid} disabled />
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-2">
-                <Label htmlFor="first_name">First Name</Label>
+                <Label htmlFor="first_name">{t("adminUsers.firstName")}</Label>
                 <Input
                   id="first_name"
                   value={form.first_name}
@@ -401,7 +401,7 @@ export default function UsersPage() {
                 )}
               </div>
               <div className="space-y-2">
-                <Label htmlFor="last_name">Last Name</Label>
+                <Label htmlFor="last_name">{t("adminUsers.lastName")}</Label>
                 <Input
                   id="last_name"
                   value={form.last_name}
@@ -417,7 +417,7 @@ export default function UsersPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">{t("adminUsers.email")}</Label>
               <Input
                 id="email"
                 type="email"
@@ -433,7 +433,7 @@ export default function UsersPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="phone">Phone</Label>
+              <Label htmlFor="phone">{t("adminUsers.phone")}</Label>
               <Input
                 id="phone"
                 value={form.phone}
@@ -450,9 +450,9 @@ export default function UsersPage() {
             {sheetMode === "edit" && (
               <div className="flex items-center justify-between rounded-3xl border border-sidebar-border bg-muted/20 p-4">
                 <div>
-                  <p className="text-sm font-medium">Status</p>
+                  <p className="text-sm font-medium">{t("adminUsers.status")}</p>
                   <p className="text-xs text-muted-foreground">
-                    {form.is_active ? "Active" : "Inactive"}
+                    {form.is_active ? t("adminUsers.active") : t("adminUsers.inactive")}
                   </p>
                 </div>
                 <Switch
@@ -465,13 +465,13 @@ export default function UsersPage() {
             )}
           </div>
 
-          <SheetFooter className="border-t border-sidebar-border flex flex-row justify-between">
+          <SheetFooter className="flex flex-col-reverse items-stretch justify-between border-t border-sidebar-border sm:flex-row sm:items-center">
             <Button variant="outline" onClick={closeSheet}>
-              Close
+              {t("adminUsers.close")}
             </Button>
             {sheetMode === "edit" && (
               <Button onClick={handleSaveEdit} disabled={isSubmitting}>
-                {isSubmitting ? "Saving..." : "Save Changes"}
+                {isSubmitting ? t("adminUsers.saving") : t("adminUsers.saveChanges")}
               </Button>
             )}
           </SheetFooter>
@@ -484,34 +484,31 @@ export default function UsersPage() {
       >
         <SheetContent side="bottom" className="mx-auto my-auto w-full rounded-t-4xl sm:max-w-xl">
           <SheetHeader className="border-b border-sidebar-border">
-            <SheetTitle>Delete User</SheetTitle>
+            <SheetTitle>{t("adminUsers.deleteTitle")}</SheetTitle>
             <SheetDescription>
-              This action cannot be undone. The user account will be permanently removed.
+              {t("adminUsers.deleteDescription")}
             </SheetDescription>
           </SheetHeader>
           <div className="space-y-4 p-6">
             <div className="rounded-3xl border border-rose-200 bg-rose-50/70 p-4 text-sm text-rose-700 dark:border-rose-500/20 dark:bg-rose-500/10 dark:text-rose-300">
               {deleteTarget ? (
-                <p>
-                  You are about to delete{" "}
-                  <span className="font-semibold">
-                    {deleteTarget.first_name} {deleteTarget.last_name}
-                  </span>{" "}
-                  with ID <span className="font-mono">{deleteTarget.uuid}</span>.
-                </p>
+                <p>{t("adminUsers.aboutToDelete", {
+                  name: `${deleteTarget.first_name} ${deleteTarget.last_name}`,
+                  id: deleteTarget.uuid,
+                })}</p>
               ) : null}
             </div>
             <p className="text-sm text-muted-foreground">
-              You can close this popup if you want to keep the record.
+              {t("adminUsers.keepRecord")}
             </p>
           </div>
           <SheetFooter className="border-t border-sidebar-border">
             <Button variant="outline" onClick={closeDeletePopup}>
-              Cancel
+              {t("adminUsers.cancel")}
             </Button>
             <Button variant="destructive" onClick={confirmDelete}>
               <HugeiconsIcon icon={Delete02Icon} strokeWidth={1.8} />
-              Delete
+              {t("adminUsers.delete")}
             </Button>
           </SheetFooter>
         </SheetContent>

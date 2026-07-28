@@ -37,8 +37,6 @@ import { useTranslation } from "@/lib/i18n"
 import { Switch } from "@/components/ui/switch"
 import { getBackendFieldErrors } from "@/lib/backend-errors"
 
-type UserRole = "user" | "receptionist" | "doctor" | "lab_tech"
-
 type FormErrors = {
   first_name?: string
   last_name?: string
@@ -155,7 +153,7 @@ export default function LabTechPage() {
       closeSheet()
     }
     closeDeletePopup()
-    toast.success("Lab technician deleted successfully")
+    toast.success(t("i18nAudit.labManagement.deleted"))
   }
 
   async function handleSave() {
@@ -170,7 +168,7 @@ export default function LabTechPage() {
         phone: form.phone,
         is_active: form.is_active,
       })
-      toast.success("Lab technician updated successfully")
+      toast.success(t("i18nAudit.labManagement.updated"))
       closeSheet()
     } catch (error: unknown) {
       const backendErrors = getBackendFieldErrors(error, [
@@ -182,7 +180,7 @@ export default function LabTechPage() {
       if (Object.keys(backendErrors).length > 0) {
         setErrors(backendErrors)
       } else {
-        toast.error("Failed to update lab technician")
+        toast.error(t("i18nAudit.labManagement.updateFailed"))
       }
     } finally {
       setIsSubmitting(false)
@@ -193,9 +191,9 @@ export default function LabTechPage() {
     <div className="w-full space-y-6 p-4 md:p-6">
       <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-center">
         <div className="space-y-1">
-          <h1 className="font-heading text-2xl font-semibold">Lab Technicians</h1>
+          <h1 className="font-heading text-2xl font-semibold">{t("i18nAudit.labManagement.title")}</h1>
           <p className="text-sm text-muted-foreground">
-            Manage laboratory staff accounts and access.
+            {t("i18nAudit.labManagement.description")}
           </p>
         </div>
 
@@ -210,13 +208,13 @@ export default function LabTechPage() {
               value={search}
               onChange={(event) => setSearch(event.target.value)}
               className="h-11 rounded-2xl border-2 border-sidebar-border pl-11"
-              placeholder="Search lab techs..."
+              placeholder={t("i18nAudit.labManagement.search")}
             />
           </div>
           <Button size="lg" className="rounded-md" asChild>
             <Link href="/lab-tech/add">
               <HugeiconsIcon icon={PlusSignIcon} strokeWidth={1.8} />
-              Add Lab Tech
+              {t("i18nAudit.labManagement.add")}
             </Link>
           </Button>
         </div>
@@ -224,17 +222,17 @@ export default function LabTechPage() {
 
       <div className="grid gap-4 md:grid-cols-3">
         <div className="rounded-4xl border border-sidebar-border bg-card p-5 shadow-sm">
-          <p className="text-sm text-muted-foreground">Total Lab Techs</p>
+          <p className="text-sm text-muted-foreground">{t("i18nAudit.labManagement.total")}</p>
           <p className="mt-2 text-3xl font-semibold">{labTechs.length}</p>
         </div>
         <div className="rounded-4xl border border-sidebar-border bg-card p-5 shadow-sm">
-          <p className="text-sm text-muted-foreground">Active Accounts</p>
+          <p className="text-sm text-muted-foreground">{t("i18nAudit.labManagement.activeAccounts")}</p>
           <p className="mt-2 text-3xl font-semibold">
             {labTechs.filter((tech) => tech.isActive).length}
           </p>
         </div>
         <div className="rounded-4xl border border-sidebar-border bg-card p-5 shadow-sm">
-          <p className="text-sm text-muted-foreground">Inactive Accounts</p>
+          <p className="text-sm text-muted-foreground">{t("i18nAudit.labManagement.inactiveAccounts")}</p>
           <p className="mt-2 text-3xl font-semibold">
             {labTechs.filter((tech) => !tech.isActive).length}
           </p>
@@ -246,19 +244,19 @@ export default function LabTechPage() {
           <TableHeader className="bg-muted/50">
             <TableRow className="hover:bg-transparent">
               <TableHead className="w-12">#</TableHead>
-              <TableHead>Name</TableHead>
-              <TableHead>Email</TableHead>
-              <TableHead>Phone</TableHead>
-              <TableHead>Role</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
+              <TableHead>{t("common.name")}</TableHead>
+              <TableHead>{t("common.email")}</TableHead>
+              <TableHead>{t("common.phone")}</TableHead>
+              <TableHead>{t("adminPatients.role")}</TableHead>
+              <TableHead>{t("common.status")}</TableHead>
+              <TableHead className="text-right">{t("common.actions")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {labTechs.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={7} className="h-24 text-center">
-                  No lab technicians found.
+                  {t("i18nAudit.labManagement.noneFound")}
                 </TableCell>
               </TableRow>
             ) : (
@@ -282,17 +280,17 @@ export default function LabTechPage() {
                   </TableCell>
                   <TableCell>
                     <span className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-medium capitalize ${statusClasses(tech.role)}`}>
-                      {tech.role.replace("_", " ")}
+                      {t(`roleLabels.${tech.role}`)}
                     </span>
                   </TableCell>
                   <TableCell>
                     {tech.isActive ? (
                       <span className="inline-flex items-center rounded-full bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700 ring-1 ring-emerald-100 dark:bg-emerald-500/15 dark:text-emerald-300 dark:ring-emerald-500/20">
-                        Active
+                        {t("adminPatients.active")}
                       </span>
                     ) : (
                       <span className="inline-flex items-center rounded-full bg-rose-50 px-3 py-1 text-xs font-medium text-rose-700 ring-1 ring-rose-100 dark:bg-rose-500/15 dark:text-rose-300 dark:ring-rose-500/20">
-                        Inactive
+                        {t("adminPatients.inactive")}
                       </span>
                     )}
                   </TableCell>
@@ -335,24 +333,24 @@ export default function LabTechPage() {
         <SheetContent side="right" className="w-full sm:max-w-xl">
           <SheetHeader className="border-b border-sidebar-border">
             <SheetTitle>
-              {sheetMode === "view" ? "Lab Technician Details" : "Edit Lab Technician"}
+              {sheetMode === "view" ? t("i18nAudit.labManagement.details") : t("i18nAudit.labManagement.edit")}
             </SheetTitle>
             <SheetDescription>
               {sheetMode === "view"
-                ? "Review lab technician profile information."
-                : "Update lab technician account details."}
+                ? t("i18nAudit.labManagement.review")
+                : t("i18nAudit.labManagement.update")}
             </SheetDescription>
           </SheetHeader>
 
           <div className="flex-1 space-y-5 overflow-y-auto p-6">
             <div className="space-y-2">
-              <Label htmlFor="uuid">ID</Label>
+              <Label htmlFor="uuid">{t("adminUsers.id")}</Label>
               <Input id="uuid" value={form.uuid} disabled />
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-2">
-                <Label htmlFor="first_name">First Name</Label>
+                <Label htmlFor="first_name">{t("adminDoctors.firstName")}</Label>
                 <Input
                   id="first_name"
                   value={form.first_name}
@@ -366,7 +364,7 @@ export default function LabTechPage() {
                 )}
               </div>
               <div className="space-y-2">
-                <Label htmlFor="last_name">Last Name</Label>
+                <Label htmlFor="last_name">{t("adminDoctors.lastName")}</Label>
                 <Input
                   id="last_name"
                   value={form.last_name}
@@ -382,7 +380,7 @@ export default function LabTechPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">{t("common.email")}</Label>
               <Input
                 id="email"
                 type="email"
@@ -398,7 +396,7 @@ export default function LabTechPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="phone">Phone</Label>
+              <Label htmlFor="phone">{t("common.phone")}</Label>
               <Input
                 id="phone"
                 value={form.phone}
@@ -415,9 +413,9 @@ export default function LabTechPage() {
             {sheetMode === "edit" && (
               <div className="flex items-center justify-between rounded-3xl border border-sidebar-border bg-muted/20 p-4">
                 <div>
-                  <p className="text-sm font-medium">Status</p>
+                  <p className="text-sm font-medium">{t("common.status")}</p>
                   <p className="text-xs text-muted-foreground">
-                    {form.is_active ? "Active" : "Inactive"}
+                    {form.is_active ? t("adminPatients.active") : t("adminPatients.inactive")}
                   </p>
                 </div>
                 <Switch
@@ -430,13 +428,13 @@ export default function LabTechPage() {
             )}
           </div>
 
-          <SheetFooter className="border-t border-sidebar-border flex flex-row justify-between">
+          <SheetFooter className="flex flex-col-reverse items-stretch justify-between border-t border-sidebar-border sm:flex-row sm:items-center">
             <Button variant="outline" onClick={closeSheet}>
-              Close
+              {t("common.close")}
             </Button>
             {sheetMode === "edit" && (
               <Button onClick={handleSave} disabled={isSubmitting}>
-                {isSubmitting ? "Saving..." : "Save Changes"}
+                {isSubmitting ? t("profile.saving") : t("adminPatients.saveChanges")}
               </Button>
             )}
           </SheetFooter>
@@ -449,34 +447,31 @@ export default function LabTechPage() {
       >
         <SheetContent side="bottom" className="mx-auto my-auto w-full rounded-t-4xl sm:max-w-xl">
           <SheetHeader className="border-b border-sidebar-border">
-            <SheetTitle>Delete Lab Technician</SheetTitle>
+            <SheetTitle>{t("i18nAudit.labManagement.deleteTitle")}</SheetTitle>
             <SheetDescription>
-              This action cannot be undone. The lab technician account will be permanently removed.
+              {t("i18nAudit.labManagement.deleteDescription")}
             </SheetDescription>
           </SheetHeader>
           <div className="space-y-4 p-6">
             <div className="rounded-3xl border border-rose-200 bg-rose-50/70 p-4 text-sm text-rose-700 dark:border-rose-500/20 dark:bg-rose-500/10 dark:text-rose-300">
               {deleteTarget ? (
-                <p>
-                  You are about to delete{" "}
-                  <span className="font-semibold">
-                    {deleteTarget.first_name} {deleteTarget.last_name}
-                  </span>{" "}
-                  with ID <span className="font-mono">{deleteTarget.uuid}</span>.
-                </p>
+                <p>{t("i18nAudit.receptionistManagement.aboutToDelete", {
+                  name: `${deleteTarget.first_name} ${deleteTarget.last_name}`,
+                  id: deleteTarget.uuid,
+                })}</p>
               ) : null}
             </div>
             <p className="text-sm text-muted-foreground">
-              You can close this popup if you want to keep the record.
+              {t("i18nAudit.receptionistManagement.keepRecord")}
             </p>
           </div>
           <SheetFooter className="border-t border-sidebar-border">
             <Button variant="outline" onClick={closeDeletePopup}>
-              Cancel
+              {t("common.cancel")}
             </Button>
             <Button variant="destructive" onClick={confirmDelete}>
               <HugeiconsIcon icon={Delete02Icon} strokeWidth={1.8} />
-              Delete
+              {t("common.delete")}
             </Button>
           </SheetFooter>
         </SheetContent>

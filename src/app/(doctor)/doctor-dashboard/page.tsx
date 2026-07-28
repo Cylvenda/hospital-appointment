@@ -230,11 +230,11 @@ export default function DoctorDashboardPage() {
       )}
 
       <Card className="overflow-hidden rounded-3xl">
-        <CardHeader className="flex flex-row items-center justify-between border-b">
+        <CardHeader className="flex flex-col items-start justify-between gap-3 border-b min-[420px]:flex-row min-[420px]:items-center">
           <div>
-            <CardTitle>Today’s consultation queue</CardTitle>
+            <CardTitle>{t("doctorHome.todayQueue")}</CardTitle>
             <p className="mt-1 text-sm text-muted-foreground">
-              Confirmed, checked-in, waiting, and active consultations
+              {t("doctorHome.todayQueueDescription")}
             </p>
           </div>
           <Button
@@ -243,7 +243,7 @@ export default function DoctorDashboardPage() {
               router.push("/doctor-dashboard/appointments/pending")
             }
           >
-            View All <ArrowRight className="size-4" />
+            {t("doctorHome.viewAll")} <ArrowRight className="size-4" />
           </Button>
         </CardHeader>
         <CardContent className="p-5 md:p-6">
@@ -252,9 +252,9 @@ export default function DoctorDashboardPage() {
           ) : activeAppointments.length === 0 ? (
             <div className="flex min-h-64 flex-col items-center justify-center text-center">
               <CheckCircle2 className="mb-3 size-12 text-emerald-600" />
-              <p className="text-lg font-bold">The active queue is clear</p>
+              <p className="text-lg font-bold">{t("doctorHome.queueClear")}</p>
               <p className="text-sm text-muted-foreground">
-                Checked-in patients will appear here automatically.
+                {t("doctorHome.queueClearDescription")}
               </p>
             </div>
           ) : (

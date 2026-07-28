@@ -24,6 +24,7 @@ import Link from "next/link";
 import { useAdminStore } from "@/store/admin/admin.store";
 import { PasswordInput } from "@/components/password-input";
 import { getBackendFieldErrors } from "@/lib/backend-errors";
+import { useTranslation } from "@/lib/i18n";
 
 type FormErrors = {
   first_name?: string;
@@ -34,6 +35,7 @@ type FormErrors = {
 };
 
 export default function AddReceptionistPage() {
+  const { t } = useTranslation();
   const router = useRouter();
   const { createUser } = useAdminStore();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -57,7 +59,7 @@ export default function AddReceptionistPage() {
         role: "receptionist",
         is_active: true,
       });
-      toast.success("Receptionist created successfully!");
+      toast.success(t("accountCreation.receptionistCreated"));
       router.push("/admin/receptionist"); // Assuming this is where receptionists are listed
     } catch (error: unknown) {
       const backendErrors = getBackendFieldErrors(error, [
@@ -72,7 +74,7 @@ export default function AddReceptionistPage() {
         setErrors(backendErrors);
       } else {
         toast.error(
-          "Failed to create receptionist. Please check your details.",
+          t("accountCreation.receptionistCreateError"),
         );
       }
     } finally {
@@ -90,10 +92,10 @@ export default function AddReceptionistPage() {
         </Button>
         <div>
           <h1 className="text-3xl font-bold tracking-tight">
-            Add Receptionist
+            {t("accountCreation.receptionistTitle")}
           </h1>
           <p className="text-muted-foreground text-sm">
-            Create a new administrative account for the front desk.
+            {t("accountCreation.receptionistDescription")}
           </p>
         </div>
       </div>
@@ -102,20 +104,20 @@ export default function AddReceptionistPage() {
         <CardHeader className="bg-primary/5 border-b border-primary/10">
           <CardTitle className="flex items-center gap-2">
             <HugeiconsIcon icon={UserPlus} className="w-5 h-5 text-primary" />
-            Account Information
+            {t("accountCreation.accountInformation")}
           </CardTitle>
           <CardDescription>
-            Fill in the details to set up a new receptionist profile.
+            {t("accountCreation.receptionistAccountDescription")}
           </CardDescription>
         </CardHeader>
-        <CardContent className="p-8">
+        <CardContent className="p-4 sm:p-6 md:p-8">
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
-                <Label htmlFor="first_name">First Name</Label>
+                <Label htmlFor="first_name">{t("accountCreation.firstName")}</Label>
                 <Input
                   id="first_name"
-                  placeholder="e.g. Sarah"
+                  placeholder={t("accountCreation.firstNameExample")}
                   className={
                     errors.first_name
                       ? "rounded-xl h-11 border-red-500"
@@ -135,10 +137,10 @@ export default function AddReceptionistPage() {
                 )}
               </div>
               <div className="space-y-2">
-                <Label htmlFor="last_name">Last Name</Label>
+                <Label htmlFor="last_name">{t("accountCreation.lastName")}</Label>
                 <Input
                   id="last_name"
-                  placeholder="e.g. Smith"
+                  placeholder={t("accountCreation.lastNameExample")}
                   className={
                     errors.last_name
                       ? "rounded-xl h-11 border-red-500"
@@ -160,7 +162,7 @@ export default function AddReceptionistPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="email">Email Address</Label>
+              <Label htmlFor="email">{t("accountCreation.email")}</Label>
               <Input
                 id="email"
                 type="email"
@@ -185,7 +187,7 @@ export default function AddReceptionistPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="phone">Phone Number</Label>
+              <Label htmlFor="phone">{t("accountCreation.phone")}</Label>
               <Input
                 id="phone"
                 placeholder="+1 234 567 890"
@@ -209,10 +211,10 @@ export default function AddReceptionistPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="password">Initial Password</Label>
+              <Label htmlFor="password">{t("accountCreation.password")}</Label>
               <PasswordInput
                 id="password"
-                placeholder="Minimum 8 characters"
+                placeholder={t("accountCreation.minimumPassword")}
                 className={
                   errors.password
                     ? "rounded-xl h-11 border-red-500"
@@ -244,12 +246,12 @@ export default function AddReceptionistPage() {
                       icon={RefreshIcon}
                       className="w-5 h-5 animate-spin"
                     />
-                    Processing...
+                    {t("accountCreation.processing")}
                   </span>
                 ) : (
                   <span className="flex items-center gap-2">
                     <HugeiconsIcon icon={CheckCircle} className="w-5 h-5" />
-                    Register Receptionist
+                    {t("accountCreation.registerReceptionist")}
                   </span>
                 )}
               </Button>

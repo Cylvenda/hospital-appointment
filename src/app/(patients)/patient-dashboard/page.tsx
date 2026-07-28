@@ -79,11 +79,11 @@ export default function PatientDashboardPage() {
      }, [appointments, nextAppointment])
 
      return (
-          <div className="mx-auto w-full max-w-8xl space-y-8 p-4 md:p-8 animate-in fade-in duration-500">
+          <div className="mx-auto w-full min-w-0 max-w-8xl space-y-5 p-1 animate-in fade-in duration-500 sm:space-y-8 sm:p-2 md:p-4">
                {/* HEADER */}
-               <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between bg-gradient-to-r from-primary/10 via-transparent to-transparent p-6 rounded-3xl border border-primary/10">
-                    <div>
-                         <h1 className="text-3xl font-bold tracking-tight">
+               <div className="flex flex-col gap-4 rounded-3xl border border-primary/10 bg-gradient-to-r from-primary/10 via-transparent to-transparent p-4 sm:flex-row sm:items-center sm:justify-between sm:p-6">
+                    <div className="min-w-0">
+                         <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
                               {t("patientHome.greeting", {
                                    name: user?.first_name ? `, ${user.first_name}` : "",
                               })}
@@ -91,17 +91,17 @@ export default function PatientDashboardPage() {
                          <p className="text-muted-foreground mt-1">
                               {t("patientHome.subtitle")}
                          </p>
-                         <div className="mt-4 inline-flex items-center gap-2 rounded-2xl border border-border/70 bg-card px-4 py-2 text-sm shadow-sm">
-                              <span className="text-xs font-black uppercase tracking-[0.22em] text-muted-foreground">
+                         <div className="mt-4 flex max-w-full flex-wrap items-center gap-2 rounded-2xl border border-border/70 bg-card px-3 py-2 text-sm shadow-sm sm:inline-flex sm:px-4">
+                              <span className="text-xs font-black uppercase tracking-[0.14em] text-muted-foreground sm:tracking-[0.22em]">
                                    {t("patients.patientId")}
                               </span>
                               <span className="font-semibold text-foreground">{patientId}</span>
                          </div>
                     </div>
 
-                    <div className="flex gap-3">
+                    <div className="flex w-full flex-col gap-2 min-[420px]:flex-row sm:w-auto sm:flex-wrap sm:gap-3">
                          <Button 
-                              className="rounded-2xl px-6 shadow-lg shadow-primary/20 transition-all hover:scale-105 active:scale-95" 
+                              className="w-full rounded-2xl px-4 shadow-lg shadow-primary/20 transition-all hover:scale-105 active:scale-95 min-[420px]:w-auto sm:px-6"
                               onClick={() => {
                                    if (!user?.patient_profile?.is_profile_complete) {
                                         toast.warning(t("booking.profileIncompleteToast"))
@@ -116,7 +116,7 @@ export default function PatientDashboardPage() {
                          </Button>
 
                          <Button
-                              className="rounded-2xl"
+                              className="w-full rounded-2xl min-[420px]:w-auto"
                               variant="outline"
                               onClick={() => fetchAppointments()}
                               disabled={loading}
@@ -134,7 +134,7 @@ export default function PatientDashboardPage() {
                          <AppointmentWorkflowLegend />
 
                          {/* STATS */}
-                         <div className="grid gap-4 sm:grid-cols-4">
+                         <div className="grid gap-4 min-[420px]:grid-cols-2 xl:grid-cols-4">
                               {[
                                    {
                                         label: t("appointments.pending"),
@@ -207,10 +207,10 @@ export default function PatientDashboardPage() {
                                                             <p className="text-lg font-semibold">{nextAppointment.doctor || t("patientHome.tbd")}</p>
                                                        </div>
                                                   </div>
-                                                 <div className="grid grid-cols-2 gap-6">
+                                                 <div className="grid gap-3 min-[420px]:grid-cols-2 sm:gap-6">
                                                        <div className="flex items-center gap-2">
                                                             <HugeiconsIcon icon={Calendar01Icon} className="w-4 h-4 text-muted-foreground" />
-                                                            <span className="text-sm font-medium">{nextAppointment.date}</span>
+                                                            <span className="min-w-0 break-words text-sm font-medium">{nextAppointment.date}</span>
                                                        </div>
                                                        <div className="flex items-center gap-2">
                                                             <HugeiconsIcon icon={Clock01Icon} className="w-4 h-4 text-muted-foreground" />

@@ -21,14 +21,12 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import {
-  Calendar01Icon,
   CallIcon,
   Doctor01Icon,
   FilterIcon,
   Mail01Icon,
   PlusSignIcon,
   Search01Icon,
-  Watch01Icon,
   Delete02Icon,
   ViewIcon,
   Edit02Icon,
@@ -266,13 +264,13 @@ export default function DoctorsPage() {
 
     try {
       await deleteDoctor(deleteTarget.uuid)
-      toast.success("Doctor deleted successfully")
+      toast.success(t("adminDoctors.doctorDeletedSuccess"))
       if (activeDoctor?.uuid === deleteTarget.uuid) {
         closeViewEditSheet()
       }
       closeDeletePopup()
     } catch {
-      toast.error("Failed to delete doctor")
+      toast.error(t("adminDoctors.doctorDeleteFailed"))
       closeDeletePopup()
     }
   }
@@ -295,7 +293,7 @@ export default function DoctorsPage() {
         category_uuids: editForm.category_uuids,
         is_available: editForm.is_available,
       })
-      toast.success("Doctor updated successfully")
+      toast.success(t("adminDoctors.doctorUpdatedSuccess"))
       closeViewEditSheet()
     } catch (error: unknown) {
       const backendErrors = getBackendFieldErrors(error, [
@@ -308,7 +306,7 @@ export default function DoctorsPage() {
       if (Object.keys(backendErrors).length > 0) {
         setEditErrors(backendErrors)
       } else {
-        toast.error("Failed to update doctor")
+        toast.error(t("adminDoctors.doctorUpdateFailed"))
       }
     } finally {
       setEditSubmitting(false)
@@ -394,19 +392,19 @@ export default function DoctorsPage() {
           <TableHeader className="bg-muted/50">
             <TableRow className="hover:bg-transparent">
               <TableHead className="w-12">#</TableHead>
-              <TableHead>Name</TableHead>
-              <TableHead>Specialty</TableHead>
-              <TableHead>Email</TableHead>
-              <TableHead>Phone</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
+              <TableHead>{t("common.name")}</TableHead>
+              <TableHead>{t("doctors.specialization")}</TableHead>
+              <TableHead>{t("common.email")}</TableHead>
+              <TableHead>{t("common.phone")}</TableHead>
+              <TableHead>{t("common.status")}</TableHead>
+              <TableHead className="text-right">{t("common.actions")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {doctors.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={7} className="h-24 text-center">
-                  No doctors found.
+                  {t("adminDoctors.noneFound")}
                 </TableCell>
               </TableRow>
             ) : (
@@ -641,9 +639,9 @@ export default function DoctorsPage() {
             </div>
 
             <div className="space-y-2">
-              <Label>Departments</Label>
+              <Label>{t("nav.departments")}</Label>
               <p className="text-xs text-muted-foreground">
-                Select every department where this doctor can work.
+                {t("adminDoctors.departmentHelp")}
               </p>
               <div className="grid gap-2 sm:grid-cols-2">
                 {illnessCategories.map((category) => {
@@ -697,24 +695,24 @@ export default function DoctorsPage() {
         <SheetContent side="right" className="w-full sm:max-w-xl">
           <SheetHeader className="border-b border-sidebar-border">
             <SheetTitle>
-              {viewEditMode === "view" ? "Doctor Details" : "Edit Doctor"}
+              {viewEditMode === "view" ? t("adminDoctors.details") : t("adminDoctors.edit")}
             </SheetTitle>
             <SheetDescription>
               {viewEditMode === "view"
-                ? "Review doctor profile information."
-                : "Update doctor account details."}
+                ? t("adminDoctors.review")
+                : t("adminDoctors.update")}
             </SheetDescription>
           </SheetHeader>
 
           <div className="flex-1 space-y-5 overflow-y-auto p-6">
             <div className="space-y-2">
-              <Label htmlFor="view-uuid">ID</Label>
+              <Label htmlFor="view-uuid">{t("adminDoctors.id")}</Label>
               <Input id="view-uuid" value={editForm.license_number ? editForm.license_number : ""} disabled />
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-2">
-                <Label htmlFor="edit-first_name">First Name</Label>
+                <Label htmlFor="edit-first_name">{t("adminDoctors.firstName")}</Label>
                 <Input
                   id="edit-first_name"
                   value={editForm.first_name}
@@ -728,7 +726,7 @@ export default function DoctorsPage() {
                 )}
               </div>
               <div className="space-y-2">
-                <Label htmlFor="edit-last_name">Last Name</Label>
+                <Label htmlFor="edit-last_name">{t("adminDoctors.lastName")}</Label>
                 <Input
                   id="edit-last_name"
                   value={editForm.last_name}
@@ -744,7 +742,7 @@ export default function DoctorsPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="edit-email">Email</Label>
+              <Label htmlFor="edit-email">{t("adminDoctors.email")}</Label>
               <Input
                 id="edit-email"
                 type="email"
@@ -760,7 +758,7 @@ export default function DoctorsPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="edit-phone">Phone</Label>
+              <Label htmlFor="edit-phone">{t("adminDoctors.phone")}</Label>
               <Input
                 id="edit-phone"
                 value={editForm.phone}
@@ -775,7 +773,7 @@ export default function DoctorsPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="edit-license_number">License Number</Label>
+              <Label htmlFor="edit-license_number">{t("adminDoctors.licenseNumber")}</Label>
               <Input
                 id="edit-license_number"
                 value={editForm.license_number}
@@ -791,9 +789,9 @@ export default function DoctorsPage() {
 
             {viewEditMode === "edit" && (
               <div className="space-y-2">
-                <Label>Departments</Label>
+                <Label>{t("nav.departments")}</Label>
                 <p className="text-xs text-muted-foreground">
-                  Select every department where this doctor can work.
+                {t("adminDoctors.departmentHelp")}
                 </p>
                 <div className="grid gap-2 sm:grid-cols-2">
                   {illnessCategories.map((category) => {
@@ -830,9 +828,9 @@ export default function DoctorsPage() {
             {viewEditMode === "edit" && (
               <div className="flex items-center justify-between rounded-3xl border border-sidebar-border bg-muted/20 p-4">
                 <div>
-                  <p className="text-sm font-medium">Availability</p>
+                  <p className="text-sm font-medium">{t("doctors.availability")}</p>
                   <p className="text-xs text-muted-foreground">
-                    {editForm.is_available ? "Available" : "Unavailable"}
+                    {editForm.is_available ? t("adminDoctors.available") : t("adminDoctors.unavailable")}
                   </p>
                 </div>
                 <Switch
@@ -845,13 +843,13 @@ export default function DoctorsPage() {
             )}
           </div>
 
-          <SheetFooter className="border-t border-sidebar-border flex flex-row justify-between">
+          <SheetFooter className="flex flex-col-reverse items-stretch justify-between border-t border-sidebar-border sm:flex-row sm:items-center">
             <Button variant="outline" onClick={closeViewEditSheet}>
-              Close
+              {t("adminDoctors.close")}
             </Button>
             {viewEditMode === "edit" && (
               <Button onClick={handleSaveEdit} disabled={editSubmitting}>
-                {editSubmitting ? "Saving..." : "Save Changes"}
+                {editSubmitting ? t("adminDoctors.saving") : t("adminDoctors.saveChanges")}
               </Button>
             )}
           </SheetFooter>
@@ -864,35 +862,31 @@ export default function DoctorsPage() {
       >
         <SheetContent side="bottom" className="mx-auto my-auto w-full rounded-t-4xl sm:max-w-xl">
           <SheetHeader className="border-b border-sidebar-border">
-            <SheetTitle>Delete Doctor</SheetTitle>
+            <SheetTitle>{t("adminDoctors.deleteDoctor")}</SheetTitle>
             <SheetDescription>
-              This action cannot be undone. The doctor account will be permanently removed.
+              {t("adminDoctors.deleteDescription")}
             </SheetDescription>
           </SheetHeader>
           <div className="space-y-4 p-6">
             <div className="rounded-3xl border border-rose-200 bg-rose-50/70 p-4 text-sm text-rose-700 dark:border-rose-500/20 dark:bg-rose-500/10 dark:text-rose-300">
               {deleteTarget ? (
-                <p>
-                  You are about to delete{" "}
-                  <span className="font-semibold">
-                    {deleteTarget.first_name} {deleteTarget.last_name}
-                  </span>{" "}
-                  with license number{" "}
-                  <span className="font-mono">{deleteTarget.license_number}</span>.
-                </p>
+                <p>{t("adminDoctors.aboutToDelete", {
+                  name: `${deleteTarget.first_name} ${deleteTarget.last_name}`,
+                  license: deleteTarget.license_number,
+                })}</p>
               ) : null}
             </div>
             <p className="text-sm text-muted-foreground">
-              You can close this popup if you want to keep the record.
+              {t("adminDoctors.keepRecord")}
             </p>
           </div>
           <SheetFooter className="border-t border-sidebar-border">
             <Button variant="outline" onClick={closeDeletePopup}>
-              Cancel
+              {t("adminDoctors.cancel")}
             </Button>
             <Button variant="destructive" onClick={confirmDelete}>
               <HugeiconsIcon icon={Delete02Icon} strokeWidth={1.8} />
-              Delete
+              {t("adminDoctors.delete")}
             </Button>
           </SheetFooter>
         </SheetContent>

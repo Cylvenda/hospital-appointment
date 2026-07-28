@@ -7,6 +7,7 @@ import { HugeiconsIcon } from "@hugeicons/react"
 import { Calendar03Icon, ArrowLeft01Icon, ArrowRight01Icon } from "@hugeicons/core-free-icons"
 import { Button } from "./button"
 import { cn } from "@/lib/utils"
+import { useTranslation } from "@/lib/i18n"
 
 interface DatePickerProps {
   value?: string // YYYY-MM-DD
@@ -17,20 +18,25 @@ interface DatePickerProps {
   min?: string // YYYY-MM-DD
 }
 
-const MONTHS = [
-  "January", "February", "March", "April", "May", "June",
-  "July", "August", "September", "October", "November", "December"
-]
-
 export function DatePicker({
   value,
   onChange,
-  placeholder = "Select date",
+  placeholder,
   className,
   disabled,
   min
 }: DatePickerProps) {
+  const { t, language } = useTranslation()
+  const locale = language === "sw" ? "sw-TZ" : "en-US"
+  const resolvedPlaceholder = placeholder ?? t("i18nAudit.calendar.selectDate")
+  const months = Array.from({ length: 12 }, (_, month) =>
+    new Intl.DateTimeFormat(locale, { month: "long" }).format(new Date(2024, month, 1))
+  )
+  const weekdays = Array.from({ length: 7 }, (_, day) =>
+    new Intl.DateTimeFormat(locale, { weekday: "short" }).format(new Date(2024, 0, day + 1))
+  )
   const [isOpen, setIsOpen] = useState(false)
+  const [popupPosition, setPopupPosition] = useState({ top: 0, left: 0 })
   const containerRef = useRef<HTMLDivElement>(null)
   const portalRef = useRef<HTMLDivElement>(null)
 
@@ -102,7 +108,7 @@ export function DatePicker({
     if (!value) return ""
     const d = new Date(value)
     if (isNaN(d.getTime())) return ""
-    return d.toLocaleDateString("en-US", {
+    return d.toLocaleDateString(locale, {
       month: "short",
       day: "numeric",
       year: "numeric"
@@ -117,13 +123,23 @@ export function DatePicker({
 
   const toggleOpen = useCallback(() => {
     if (!disabled) {
-      setIsOpen(prev => !prev)
+      setIsOpen(prev => {
+        if (!prev && containerRef.current) {
+          const rect = containerRef.current.getBoundingClientRect()
+          const popupWidth = Math.min(320, window.innerWidth - 16)
+          setPopupPosition({
+            top: rect.bottom + 4,
+            left: Math.max(8, Math.min(rect.left, window.innerWidth - popupWidth - 8)),
+          })
+        }
+        return !prev
+      })
     }
   }, [disabled])
 
   const renderCalendar = () => (
     <div
-      className="w-80 rounded-2xl border border-border bg-card p-4 shadow-2xl"
+      className="w-[min(20rem,calc(100vw-1rem))] rounded-2xl border border-border bg-card p-3 shadow-2xl sm:p-4"
       style={{ animation: "fadeIn 0.15s ease-out" }}
     >
       {/* Header selectors */}
@@ -131,7 +147,8 @@ export function DatePicker({
         <button
           type="button"
           onClick={handlePrevMonth}
-          className="p-1.5 rounded-lg hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
+          className="touch-target flex items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+          aria-label={t("i18nAudit.calendar.previousMonth")}
         >
           <HugeiconsIcon icon={ArrowLeft01Icon} className="h-4 w-4" />
         </button>
@@ -141,7 +158,7 @@ export function DatePicker({
             onChange={(e) => setCurrentMonth(parseInt(e.target.value))}
             className="bg-transparent font-bold text-sm text-foreground focus:outline-none cursor-pointer border border-transparent hover:border-border rounded px-1 py-0.5"
           >
-            {MONTHS.map((name, idx) => (
+            {months.map((name, idx) => (
               <option key={name} value={idx} className="bg-card text-foreground">{name}</option>
             ))}
           </select>
@@ -158,7 +175,8 @@ export function DatePicker({
         <button
           type="button"
           onClick={handleNextMonth}
-          className="p-1.5 rounded-lg hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
+          className="touch-target flex items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+          aria-label={t("i18nAudit.calendar.nextMonth")}
         >
           <HugeiconsIcon icon={ArrowRight01Icon} className="h-4 w-4" />
         </button>
@@ -166,7 +184,7 @@ export function DatePicker({
 
       {/* Weekday Labels */}
       <div className="grid grid-cols-7 gap-1 text-center py-2 text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
-        {["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"].map(d => (
+        {weekdays.map(d => (
           <div key={d}>{d}</div>
         ))}
       </div>
@@ -174,7 +192,7 @@ export function DatePicker({
       {/* Days Grid */}
       <div className="grid grid-cols-7 gap-1">
         {paddingArray.map(p => (
-          <div key={`pad-${p}`} className="h-8 w-8" />
+          <div key={`pad-${p}`} className="aspect-square w-full" />
         ))}
         {daysArray.map(day => {
           const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`
@@ -189,7 +207,7 @@ export function DatePicker({
               onClick={() => handleDateSelect(day)}
               disabled={isBeforeMin}
               className={cn(
-                "h-8 w-8 rounded-lg text-xs font-medium flex items-center justify-center transition-all",
+                "aspect-square min-h-10 w-full rounded-lg text-xs font-medium flex items-center justify-center transition-all",
                 "hover:bg-emerald-500/10 hover:text-emerald-600 dark:hover:text-emerald-400",
                 isSelected && "bg-emerald-600 hover:bg-emerald-600 text-white font-bold shadow-sm",
                 isToday && !isSelected && "border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 font-bold",
@@ -218,7 +236,7 @@ export function DatePicker({
         )}
       >
         <HugeiconsIcon icon={Calendar03Icon} className="mr-2 h-4 w-4 text-muted-foreground" />
-        {getDisplayValue() || placeholder}
+        {getDisplayValue() || resolvedPlaceholder}
       </Button>
 
       {isOpen && (
@@ -226,10 +244,7 @@ export function DatePicker({
           <div ref={portalRef} className="fixed inset-0 z-[9998]" onClick={() => setIsOpen(false)}>
             <div
               className="absolute z-[9999] animate-in fade-in zoom-in-95 duration-200"
-              style={{
-                top: containerRef.current?.getBoundingClientRect().bottom ?? 0,
-                left: containerRef.current?.getBoundingClientRect().left ?? 0,
-              }}
+              style={popupPosition}
               onClick={(e) => e.stopPropagation()}
             >
               {renderCalendar()}

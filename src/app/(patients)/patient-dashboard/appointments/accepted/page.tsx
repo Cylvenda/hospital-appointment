@@ -5,8 +5,10 @@ import { Button } from "@/components/ui/button"
 import { useAppointmentStore } from "@/store/appointments/appointment.store"
 import AppointmentDisplay from "@/components/customs/pattient-appointment"
 import { filterAppointmentsForQueue } from "@/lib/appointment-queues"
+import { useTranslation } from "@/lib/i18n"
 
 export default function ReceptionistAppointmentsPage() {
+  const { t } = useTranslation()
   const {
     appointments,
     loading,
@@ -32,7 +34,7 @@ export default function ReceptionistAppointmentsPage() {
   if (loading && appointments.length === 0) {
     return (
       <div className="w-full rounded-8xl border border-dashed border-border bg-card p-10 text-center">
-        <p className="text-sm text-muted-foreground">Loading appointments...</p>
+        <p className="text-sm text-muted-foreground">{t("patientAppointmentLists.loading")}</p>
       </div>
     )
   }
@@ -41,10 +43,10 @@ export default function ReceptionistAppointmentsPage() {
     return (
       <div className="flex w-full flex-col items-center gap-4 rounded-8xl border border-red-200 bg-red-50/60 p-10 text-center">
         <p className="text-sm text-red-700">
-          {error || "We could not load appointments right now."}
+          {t("patientAppointmentLists.loadError")}
         </p>
         <Button onClick={() => void initialize()} variant="outline">
-          Try Again
+          {t("patientAppointmentLists.tryAgain")}
         </Button>
       </div>
     )
@@ -53,16 +55,16 @@ export default function ReceptionistAppointmentsPage() {
   return (
     <div className="w-full space-y-4 max-w-8xl">
       <div>
-        <h1 className="text-2xl font-semibold">Upcoming Appointments</h1>
+        <h1 className="text-2xl font-semibold">{t("patientAppointmentLists.upcomingTitle")}</h1>
         <p className="text-sm text-muted-foreground">
-          Review appointments that have been confirmed or are on the way to being scheduled.
+          {t("patientAppointmentLists.confirmedDescription")}
         </p>
       </div>
 
       {acceptedAppointments.length === 0 ? (
         <div className="rounded-4xl border border-dashed border-border bg-card p-10 text-center">
           <p className="text-sm text-muted-foreground">
-            No upcoming appointments are available.
+            {t("patientAppointmentLists.noUpcoming")}
           </p>
         </div>
       ) : (

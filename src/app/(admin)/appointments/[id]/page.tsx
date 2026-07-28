@@ -7,8 +7,10 @@ import { Button } from "@/components/ui/button"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { ArrowLeft02Icon } from "@hugeicons/core-free-icons"
 import AssignAppointment from "@/components/customs/assign-appointment"
+import { useTranslation } from "@/lib/i18n"
 
 export default function AdminSingleAppointmentPage() {
+  const { t } = useTranslation()
   const params = useParams()
   const router = useRouter()
   const id = params.id as string
@@ -23,7 +25,7 @@ export default function AdminSingleAppointmentPage() {
   if (!initialized) {
     return (
       <div className="w-full flex h-64 items-center justify-center rounded-4xl border border-dashed border-border bg-card">
-        <p className="text-sm text-muted-foreground animate-pulse">Loading appointment details...</p>
+        <p className="text-sm text-muted-foreground animate-pulse">{t("appointmentDetailPage.loading")}</p>
       </div>
     )
   }
@@ -34,10 +36,10 @@ export default function AdminSingleAppointmentPage() {
     return (
       <div className="flex w-full flex-col items-center gap-4 rounded-4xl border border-dashed border-border bg-card p-10 text-center">
         <p className="text-sm text-muted-foreground">
-          Appointment not found or you do not have permission to view it.
+          {t("appointmentDetailPage.notFound")}
         </p>
         <Button onClick={() => router.push("/appointments/all")} variant="outline">
-          Back to Appointments
+          {t("appointmentDetailPage.back")}
         </Button>
       </div>
     )
@@ -55,9 +57,9 @@ export default function AdminSingleAppointmentPage() {
           <HugeiconsIcon icon={ArrowLeft02Icon} className="w-6 h-6" />
         </Button>
         <div>
-          <h1 className="text-2xl font-black tracking-tight">Appointment Details</h1>
+          <h1 className="text-2xl font-black tracking-tight">{t("appointmentDetailPage.title")}</h1>
           <p className="text-sm text-muted-foreground font-medium">
-            View full details for appointment #{id?.slice(0, 8) || id}
+            {t("appointmentDetailPage.description", { id: id?.slice(0, 8) || id })}
           </p>
         </div>
       </div>

@@ -27,6 +27,7 @@ type ColumnActions = {
   onEdit: (patient: User) => void
   onDelete: (patient: User) => void
   readOnly?: boolean
+  t: (key: string, params?: Record<string, string | number>) => string
 }
 
 
@@ -35,10 +36,11 @@ export function getColumns({
   onEdit,
   onDelete,
   readOnly = false,
+  t,
 }: ColumnActions): ColumnDef<User>[] {
   return [
     {
-      header: "ID",
+      header: t("adminPatients.id"),
       cell: ({ row }) => (
         <span className="font-mono text-xs text-muted-foreground">
           {row.index + 1}
@@ -47,7 +49,7 @@ export function getColumns({
     },
     {
       accessorKey: "first_name",
-      header: "Patient",
+      header: t("adminPatients.patient"),
       cell: ({ row }) => {
         const patient = row.original
         const fullName =
@@ -72,7 +74,7 @@ export function getColumns({
     },
     {
       accessorKey: "email",
-      header: "Email",
+      header: t("adminPatients.email"),
       cell: ({ row }) => (
         <div className="flex items-center gap-2 text-muted-foreground">
           <HugeiconsIcon icon={Mail01Icon} strokeWidth={1.8} className="size-4" />
@@ -82,7 +84,7 @@ export function getColumns({
     },
     {
       accessorKey: "phone",
-      header: "Phone Number",
+      header: t("adminPatients.phoneNumber"),
       cell: ({ row }) => (
         <div className="flex items-center gap-2 text-muted-foreground">
           <HugeiconsIcon icon={CallIcon} strokeWidth={1.8} className="size-4" />
@@ -92,17 +94,17 @@ export function getColumns({
     },
     {
       accessorKey: "role",
-      header: "Role",
+      header: t("adminPatients.role"),
       cell: ({ row }) => (
         <span className="inline-flex items-center gap-2 rounded-full bg-muted px-3 py-1 text-xs font-medium text-muted-foreground">
           <HugeiconsIcon icon={UserIcon} strokeWidth={1.8} className="size-3.5" />
-          {row.original.role}
+          {t(`roleLabels.${row.original.role}`)}
         </span>
       ),
     },
     {
       accessorKey: "is_active",
-      header: "Status",
+      header: t("adminPatients.status"),
       cell: ({ row }) =>
         row.original.is_active ? (
           <span className="inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700 ring-1 ring-emerald-100 dark:bg-emerald-500/15 dark:text-emerald-300 dark:ring-emerald-500/20">
@@ -111,7 +113,7 @@ export function getColumns({
               strokeWidth={1.8}
               className="size-3.5"
             />
-            Active
+            {t("adminPatients.active")}
           </span>
         ) : (
           <span className="inline-flex items-center gap-2 rounded-full bg-rose-50 px-3 py-1 text-xs font-medium text-rose-700 ring-1 ring-rose-100 dark:bg-rose-500/15 dark:text-rose-300 dark:ring-rose-500/20">
@@ -120,13 +122,13 @@ export function getColumns({
               strokeWidth={1.8}
               className="size-3.5"
             />
-            Inactive
+            {t("adminPatients.inactive")}
           </span>
         ),
     },
     {
       id: "actions",
-      header: "Actions",
+      header: t("adminPatients.actions"),
       cell: ({ row }) => {
         const patient = row.original
 
@@ -137,7 +139,7 @@ export function getColumns({
               variant="outline"
               className="rounded-xl"
               onClick={() => onView(patient)}
-              aria-label={`View ${patient.first_name}`}
+              aria-label={t("adminPatients.viewNamed", { name: patient.first_name })}
             >
               <HugeiconsIcon icon={ViewIcon} strokeWidth={1.8} className="size-4" />
             </Button>
@@ -147,7 +149,7 @@ export function getColumns({
               className="rounded-xl"
               onClick={() => onEdit(patient)}
               disabled={readOnly}
-              aria-label={`Edit ${patient.first_name}`}
+              aria-label={t("adminPatients.editNamed", { name: patient.first_name })}
             >
               <HugeiconsIcon icon={Edit02Icon} strokeWidth={1.8} className="size-4" />
             </Button>
@@ -157,7 +159,7 @@ export function getColumns({
               className="rounded-xl"
               onClick={() => onDelete(patient)}
               disabled={readOnly}
-              aria-label={`Delete ${patient.first_name}`}
+              aria-label={t("adminPatients.deleteNamed", { name: patient.first_name })}
             >
               <HugeiconsIcon icon={Delete02Icon} strokeWidth={1.8} className="size-4" />
             </Button>

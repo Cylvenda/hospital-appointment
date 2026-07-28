@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "react-toastify";
 import { Button } from "@/components/ui/button";
 import {
@@ -34,6 +34,7 @@ import {
   type PrescriptionApi,
 } from "@/api/services/clinical.service";
 import { getAppointmentQueueForRole } from "@/lib/appointment-queues";
+import { useTranslation } from "@/lib/i18n";
 
 type Props = {
   appointment: Appointment;
@@ -95,6 +96,8 @@ const emptyPrescriptionItem = {
 type PrescriptionItemDraft = typeof emptyPrescriptionItem;
 
 export function ClinicalWorkspace({ appointment }: Props) {
+  const { t, language } = useTranslation();
+  const locale = language === "sw" ? "sw-TZ" : "en-US";
   const [consultations, setConsultations] = useState<ConsultationApi[]>([]);
   const [diagnoses, setDiagnoses] = useState<DiagnosisApi[]>([]);
   const [prescriptions, setPrescriptions] = useState<PrescriptionApi[]>([]);
@@ -134,15 +137,15 @@ export function ClinicalWorkspace({ appointment }: Props) {
 
   const formatVerificationTime = (value: string | null) => {
     if (!value) {
-      return "Pending verification";
+      return t("i18nAudit.clinicalWorkspace.pendingVerification");
     }
 
     const parsed = new Date(value);
     if (Number.isNaN(parsed.getTime())) {
-      return "Pending verification";
+      return t("i18nAudit.clinicalWorkspace.pendingVerification");
     }
 
-    return parsed.toLocaleString();
+    return parsed.toLocaleString(locale);
   };
 
   useEffect(() => {
@@ -239,14 +242,14 @@ export function ClinicalWorkspace({ appointment }: Props) {
     const savedAt = new Date(consultation.updated_at);
     const elapsedMs = Date.now() - savedAt.getTime();
     if (Number.isFinite(elapsedMs) && elapsedMs < 60_000) {
-      return "Updated just now";
+      return t("i18nAudit.clinicalWorkspace.updatedNow");
     }
 
-    return `Saved at ${savedAt.toLocaleTimeString([], {
+    return t("i18nAudit.clinicalWorkspace.savedAt", { time: savedAt.toLocaleTimeString(locale, {
       hour: "numeric",
       minute: "2-digit",
-    })}`;
-  }, [consultation]);
+    }) });
+  }, [consultation, locale, t]);
 
   const syncConsultation = async () => {
     setConsultationErrors({});
@@ -287,7 +290,7 @@ export function ClinicalWorkspace({ appointment }: Props) {
     return response.data;
   };
 
-  const loadClinicalData = async () => {
+  const loadClinicalData = useCallback(async () => {
     setLoading(true);
     try {
       const [
@@ -314,15 +317,15 @@ export function ClinicalWorkspace({ appointment }: Props) {
       setLabTests(labTestsResponse.data);
     } catch (error) {
       console.error(error);
-      toast.error("Failed to load clinical workspace.");
+      toast.error(t("i18nAudit.clinicalWorkspace.loadFailed"));
     } finally {
       setLoading(false);
     }
-  };
+  }, [t]);
 
   useEffect(() => {
     void loadClinicalData();
-  }, [appointment.id]);
+  }, [loadClinicalData]);
 
   const runAction = async (
     runner: () => Promise<void>,
@@ -341,7 +344,7 @@ export function ClinicalWorkspace({ appointment }: Props) {
           error.message === "Consultation note validation failed."
         )
       ) {
-        toast.error("Something went wrong while saving the clinical record.");
+        toast.error(t("i18nAudit.clinicalWorkspace.saveFailed"));
       }
     } finally {
       setActionState("idle");
@@ -370,7 +373,7 @@ export function ClinicalWorkspace({ appointment }: Props) {
 
   const handleAddDiagnosis = async () => {
     if (!diagnosisForm.disease_name.trim()) {
-      toast.error("Please add a diagnosis name.");
+      toast.error(t("i18nAudit.clinicalWorkspace.diagnosisRequired"));
       return;
     }
 
@@ -388,7 +391,7 @@ export function ClinicalWorkspace({ appointment }: Props) {
 
   const handleCreatePrescription = async () => {
     if (prescriptionItems.length === 0) {
-      toast.error("Add at least one medicine to the prescription.");
+      toast.error(t("i18nAudit.clinicalWorkspace.medicineRequired"));
       return;
     }
 
@@ -412,7 +415,7 @@ export function ClinicalWorkspace({ appointment }: Props) {
 
   const handleAddPrescriptionItem = () => {
     if (!prescriptionItem.medicine_name.trim()) {
-      toast.error("Enter the medicine name before adding it.");
+      toast.error(t("i18nAudit.clinicalWorkspace.medicineNameRequired"));
       return;
     }
     if (
@@ -420,7 +423,7 @@ export function ClinicalWorkspace({ appointment }: Props) {
       !prescriptionItem.frequency.trim() ||
       !prescriptionItem.duration.trim()
     ) {
-      toast.error("Dosage, frequency, and duration are required.");
+      toast.error(t("i18nAudit.clinicalWorkspace.medicineDetailsRequired"));
       return;
     }
 
@@ -436,7 +439,7 @@ export function ClinicalWorkspace({ appointment }: Props) {
 
   const handleExportRecord = async (format: "pdf" | "docx") => {
     if (!consultation) {
-      toast.error("Open and save the visit before exporting its record.");
+      toast.error(t("i18nAudit.clinicalWorkspace.saveBeforeExport"));
       return;
     }
 
@@ -454,10 +457,10 @@ export function ClinicalWorkspace({ appointment }: Props) {
       anchor.click();
       anchor.remove();
       URL.revokeObjectURL(url);
-      toast.success(`${format.toUpperCase()} clinical record exported.`);
+      toast.success(t("i18nAudit.clinicalWorkspace.exported", { format: format.toUpperCase() }));
     } catch (error) {
       console.error(error);
-      toast.error("The clinical record could not be exported.");
+      toast.error(t("i18nAudit.clinicalWorkspace.exportFailed"));
     } finally {
       setActionState("idle");
     }
@@ -465,7 +468,7 @@ export function ClinicalWorkspace({ appointment }: Props) {
 
   const handleCreateLabRequest = async () => {
     if (selectedLabTestUuids.length === 0) {
-      toast.error("Please select at least one lab test.");
+      toast.error(t("i18nAudit.clinicalWorkspace.labTestRequired"));
       return;
     }
 
@@ -508,12 +511,10 @@ export function ClinicalWorkspace({ appointment }: Props) {
                 icon={MedicalFileIcon}
                 className="h-6 w-6 text-primary"
               />
-              Visit Workspace
+              {t("i18nAudit.clinicalWorkspace.workspaceTitle")}
             </CardTitle>
             <CardDescription className="max-w-3xl text-sm">
-              Use this panel to open the visit, document findings, add
-              diagnoses, issue prescriptions, and request labs without leaving
-              the page.
+              {t("i18nAudit.clinicalWorkspace.workspaceDescription")}
             </CardDescription>
           </div>
 
@@ -533,7 +534,7 @@ export function ClinicalWorkspace({ appointment }: Props) {
               className="rounded-full px-3 py-1 font-semibold"
             >
               <HugeiconsIcon icon={Clock03Icon} className="mr-2 h-3.5 w-3.5" />
-              {appointment.date || "Not scheduled"}
+              {appointment.date || t("i18nAudit.clinicalWorkspace.notScheduled")}
             </Badge>
             <Button
               type="button"
@@ -543,7 +544,7 @@ export function ClinicalWorkspace({ appointment }: Props) {
               onClick={() => void handleExportRecord("pdf")}
               className="rounded-full"
             >
-              PDF record
+              {t("i18nAudit.clinicalWorkspace.pdfRecord")}
             </Button>
             <Button
               type="button"
@@ -553,7 +554,7 @@ export function ClinicalWorkspace({ appointment }: Props) {
               onClick={() => void handleExportRecord("docx")}
               className="rounded-full"
             >
-              DOCX record
+              {t("i18nAudit.clinicalWorkspace.docxRecord")}
             </Button>
           </div>
         </div>
@@ -562,24 +563,24 @@ export function ClinicalWorkspace({ appointment }: Props) {
       <CardContent className="space-y-8 p-6">
         {loading ? (
           <div className="rounded-2xl border border-dashed border-border bg-muted/20 p-8 text-center text-sm text-muted-foreground">
-            Loading consultation data...
+            {t("i18nAudit.clinicalWorkspace.loadingConsultation")}
           </div>
         ) : (
           <>
             <div className="flex flex-col gap-4 rounded-2xl border border-border/60 bg-card p-5 shadow-sm lg:flex-row lg:items-center lg:justify-between">
               <div>
                 <p className="text-xs font-black uppercase tracking-[0.22em] text-muted-foreground">
-                  Consultation Status
+                  {t("i18nAudit.clinicalWorkspace.consultationStatus")}
                 </p>
                 <p className="mt-2 text-lg font-bold">
                   {consultation
-                    ? `Visit ${consultation.status.replace("_", " ")}`
-                    : "No visit created yet"}
+                    ? t("i18nAudit.clinicalWorkspace.visitStatus", { status: consultation.status.replace("_", " ") })
+                    : t("i18nAudit.clinicalWorkspace.noVisit")}
                 </p>
                 <p className="text-sm text-muted-foreground">
                   {consultation
-                    ? `Opened at ${new Date(consultation.started_at).toLocaleString()}`
-                    : "Open the visit before adding diagnoses, prescriptions, or lab requests."}
+                    ? t("i18nAudit.clinicalWorkspace.openedAt", { date: new Date(consultation.started_at).toLocaleString(locale) })
+                    : t("i18nAudit.clinicalWorkspace.openVisitHelp")}
                 </p>
               </div>
 
@@ -595,10 +596,10 @@ export function ClinicalWorkspace({ appointment }: Props) {
                   }
                 >
                   {consultationDraftStatus === "saved"
-                    ? "Visit note saved"
+                    ? t("i18nAudit.clinicalWorkspace.visitNoteSaved")
                     : consultationDraftStatus === "unsaved"
-                      ? "Unsaved visit note"
-                      : "No visit note yet"}
+                      ? t("i18nAudit.clinicalWorkspace.visitNoteUnsaved")
+                      : t("i18nAudit.clinicalWorkspace.noVisitNote")}
                 </Badge>
                 {lastSavedLabel && (
                   <p className="self-center text-xs font-medium text-muted-foreground">
@@ -615,7 +616,7 @@ export function ClinicalWorkspace({ appointment }: Props) {
                       icon={PlusSignIcon}
                       className="mr-2 h-4 w-4"
                     />
-                    Open Visit
+                    {t("i18nAudit.clinicalWorkspace.openVisit")}
                   </Button>
                 ) : (
                   <>
@@ -629,7 +630,7 @@ export function ClinicalWorkspace({ appointment }: Props) {
                         icon={RefreshIcon}
                         className="mr-2 h-4 w-4"
                       />
-                      Refresh Visit
+                      {t("i18nAudit.clinicalWorkspace.refreshVisit")}
                     </Button>
                     {isVisitOpen && (
                       <Button
@@ -641,7 +642,7 @@ export function ClinicalWorkspace({ appointment }: Props) {
                           icon={CheckCircle}
                           className="mr-2 h-4 w-4"
                         />
-                        Close Visit
+                        {t("i18nAudit.clinicalWorkspace.closeVisit")}
                       </Button>
                     )}
                   </>
@@ -655,11 +656,10 @@ export function ClinicalWorkspace({ appointment }: Props) {
                   icon={MedicalFileIcon}
                   className="h-5 w-5 text-primary"
                 />
-                <h3 className="text-base font-bold">Visit Note</h3>
+                <h3 className="text-base font-bold">{t("i18nAudit.clinicalWorkspace.visitNote")}</h3>
               </div>
               <p className="mt-1 text-sm text-muted-foreground">
-                Save the core visit note independently, then use the other
-                actions to add diagnoses, prescriptions, and lab requests.
+                {t("i18nAudit.clinicalWorkspace.noteHelp")}
               </p>
               <div className="mt-4 grid gap-4 xl:grid-cols-2">
                 <div className="space-y-4">
@@ -677,7 +677,7 @@ export function ClinicalWorkspace({ appointment }: Props) {
                         }));
                       }
                     }}
-                    placeholder="Chief complaint"
+                    placeholder={t("i18nAudit.clinicalWorkspace.chiefComplaint")}
                     className="min-h-24 rounded-2xl"
                   />
                   {consultationErrors.chief_complaint && (
@@ -693,7 +693,7 @@ export function ClinicalWorkspace({ appointment }: Props) {
                         history_of_present_illness: e.target.value,
                       }))
                     }
-                    placeholder="History of present illness"
+                    placeholder={t("i18nAudit.clinicalWorkspace.presentIllness")}
                     className="min-h-32 rounded-2xl"
                   />
                 </div>
@@ -706,7 +706,7 @@ export function ClinicalWorkspace({ appointment }: Props) {
                         physical_examination: e.target.value,
                       }))
                     }
-                    placeholder="Physical examination"
+                    placeholder={t("i18nAudit.clinicalWorkspace.physicalExamination")}
                     className="min-h-32 rounded-2xl"
                   />
                   <Textarea
@@ -717,7 +717,7 @@ export function ClinicalWorkspace({ appointment }: Props) {
                         provisional_diagnosis: e.target.value,
                       }))
                     }
-                    placeholder="Provisional diagnosis"
+                    placeholder={t("i18nAudit.clinicalWorkspace.provisionalDiagnosis")}
                     className="min-h-24 rounded-2xl"
                   />
                 </div>
@@ -728,11 +728,10 @@ export function ClinicalWorkspace({ appointment }: Props) {
                   disabled={actionState === "loading"}
                   className="rounded-2xl"
                 >
-                  Save Visit Note
+                  {t("i18nAudit.clinicalWorkspace.saveVisitNote")}
                 </Button>
                 <p className="text-xs text-muted-foreground">
-                  This will open the visit if needed, or update the existing
-                  note.
+                  {t("i18nAudit.clinicalWorkspace.saveVisitHelp")}
                 </p>
               </div>
             </div>
@@ -745,7 +744,7 @@ export function ClinicalWorkspace({ appointment }: Props) {
                       icon={StethoscopeIcon}
                       className="h-5 w-5 text-primary"
                     />
-                    <h3 className="text-base font-bold">Record Diagnosis</h3>
+                    <h3 className="text-base font-bold">{t("i18nAudit.clinicalWorkspace.recordDiagnosis")}</h3>
                   </div>
                   <div className="mt-4 grid gap-3">
                     <Input
@@ -756,7 +755,7 @@ export function ClinicalWorkspace({ appointment }: Props) {
                           disease_name: e.target.value,
                         }))
                       }
-                      placeholder="Disease name"
+                      placeholder={t("i18nAudit.clinicalWorkspace.diseaseName")}
                     />
                     <Input
                       value={diagnosisForm.icd10_code}
@@ -766,7 +765,7 @@ export function ClinicalWorkspace({ appointment }: Props) {
                           icd10_code: e.target.value,
                         }))
                       }
-                      placeholder="ICD-10 code"
+                      placeholder={t("i18nAudit.clinicalWorkspace.icdCode")}
                     />
                     <Textarea
                       value={diagnosisForm.description}
@@ -776,7 +775,7 @@ export function ClinicalWorkspace({ appointment }: Props) {
                           description: e.target.value,
                         }))
                       }
-                      placeholder="Diagnosis notes"
+                      placeholder={t("i18nAudit.clinicalWorkspace.diagnosisNotes")}
                     />
                     <div className="flex flex-wrap gap-2">
                       {(["provisional", "final"] as const).map((value) => (
@@ -803,7 +802,7 @@ export function ClinicalWorkspace({ appointment }: Props) {
                       disabled={actionState === "loading"}
                       className="rounded-2xl"
                     >
-                      Record Diagnosis
+                      {t("i18nAudit.clinicalWorkspace.recordDiagnosis")}
                     </Button>
                   </div>
                 </div>
@@ -817,11 +816,10 @@ export function ClinicalWorkspace({ appointment }: Props) {
                       />
                       <div>
                         <h3 className="text-base font-bold">
-                          Medication Order
+                          {t("i18nAudit.clinicalWorkspace.medicationOrder")}
                         </h3>
                         <p className="text-xs text-muted-foreground">
-                          Build a complete prescription before issuing it to the
-                          patient.
+                          {t("i18nAudit.clinicalWorkspace.medicationOrderHelp")}
                         </p>
                       </div>
                     </div>
@@ -830,7 +828,7 @@ export function ClinicalWorkspace({ appointment }: Props) {
                     <Textarea
                       value={prescriptionNotes}
                       onChange={(e) => setPrescriptionNotes(e.target.value)}
-                      placeholder="General prescription notes, precautions, or follow-up instructions"
+                      placeholder={t("i18nAudit.clinicalWorkspace.prescriptionNotes")}
                       className="min-h-20 rounded-2xl bg-background"
                     />
                     <Input
@@ -841,7 +839,7 @@ export function ClinicalWorkspace({ appointment }: Props) {
                           medicine_name: e.target.value,
                         }))
                       }
-                      placeholder="Medicine name *"
+                      placeholder={t("i18nAudit.clinicalWorkspace.medicineName")}
                       className="rounded-xl bg-background"
                     />
                     <div className="grid gap-3 md:grid-cols-2">
@@ -853,7 +851,7 @@ export function ClinicalWorkspace({ appointment }: Props) {
                             dosage: e.target.value,
                           }))
                         }
-                        placeholder="Dosage, e.g. 500 mg *"
+                        placeholder={t("i18nAudit.clinicalWorkspace.dosage")}
                         className="rounded-xl bg-background"
                       />
                       <Input
@@ -864,7 +862,7 @@ export function ClinicalWorkspace({ appointment }: Props) {
                             frequency: e.target.value,
                           }))
                         }
-                        placeholder="Frequency, e.g. twice daily *"
+                        placeholder={t("i18nAudit.clinicalWorkspace.frequency")}
                         className="rounded-xl bg-background"
                       />
                     </div>
@@ -877,7 +875,7 @@ export function ClinicalWorkspace({ appointment }: Props) {
                             duration: e.target.value,
                           }))
                         }
-                        placeholder="Duration, e.g. 7 days *"
+                        placeholder={t("i18nAudit.clinicalWorkspace.duration")}
                         className="rounded-xl bg-background"
                       />
                       <Input
@@ -888,7 +886,7 @@ export function ClinicalWorkspace({ appointment }: Props) {
                             instructions: e.target.value,
                           }))
                         }
-                        placeholder="Instructions, e.g. after food"
+                        placeholder={t("i18nAudit.clinicalWorkspace.instructions")}
                         className="rounded-xl bg-background"
                       />
                     </div>
@@ -902,13 +900,13 @@ export function ClinicalWorkspace({ appointment }: Props) {
                         icon={PlusSignIcon}
                         className="mr-2 h-4 w-4"
                       />
-                      Add medicine to order
+                      {t("i18nAudit.clinicalWorkspace.addMedicine")}
                     </Button>
 
                     <div className="rounded-2xl border border-border/60 bg-background/80">
                       <div className="flex items-center justify-between border-b px-4 py-3">
                         <p className="text-xs font-black uppercase tracking-[0.18em] text-muted-foreground">
-                          Prescription items
+                          {t("i18nAudit.clinicalWorkspace.prescriptionItems")}
                         </p>
                         <Badge variant="outline">
                           {prescriptionItems.length}
@@ -916,7 +914,7 @@ export function ClinicalWorkspace({ appointment }: Props) {
                       </div>
                       {prescriptionItems.length === 0 ? (
                         <p className="p-4 text-sm text-muted-foreground">
-                          No medicines added yet.
+                          {t("i18nAudit.clinicalWorkspace.noMedicines")}
                         </p>
                       ) : (
                         <div className="divide-y">
@@ -948,7 +946,7 @@ export function ClinicalWorkspace({ appointment }: Props) {
                                 }
                                 className="text-rose-600"
                               >
-                                Remove
+                                {t("i18nAudit.clinicalWorkspace.remove")}
                               </Button>
                             </div>
                           ))}
@@ -964,7 +962,7 @@ export function ClinicalWorkspace({ appointment }: Props) {
                       }
                       className="rounded-xl"
                     >
-                      Issue prescription ({prescriptionItems.length})
+                      {t("i18nAudit.clinicalWorkspace.issuePrescription", { count: prescriptionItems.length })}
                     </Button>
                   </div>
                 </div>
@@ -977,7 +975,7 @@ export function ClinicalWorkspace({ appointment }: Props) {
                       icon={Clock03Icon}
                       className="h-5 w-5 text-primary"
                     />
-                    <h3 className="text-base font-bold">Request Lab Tests</h3>
+                    <h3 className="text-base font-bold">{t("i18nAudit.clinicalWorkspace.requestLabTests")}</h3>
                   </div>
                   <div className="mt-4 space-y-4">
                     <div className="grid gap-3 sm:grid-cols-[1fr_auto]">
@@ -986,7 +984,7 @@ export function ClinicalWorkspace({ appointment }: Props) {
                         value={selectedLabTestUuid}
                         onChange={(e) => setSelectedLabTestUuid(e.target.value)}
                       >
-                        <option value="">Select a test</option>
+                        <option value="">{t("i18nAudit.clinicalWorkspace.selectTest")}</option>
                         {labTests.map((test) => (
                           <option key={test.uuid} value={test.uuid}>
                             {test.name}
@@ -1000,14 +998,14 @@ export function ClinicalWorkspace({ appointment }: Props) {
                         disabled={!selectedLabTestUuid}
                         className="rounded-2xl"
                       >
-                        Add to request
+                        {t("i18nAudit.clinicalWorkspace.addToRequest")}
                       </Button>
                     </div>
 
                     <div className="flex flex-wrap gap-2">
                       {selectedLabTestUuids.length === 0 ? (
                         <p className="text-sm text-muted-foreground">
-                          No tests selected yet.
+                          {t("i18nAudit.clinicalWorkspace.noTests")}
                         </p>
                       ) : (
                         selectedLabTestUuids.map((uuid) => {
@@ -1021,7 +1019,7 @@ export function ClinicalWorkspace({ appointment }: Props) {
                               onClick={() => handleRemoveLabTest(uuid)}
                               className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-xs font-semibold text-primary transition hover:bg-primary/10"
                             >
-                              {test?.name || "Selected test"}
+                              {test?.name || t("i18nAudit.clinicalWorkspace.selectedTest")}
                               <span className="text-primary/60">×</span>
                             </button>
                           );
@@ -1037,21 +1035,21 @@ export function ClinicalWorkspace({ appointment }: Props) {
                       }
                       className="rounded-2xl"
                     >
-                      Send Lab Request
+                      {t("i18nAudit.clinicalWorkspace.sendLabRequest")}
                     </Button>
                   </div>
                 </div>
 
                 <div className="rounded-2xl border border-border/60 bg-card p-5 shadow-sm">
-                  <h3 className="text-base font-bold">Orders & Workflow</h3>
+                  <h3 className="text-base font-bold">{t("i18nAudit.clinicalWorkspace.ordersWorkflow")}</h3>
                   <div className="mt-4 space-y-5">
                     <div className="space-y-3">
                       <p className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground">
-                        Prescriptions
+                        {t("i18nAudit.clinicalWorkspace.prescriptions")}
                       </p>
                       {consultationPrescriptions.length === 0 ? (
                         <p className="text-sm text-muted-foreground">
-                          No prescriptions issued.
+                          {t("i18nAudit.clinicalWorkspace.noPrescriptions")}
                         </p>
                       ) : (
                         consultationPrescriptions.map(
@@ -1062,10 +1060,10 @@ export function ClinicalWorkspace({ appointment }: Props) {
                             >
                               <div className="flex items-center justify-between bg-muted/30 px-4 py-3">
                                 <p className="text-sm font-bold">
-                                  Prescription {prescriptionIndex + 1}
+                                  {t("i18nAudit.clinicalWorkspace.prescriptionNumber", { number: prescriptionIndex + 1 })}
                                 </p>
                                 <Badge variant="outline">
-                                  {prescription.items.length} medicine(s)
+                                  {t("i18nAudit.clinicalWorkspace.medicineCount", { count: prescription.items.length })}
                                 </Badge>
                               </div>
                               <div className="divide-y">
@@ -1098,29 +1096,27 @@ export function ClinicalWorkspace({ appointment }: Props) {
                     </div>
                     <div>
                       <p className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground">
-                        Lab Requests
+                        {t("i18nAudit.clinicalWorkspace.labRequests")}
                       </p>
                       <p className="text-sm text-muted-foreground">
-                        {consultationLabRequests.length} request(s)
+                        {t("i18nAudit.clinicalWorkspace.requestCount", { count: consultationLabRequests.length })}
                       </p>
                     </div>
 
                     <div className="space-y-3 border-t border-border/60 pt-4">
                       <div>
                         <p className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground">
-                          Lab Replies
+                          {t("i18nAudit.clinicalWorkspace.labReplies")}
                         </p>
                         <p className="text-sm text-muted-foreground">
-                          Grouped by appointment, with each requested test and
-                          its answer below.
+                          {t("i18nAudit.clinicalWorkspace.labRepliesHelp")}
                         </p>
                       </div>
 
                       {consultationLabRequestsWithResults.length === 0 ? (
                         <div className="rounded-2xl border border-dashed border-border/60 bg-muted/20 p-4">
                           <p className="text-sm text-muted-foreground">
-                            No lab requests have been created for this
-                            appointment yet.
+                            {t("i18nAudit.clinicalWorkspace.noLabRequests")}
                           </p>
                         </div>
                       ) : (
@@ -1133,12 +1129,13 @@ export function ClinicalWorkspace({ appointment }: Props) {
                               <div className="flex flex-wrap items-center justify-between gap-3">
                                 <div>
                                   <p className="text-sm font-bold text-foreground">
-                                    Appointment{" "}
-                                    {request.appointment_uuid.slice(0, 8)}
+                                    {t("i18nAudit.clinicalWorkspace.appointmentReference", { id: request.appointment_uuid.slice(0, 8) })}
                                   </p>
                                   <p className="text-xs text-muted-foreground">
-                                    Request {request.uuid.slice(0, 8)} •{" "}
-                                    {request.items.length} test(s)
+                                    {t("i18nAudit.clinicalWorkspace.requestSummary", {
+                                      id: request.uuid.slice(0, 8),
+                                      count: request.items.length,
+                                    })}
                                   </p>
                                 </div>
                                 <Badge
@@ -1163,14 +1160,14 @@ export function ClinicalWorkspace({ appointment }: Props) {
                                         </p>
                                         {reply ? (
                                           <Badge className="rounded-full bg-emerald-500 text-white">
-                                            Answered
+                                            {t("i18nAudit.clinicalWorkspace.answered")}
                                           </Badge>
                                         ) : (
                                           <Badge
                                             variant="outline"
                                             className="rounded-full"
                                           >
-                                            Waiting
+                                            {t("i18nAudit.clinicalWorkspace.waiting")}
                                           </Badge>
                                         )}
                                       </div>
@@ -1178,7 +1175,7 @@ export function ClinicalWorkspace({ appointment }: Props) {
                                         <div className="mt-3 grid gap-2">
                                           <div className="rounded-xl bg-muted/20 p-3">
                                             <p className="text-[10px] font-black uppercase tracking-[0.22em] text-muted-foreground">
-                                              Result
+                                              {t("i18nAudit.clinicalWorkspace.result")}
                                             </p>
                                             <p className="mt-1 font-semibold">
                                               {reply.result}
@@ -1186,25 +1183,22 @@ export function ClinicalWorkspace({ appointment }: Props) {
                                           </div>
                                           <div className="rounded-xl bg-muted/20 p-3">
                                             <p className="text-[10px] font-black uppercase tracking-[0.22em] text-muted-foreground">
-                                              Lab Remarks
+                                              {t("i18nAudit.clinicalWorkspace.labRemarks")}
                                             </p>
                                             <p className="mt-1 text-sm text-muted-foreground">
-                                              {reply.remarks ||
-                                                "No remarks added."}
+                                              {reply.remarks || t("i18nAudit.clinicalWorkspace.noRemarks")}
                                             </p>
                                           </div>
                                           <p className="text-[11px] text-muted-foreground">
-                                            Verified by {reply.verified_by_name}{" "}
-                                            on{" "}
-                                            {formatVerificationTime(
-                                              reply.verified_at,
-                                            )}
+                                            {t("i18nAudit.clinicalWorkspace.verifiedBy", {
+                                              name: reply.verified_by_name,
+                                              date: formatVerificationTime(reply.verified_at),
+                                            })}
                                           </p>
                                         </div>
                                       ) : (
                                         <p className="mt-3 text-sm text-muted-foreground">
-                                          No reply has been recorded for this
-                                          test yet.
+                                          {t("i18nAudit.clinicalWorkspace.noReply")}
                                         </p>
                                       )}
                                     </div>
@@ -1223,7 +1217,7 @@ export function ClinicalWorkspace({ appointment }: Props) {
 
             <div className="">
               <div className="rounded-2xl border border-border/60 bg-card p-5 shadow-sm">
-                <h3 className="text-base font-bold">Diagnosis Log</h3>
+                <h3 className="text-base font-bold">{t("i18nAudit.clinicalWorkspace.diagnosisLog")}</h3>
                 <div className="mt-4 space-y-3">
                   {consultationDiagnoses.length ? (
                     consultationDiagnoses.map((diagnosis) => (
@@ -1244,7 +1238,7 @@ export function ClinicalWorkspace({ appointment }: Props) {
                     ))
                   ) : (
                     <p className="text-sm text-muted-foreground">
-                      No diagnoses recorded for this consultation yet.
+                      {t("i18nAudit.clinicalWorkspace.noDiagnoses")}
                     </p>
                   )}
                 </div>

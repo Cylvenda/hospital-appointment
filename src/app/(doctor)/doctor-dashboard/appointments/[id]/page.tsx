@@ -12,8 +12,10 @@ import {
 } from "@hugeicons/core-free-icons";
 import { DoctorAppointmentCard } from "@/components/customs/doctor-appointment-card";
 import { ClinicalWorkspace } from "@/components/customs/clinical-workspace";
+import { useTranslation } from "@/lib/i18n";
 
 export default function DoctorSingleAppointmentPage() {
+  const { t } = useTranslation();
   const params = useParams();
   const router = useRouter();
   const id = params.id as string;
@@ -31,7 +33,7 @@ export default function DoctorSingleAppointmentPage() {
     return (
       <div className="w-full flex h-64 items-center justify-center rounded-4xl border border-dashed border-border bg-card">
         <p className="text-sm text-muted-foreground animate-pulse">
-          Loading appointment details...
+          {t("appointmentDetailPage.loading")}
         </p>
       </div>
     );
@@ -43,13 +45,13 @@ export default function DoctorSingleAppointmentPage() {
     return (
       <div className="flex w-full flex-col items-center gap-4 rounded-4xl border border-dashed border-border bg-card p-10 text-center">
         <p className="text-sm text-muted-foreground">
-          Appointment not found or you do not have permission to view it.
+          {t("appointmentDetailPage.notFound")}
         </p>
         <Button
           onClick={() => router.push("/doctor-dashboard/appointments/all")}
           variant="outline"
         >
-          Back to Appointments
+          {t("appointmentDetailPage.back")}
         </Button>
       </div>
     );
@@ -72,14 +74,13 @@ export default function DoctorSingleAppointmentPage() {
             <div>
               <p className="mb-2 flex items-center gap-2 text-xs font-black uppercase tracking-[0.22em] text-emerald-300">
                 <HugeiconsIcon icon={StethoscopeIcon} className="h-4 w-4" />
-                Doctor clinical console
+                {t("appointmentDetailPage.clinicalConsole")}
               </p>
               <h1 className="text-3xl font-black tracking-tight md:text-4xl">
-                Patient encounter
+                {t("appointmentDetailPage.patientEncounter")}
               </h1>
               <p className="mt-2 max-w-2xl text-sm text-slate-300">
-                Review the appointment, document the assessment, order laboratory
-                tests, issue prescriptions, and export the complete clinical record.
+                {t("appointmentDetailPage.clinicalDescription")}
               </p>
             </div>
           </div>
@@ -87,7 +88,7 @@ export default function DoctorSingleAppointmentPage() {
             <HugeiconsIcon icon={MedicalFileIcon} className="h-5 w-5 text-emerald-300" />
             <div>
               <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">
-                Appointment reference
+                {t("appointmentDetailPage.reference")}
               </p>
               <p className="font-mono text-sm font-bold">{id?.slice(0, 8) || id}</p>
             </div>

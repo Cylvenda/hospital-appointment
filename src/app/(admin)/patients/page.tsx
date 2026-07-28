@@ -241,8 +241,9 @@ export default function PatientsPage() {
         onEdit: handleEdit,
         onDelete: handleDelete,
         readOnly: false,
+        t,
       }),
-    [handleDelete, handleEdit, handleView]
+    [handleDelete, handleEdit, handleView, t]
   )
 
   function closeSheet() {
@@ -568,7 +569,7 @@ export default function PatientsPage() {
             </div>
           </div>
 
-          <SheetFooter className="border-t border-sidebar-border flex flex-row justify-between">
+          <SheetFooter className="flex flex-col-reverse items-stretch justify-between border-t border-sidebar-border sm:flex-row sm:items-center">
             <Button variant="outline" onClick={closeSheet}>
               {t("adminPatients.close")}
             </Button>

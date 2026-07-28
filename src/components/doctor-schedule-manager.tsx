@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react"
 import { toast } from "react-toastify"
+import { useTranslation } from "@/lib/i18n"
 import api from "@/api/axios"
 import { API_ENDPOINTS } from "@/api/endpoints"
 import type { AdminDoctor } from "@/store/admin/admin.types"
@@ -50,6 +51,7 @@ function timeValue(value: string | null) {
 }
 
 export function DoctorScheduleManager({ doctor }: { doctor: AdminDoctor }) {
+  const { t } = useTranslation()
   const [open, setOpen] = useState(false)
   const [schedules, setSchedules] = useState<Schedule[]>([])
   const [unavailableDates, setUnavailableDates] = useState<UnavailableDate[]>([])
@@ -81,8 +83,8 @@ export function DoctorScheduleManager({ doctor }: { doctor: AdminDoctor }) {
 
   useEffect(() => {
     if (!open) return
-    void load().catch(() => toast.error("Unable to load doctor schedule."))
-  }, [load, open])
+    void load().catch(() => toast.error(t("sharedAudit.scheduleLoadError")))
+  }, [load, open, t])
 
   const updateLocalSchedule = (
     day: number,
@@ -132,7 +134,7 @@ export function DoctorScheduleManager({ doctor }: { doctor: AdminDoctor }) {
         })
       )
       await load()
-      toast.success("Doctor schedule saved.")
+      toast.success(t("sharedAudit.scheduleSaved"))
     } catch (error) {
       toast.error(getBackendErrorMessage(error, "Doctor schedule could not be saved."))
     } finally {
@@ -152,24 +154,24 @@ export function DoctorScheduleManager({ doctor }: { doctor: AdminDoctor }) {
       setBlockedReason("")
       await load()
     } catch (error) {
-      toast.error(getBackendErrorMessage(error, "Date could not be blocked."))
+      toast.error(getBackendErrorMessage(error, t("sharedAudit.blockDateError")))
     }
   }
 
   return (
     <>
       <Button variant="outline" className="rounded-md" onClick={() => setOpen(true)}>
-        Update Schedule
+        {t("sharedAudit.updateSchedule")}
       </Button>
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-4xl">
           <DialogHeader>
-            <DialogTitle>{doctor.name} · Weekly Schedule</DialogTitle>
+            <DialogTitle>{t("sharedAudit.weeklySchedule", { name: doctor.name })}</DialogTitle>
           </DialogHeader>
 
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
-              <Label>Consultation duration (minutes)</Label>
+              <Label>{t("sharedAudit.consultationDuration")}</Label>
               <Input
                 type="number"
                 min={5}
@@ -179,12 +181,12 @@ export function DoctorScheduleManager({ doctor }: { doctor: AdminDoctor }) {
               />
             </div>
             <div className="space-y-2">
-              <Label>Maximum appointments per day</Label>
+              <Label>{t("sharedAudit.maxAppointments")}</Label>
               <Input
                 type="number"
                 min={1}
                 value={maximum}
-                placeholder="No limit"
+                placeholder={t("sharedAudit.noLimit")}
                 onChange={(event) => setMaximum(event.target.value)}
               />
             </div>
@@ -235,7 +237,7 @@ export function DoctorScheduleManager({ doctor }: { doctor: AdminDoctor }) {
           </div>
 
           <div className="space-y-3 rounded-xl border p-4">
-            <Label>Unavailable date or leave</Label>
+            <Label>{t("sharedAudit.unavailableDate")}</Label>
             <div className="grid gap-2 sm:grid-cols-[1fr_2fr_auto]">
               <DatePicker
                 value={blockedDate}
@@ -243,10 +245,10 @@ export function DoctorScheduleManager({ doctor }: { doctor: AdminDoctor }) {
               />
               <Input
                 value={blockedReason}
-                placeholder="Reason (optional)"
+                placeholder={t("sharedAudit.optionalReason")}
                 onChange={(event) => setBlockedReason(event.target.value)}
               />
-              <Button type="button" onClick={blockDate}>Block Date</Button>
+              <Button type="button" onClick={blockDate}>{t("sharedAudit.blockDate")}</Button>
             </div>
             {unavailableDates.map((item) => (
               <div key={item.uuid} className="flex items-center justify-between text-sm">
@@ -261,7 +263,7 @@ export function DoctorScheduleManager({ doctor }: { doctor: AdminDoctor }) {
                     await load()
                   }}
                 >
-                  Unblock
+                  {t("sharedAudit.unblock")}
                 </Button>
               </div>
             ))}

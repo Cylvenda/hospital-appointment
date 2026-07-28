@@ -132,9 +132,9 @@ export function AppReceptionistSidebar({ ...props }: React.ComponentProps<typeof
      const { t } = useTranslation()
      const user = useAuthUserStore((state) => state.user)
      const displayName =
-          `${user?.first_name ?? ""} ${user?.last_name ?? ""}`.trim() || "User"
+          `${user?.first_name ?? ""} ${user?.last_name ?? ""}`.trim() || t("roleLabels.user")
      const roleLabel = user?.role
-          ? user.role.charAt(0).toUpperCase() + user.role.slice(1)
+          ? t(`roleLabels.${user.role}`)
           : t("nav.authenticatedUser")
 
      return (

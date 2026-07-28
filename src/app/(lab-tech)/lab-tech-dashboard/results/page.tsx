@@ -17,7 +17,8 @@ import { cn } from "@/lib/utils"
 import { useTranslation } from "@/lib/i18n"
 
 export default function LabResultsPage() {
-     const { t } = useTranslation()
+     const { t, language } = useTranslation()
+     const locale = language === "sw" ? "sw-TZ" : "en-US"
      const router = useRouter()
      const { checkAuth } = useAuthUserStore()
      const { results, loading, initialize, initialized } = useLaboratoryStore()
@@ -127,8 +128,8 @@ export default function LabResultsPage() {
                                         {filteredResults.map((res) => (
                                              <TableRow key={res.id} className="hover:bg-primary/[0.02] transition-colors">
                                                   <TableCell className="font-medium text-muted-foreground text-xs whitespace-nowrap">
-                                                       {new Date(res.createdAt).toLocaleDateString()}<br/>
-                                                       {new Date(res.createdAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                                                       {new Date(res.createdAt).toLocaleDateString(locale)}<br/>
+                                                       {new Date(res.createdAt).toLocaleTimeString(locale, {hour: '2-digit', minute:'2-digit'})}
                                                   </TableCell>
                                                   <TableCell className="font-bold">{res.testName}</TableCell>
                                                   <TableCell>

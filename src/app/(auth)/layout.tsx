@@ -5,16 +5,16 @@ import { Card } from "@/components/ui/card"
 
 export default function AuthLayout({ children }: { children: ReactNode }) {
      return (
-          <div className="min-h-screen flex items-center justify-center bg-linear-to-r from-primary to-chart-3 p-4">
+          <div className="min-h-dvh flex items-center justify-center bg-linear-to-r from-primary to-chart-3 p-3 sm:p-4">
 
                <Card className="w-full max-w-6xl grid grid-cols-1 md:grid-cols-2 overflow-hidden rounded-2xl shadow-xl border-0">
 
 
                      {/* RIGHT SIDE (IMAGE) */}
-                     <div className="relative left-4  hidden md:block">
+                     <div className="relative hidden md:block">
                           <Image
                                src="/meeet.webp"
-                               alt="Meeting Background"
+                               alt="DPAMS"
                                fill
                                sizes="(max-width: 768px) 100vw, 50vw"
                                className="rounded-2xl dark:invert dark:hue-rotate-180 dark:opacity-90 dark:brightness-95 transition-all duration-300"
@@ -23,7 +23,7 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
                      </div>
 
                     {/* LEFT SIDE (FORM) */}
-                    <div className="flex items-center justify-center p-10">
+                    <div className="flex min-w-0 items-center justify-center p-5 sm:p-8 lg:p-10">
                          <div className="w-full max-w-md space-y-6">
                               <Link
                                    href="/"

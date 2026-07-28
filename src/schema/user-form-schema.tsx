@@ -1,78 +1,54 @@
 import * as z from "zod"
 
-export const RegisterFormSchema = z.object({
-     email: z
-          .string()
-          .regex(
-               /^[a-zA-Z][a-zA-Z0-9._]*@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
-               "Email must contain only letters, numbers, dots or underscores and be a valid email"
-          ),
-     phone: z
-          .string()
-          .regex(
-               /^(?:\+255|0)(6|7)\d{8}$/,
-               "Phone number must start with 06 or 07 (or +2556/+2557) and be valid"
-          )
-          .transform((val) => val.replace(/[\s-]/g, "")) // remove spaces and dashes
-          .transform((val) => {
-               // Normalize to +2557xxxxxxxx format
-               if (val.startsWith("0")) return "+255" + val.slice(1);
-               return val; // already +255
-          }),
-     password: z
-          .string()
-          .min(1, "Password is required")
-          .min(8, "Password must be at least 8 characters long")
-          .max(20, "Password is too long")
-          .max(20, "Password is too long")
-          .regex(/[a-z]/, "Password must contain at least one lowercase letter")
-          .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
-          .regex(/[0-9]/, "Password must contain at least one number")
-          .regex(/[^a-zA-Z0-9]/, "Password must contain at least one special character"),
-})
+type Translate = (key: string) => string
 
+const emailPattern = /^[a-zA-Z][a-zA-Z0-9._]*@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
 
-export const LoginFormSchema = z.object({
-     email: z
-          .string()
-          .regex(
-               /^[a-zA-Z][a-zA-Z0-9._]*@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
-               "Email must contain only letters, numbers, dots or underscores and be a valid email"
-          ),
-     password: z
-           .string()
-          .min(1, "Password is required")
-          .min(8, "Password must be at least 8 characters long")
-          .max(20, "Password is too long")
-          .max(20, "Password is too long")
-          .regex(/[a-z]/, "Password must contain at least one lowercase letter")
-          .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
-          .regex(/[0-9]/, "Password must contain at least one number")
-          .regex(/[^a-zA-Z0-9]/, "Password must contain at least one special character"),
-})
+function passwordSchema(t: Translate) {
+  return z
+    .string()
+    .min(1, t("auth.validation.passwordRequired"))
+    .min(8, t("auth.validation.passwordMinimum"))
+    .max(20, t("auth.validation.passwordMaximum"))
+    .regex(/[a-z]/, t("auth.validation.passwordLowercase"))
+    .regex(/[A-Z]/, t("auth.validation.passwordUppercase"))
+    .regex(/[0-9]/, t("auth.validation.passwordNumber"))
+    .regex(/[^a-zA-Z0-9]/, t("auth.validation.passwordSpecial"))
+}
 
-export const ResetFormSchema = z.object({
-     email: z
-          .string()
-          .regex(
-               /^[a-zA-Z0-9._]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
-               "Email must contain only letters, numbers, dots or underscores and be a valid email"
-          )
-})
+export function createRegisterFormSchema(t: Translate) {
+  return z.object({
+    email: z.string().regex(emailPattern, t("auth.validation.emailInvalid")),
+    phone: z
+      .string()
+      .regex(/^(?:\+255|0)(6|7)\d{8}$/, t("auth.validation.phoneInvalid"))
+      .transform((value) => value.replace(/[\s-]/g, ""))
+      .transform((value) => value.startsWith("0") ? `+255${value.slice(1)}` : value),
+    password: passwordSchema(t),
+  })
+}
 
-export const ResetConfirmFormSchema = z
-     .object({
-          newPassword: z
-               .string()
-               .min(8, "Password must be at least 8 characters long")
-               .max(20, "Password is too long")
-               .regex(/[a-z]/, "Password must contain at least one lowercase letter")
-               .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
-               .regex(/[0-9]/, "Password must contain at least one number")
-               .regex(/[^a-zA-Z0-9]/, "Password must contain at least one special character"),
-          confirmPassword: z.string().min(1, "Confirm password is required"),
-     })
-     .refine((data) => data.newPassword === data.confirmPassword, {
-          message: "Passwords do not match",
-          path: ["confirmPassword"],
-     })
+export function createLoginFormSchema(t: Translate) {
+  return z.object({
+    email: z.string().regex(emailPattern, t("auth.validation.emailInvalid")),
+    password: passwordSchema(t),
+  })
+}
+
+export function createResetFormSchema(t: Translate) {
+  return z.object({
+    email: z.string().regex(emailPattern, t("auth.validation.emailInvalid")),
+  })
+}
+
+export function createResetConfirmFormSchema(t: Translate) {
+  return z
+    .object({
+      newPassword: passwordSchema(t),
+      confirmPassword: z.string().min(1, t("auth.validation.confirmPasswordRequired")),
+    })
+    .refine((data) => data.newPassword === data.confirmPassword, {
+      message: t("auth.validation.passwordsMismatch"),
+      path: ["confirmPassword"],
+    })
+}

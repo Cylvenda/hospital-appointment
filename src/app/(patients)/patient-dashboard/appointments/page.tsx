@@ -257,7 +257,7 @@ export default function PatientAppointmentsPage() {
 
       {/* SINGLE FORM CONTAINER */}
       <Card className="rounded-md border border-border bg-card shadow-xl shadow-foreground/[0.02] overflow-hidden">
-        <CardHeader className="p-8 pb-6 border-b border-border/80 bg-muted/20">
+        <CardHeader className="border-b border-border/80 bg-muted/20 p-4 pb-4 sm:p-6 sm:pb-5 md:p-8 md:pb-6">
           <CardTitle className="text-xl font-bold flex items-center gap-3">
             <span className="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-600 flex items-center justify-center">
               <HugeiconsIcon icon={Calendar03Icon} className="w-5 h-5" />
@@ -578,7 +578,11 @@ export default function PatientAppointmentsPage() {
                 loadingFee
                   ? "..."
                   : appointmentFee
-                    ? `${Number(appointmentFee).toLocaleString()} TZS`
+                    ? new Intl.NumberFormat(language === "sw" ? "sw-TZ" : "en-US", {
+                        style: "currency",
+                        currency: "TZS",
+                        maximumFractionDigits: 0,
+                      }).format(Number(appointmentFee))
                     : "—",
               ],
               [t("booking.nextStep"), t("booking.appointmentPayment")],

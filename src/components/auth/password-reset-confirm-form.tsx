@@ -4,7 +4,7 @@ import { authUserService } from "@/api/services/auth.service"
 import { FormInput, PasswordInput } from "@/components/customs/form"
 import { Button } from "@/components/ui/button"
 import { Spinner } from "@/components/ui/spinner"
-import { ResetConfirmFormSchema } from "@/schema/user-form-schema"
+import { createResetConfirmFormSchema } from "@/schema/user-form-schema"
 import { zodResolver } from "@hookform/resolvers/zod"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
@@ -12,8 +12,9 @@ import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "react-toastify"
 import { z } from "zod"
+import { useTranslation } from "@/lib/i18n"
 
-type ResetConfirmFormValues = z.infer<typeof ResetConfirmFormSchema>
+type ResetConfirmFormValues = z.infer<ReturnType<typeof createResetConfirmFormSchema>>
 
 type Props = {
      uid: string
@@ -22,10 +23,11 @@ type Props = {
 
 export default function PasswordResetConfirmForm({ uid, token }: Props) {
      const router = useRouter()
+     const { t } = useTranslation()
      const [loading, setLoading] = useState(false)
 
      const form = useForm<ResetConfirmFormValues>({
-          resolver: zodResolver(ResetConfirmFormSchema),
+          resolver: zodResolver(createResetConfirmFormSchema(t)),
           defaultValues: {
                newPassword: "",
                confirmPassword: "",
@@ -34,7 +36,7 @@ export default function PasswordResetConfirmForm({ uid, token }: Props) {
 
      const onSubmit = async (data: ResetConfirmFormValues) => {
           if (!uid || !token) {
-               toast.error("Invalid reset link.")
+               toast.error(t("i18nAudit.passwordReset.invalidLink"))
                return
           }
 
@@ -46,7 +48,7 @@ export default function PasswordResetConfirmForm({ uid, token }: Props) {
                     new_password: data.newPassword,
                })
 
-               toast.success("Password reset successful. Please log in.")
+               toast.success(t("i18nAudit.passwordReset.success"))
                router.replace("/login")
           } catch (error: unknown) {
                const errorData = (error as {
@@ -65,7 +67,7 @@ export default function PasswordResetConfirmForm({ uid, token }: Props) {
                     errorData?.token?.[0] ||
                     errorData?.uid?.[0] ||
                     errorData?.new_password?.[0] ||
-                    "Could not reset password. The link may be invalid or expired."
+                    t("i18nAudit.passwordReset.failed")
 
                toast.error(msg)
           } finally {
@@ -76,22 +78,22 @@ export default function PasswordResetConfirmForm({ uid, token }: Props) {
      return (
           <div className="w-full max-w-md">
                <FormInput
-                    title="Set New Password"
-                    description="Choose a strong password for your account"
+                    title={t("i18nAudit.passwordReset.setNew")}
+                    description={t("i18nAudit.passwordReset.setNewDescription")}
                >
                     <form onSubmit={form.handleSubmit(onSubmit)} className="mt-2 space-y-5">
                          <PasswordInput
                               control={form.control}
                               name="newPassword"
-                              label="New Password"
-                              placeholder="Enter new password"
+                              label={t("i18nAudit.passwordReset.newPassword")}
+                              placeholder={t("i18nAudit.passwordReset.enterNew")}
                          />
 
                          <PasswordInput
                               control={form.control}
                               name="confirmPassword"
-                              label="Confirm Password"
-                              placeholder="Re-enter new password"
+                              label={t("i18nAudit.passwordReset.confirmPassword")}
+                              placeholder={t("i18nAudit.passwordReset.reenter")}
                          />
 
                          <Button
@@ -99,13 +101,13 @@ export default function PasswordResetConfirmForm({ uid, token }: Props) {
                               disabled={loading}
                               className="w-full bg-chart-3 p-5 hover:bg-chart-2 rounded-md"
                          >
-                              {loading ? <Spinner /> : "Update Password"}
+                              {loading ? <Spinner /> : t("i18nAudit.passwordReset.update")}
                          </Button>
 
                          <p className="text-center text-sm text-muted-foreground">
-                              Back to{" "}
+                              {t("i18nAudit.passwordReset.backTo")}{" "}
                               <Link href="/login" className="text-emerald-600 dark:text-emerald-400 hover:underline">
-                                   Login
+                                   {t("auth.login")}
                               </Link>
                          </p>
                     </form>

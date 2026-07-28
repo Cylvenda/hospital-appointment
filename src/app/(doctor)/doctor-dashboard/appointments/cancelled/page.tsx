@@ -9,8 +9,10 @@ import { filterAppointmentsForQueue } from "@/lib/appointment-queues"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { RefreshIcon, Cancel01Icon, Medicine01Icon } from "@hugeicons/core-free-icons"
 import { cn } from "@/lib/utils"
+import { useTranslation } from "@/lib/i18n"
 
 export default function DoctorCancelledAppointmentsPage() {
+  const { t } = useTranslation()
   const {
     appointments,
     loading,
@@ -35,7 +37,7 @@ export default function DoctorCancelledAppointmentsPage() {
       <div className="w-full h-[400px] flex items-center justify-center">
          <div className="flex flex-col items-center gap-4">
               <div className="w-12 h-12 border-4 border-rose-500 border-t-transparent rounded-full animate-spin" />
-              <p className="text-sm font-bold text-muted-foreground animate-pulse">Scanning records...</p>
+              <p className="text-sm font-bold text-muted-foreground animate-pulse">{t("doctorAppointmentLists.scanningRecords")}</p>
          </div>
       </div>
     )
@@ -49,13 +51,13 @@ export default function DoctorCancelledAppointmentsPage() {
         </div>
         <div className="space-y-1">
              <p className="text-lg font-bold text-rose-900">
-               {error || "Failed to load cancellation logs."}
+               {error || t("doctorAppointmentLists.loadCancellationsError")}
              </p>
-             <p className="text-sm text-rose-700/60">Please try again later.</p>
+             <p className="text-sm text-rose-700/60">{t("doctorAppointmentLists.tryLater")}</p>
         </div>
         <Button onClick={() => void initialize()} variant="outline" className="rounded-2xl border-rose-200 text-rose-700 hover:bg-rose-100">
           <HugeiconsIcon icon={RefreshIcon} className="mr-2 w-4 h-4" />
-          Retry Sync
+          {t("doctorAppointmentLists.retrySync")}
         </Button>
       </div>
     )
@@ -65,14 +67,14 @@ export default function DoctorCancelledAppointmentsPage() {
     <div className="w-full space-y-10 max-w-8xl p-4 md:p-8">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
         <div>
-          <h1 className="text-4xl font-black tracking-tight italic">Cancelled Visits</h1>
+          <h1 className="text-4xl font-black tracking-tight italic">{t("doctorAppointmentLists.cancelledTitle")}</h1>
           <p className="text-muted-foreground text-lg mt-1 font-medium">
-            History of cancelled appointments and discontinued requests.
+            {t("doctorAppointmentLists.cancelledDescription")}
           </p>
         </div>
         <div className="flex items-center gap-4 bg-muted/30 px-6 py-3 rounded-3xl border border-muted-foreground/10">
              <div className="text-right">
-                  <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground opacity-60">Total Cancelled</p>
+                  <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground opacity-60">{t("doctorAppointmentLists.totalCancelled")}</p>
                   <p className="text-xl font-black">{cancelledAppointments.length}</p>
              </div>
              <div className="w-px h-8 bg-muted-foreground/10 mx-2" />
@@ -99,9 +101,9 @@ export default function DoctorCancelledAppointmentsPage() {
                     <HugeiconsIcon icon={Cancel01Icon} className="w-10 h-10" />
                </div>
                <div className="space-y-1">
-                    <p className="text-2xl font-black text-foreground">Zero Cancellations</p>
+                    <p className="text-2xl font-black text-foreground">{t("doctorAppointmentLists.zeroCancellations")}</p>
                     <p className="text-muted-foreground max-w-xs mx-auto font-medium">
-                      Excellent! All your appointments have been processed or are still active.
+                      {t("doctorAppointmentLists.zeroCancellationsDescription")}
                     </p>
                </div>
              </motion.div>

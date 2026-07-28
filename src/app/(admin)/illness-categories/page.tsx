@@ -32,6 +32,7 @@ import {
 } from "@/components/ui/table"
 import { Textarea } from "@/components/ui/textarea"
 import { useAdminStore } from "@/store/admin/admin.store"
+import { useTranslation } from "@/lib/i18n"
 
 const emptyForm = {
   name: "",
@@ -39,6 +40,7 @@ const emptyForm = {
 }
 
 export default function DepartmentsPage() {
+  const { t } = useTranslation()
   const {
     illnessCategories,
     fetchIllnessCategories,
@@ -73,10 +75,10 @@ export default function DepartmentsPage() {
     (category) => Boolean(category.description?.trim())
   ).length
 
-  const formTitle = editingId ? "Update Department" : "Add Department"
+  const formTitle = editingId ? t("departmentManagement.update") : t("departmentManagement.add")
   const formDescription = editingId
-    ? "Edit the department details and save your changes."
-    : "Create a new department for appointment booking and triage."
+    ? t("departmentManagement.updateDescription")
+    : t("departmentManagement.addDescription")
 
   const isFormValid = form.name.trim().length > 0
 
@@ -100,15 +102,15 @@ export default function DepartmentsPage() {
 
       if (editingId) {
         await updateIllnessCategory(editingId, payload)
-        toast.success("Department updated.")
+        toast.success(t("departmentManagement.updated"))
       } else {
         await createIllnessCategory(payload)
-        toast.success("Department added.")
+        toast.success(t("departmentManagement.created"))
       }
 
       resetForm()
     } catch {
-      toast.error(editingId ? "Failed to update department." : "Failed to add department.")
+      toast.error(editingId ? t("departmentManagement.updateError") : t("departmentManagement.createError"))
     } finally {
       setIsSaving(false)
     }
@@ -136,7 +138,7 @@ export default function DepartmentsPage() {
 
     try {
       await deleteIllnessCategory(deleteTarget.uuid)
-      toast.success("Department deleted.")
+      toast.success(t("departmentManagement.deleted"))
 
       if (editingId === deleteTarget.uuid) {
         resetForm()
@@ -144,7 +146,7 @@ export default function DepartmentsPage() {
 
       setDeleteTarget(null)
     } catch {
-      toast.error("Failed to delete department.")
+      toast.error(t("departmentManagement.deleteError"))
     } finally {
       setIsDeleting(false)
     }
@@ -154,9 +156,9 @@ export default function DepartmentsPage() {
     <div className="w-full space-y-6 p-4 md:p-6">
       <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-center">
         <div className="space-y-1">
-           <h1 className="font-heading text-2xl font-semibold">Departments</h1>
+           <h1 className="font-heading text-2xl font-semibold">{t("departmentManagement.title")}</h1>
            <p className="text-sm text-muted-foreground">
-             Add, review, update, and remove the departments used during appointment booking.
+             {t("departmentManagement.subtitle")}
            </p>
         </div>
 
@@ -170,22 +172,22 @@ export default function DepartmentsPage() {
             value={search}
             onChange={(event) => setSearch(event.target.value)}
             className="h-11 rounded-2xl border-2 border-sidebar-border pl-11"
-             placeholder="Search department or description..."
+             placeholder={t("departmentManagement.search")}
           />
         </div>
       </div>
 
       <div className="grid gap-4 md:grid-cols-3">
         <div className="rounded-4xl border border-sidebar-border bg-card p-5 shadow-sm">
-          <p className="text-sm text-muted-foreground">Total Departments</p>
+          <p className="text-sm text-muted-foreground">{t("departmentManagement.total")}</p>
           <p className="mt-2 text-3xl font-semibold">{illnessCategories.length}</p>
         </div>
         <div className="rounded-4xl border border-sidebar-border bg-card p-5 shadow-sm">
-          <p className="text-sm text-muted-foreground">Shown Results</p>
+          <p className="text-sm text-muted-foreground">{t("departmentManagement.shown")}</p>
           <p className="mt-2 text-3xl font-semibold">{filteredCategories.length}</p>
         </div>
         <div className="rounded-4xl border border-sidebar-border bg-card p-5 shadow-sm">
-          <p className="text-sm text-muted-foreground">With Descriptions</p>
+          <p className="text-sm text-muted-foreground">{t("departmentManagement.withDescriptions")}</p>
           <p className="mt-2 text-3xl font-semibold">{categoriesWithDescriptions}</p>
         </div>
       </div>
@@ -199,31 +201,31 @@ export default function DepartmentsPage() {
 
           <CardContent className="space-y-4 py-6">
             <div className="space-y-2">
-               <label className="text-sm font-medium">Department Name</label>
+               <label className="text-sm font-medium">{t("departmentManagement.name")}</label>
                <Input
                  value={form.name}
                  onChange={(event) =>
                    setForm((current) => ({ ...current, name: event.target.value }))
                  }
-                 placeholder="Example: Dermatology"
+                 placeholder={t("departmentManagement.namePlaceholder")}
                />
             </div>
 
             <div className="space-y-2">
-               <label className="text-sm font-medium">Description</label>
+               <label className="text-sm font-medium">{t("departmentManagement.description")}</label>
                <Textarea
                  value={form.description}
                  onChange={(event) =>
                    setForm((current) => ({ ...current, description: event.target.value }))
                  }
-                 placeholder="Short explanation about what this department covers."
+                 placeholder={t("departmentManagement.descriptionPlaceholder")}
                />
             </div>
 
             <div className="flex flex-wrap gap-2">
                <Button onClick={handleSubmit} disabled={!isFormValid || isSaving} className="rounded-md">
                  <HugeiconsIcon icon={editingId ? Edit02Icon : PlusSignIcon} strokeWidth={1.8} />
-                 {isSaving ? "Saving..." : editingId ? "Update Department" : "Add Department"}
+                 {isSaving ? t("departmentManagement.saving") : editingId ? t("departmentManagement.update") : t("departmentManagement.add")}
                </Button>
               <Button
                 variant="outline"
@@ -231,7 +233,7 @@ export default function DepartmentsPage() {
                 disabled={isSaving || (!editingId && !form.name && !form.description)}
                 className="rounded-md"
               >
-                Reset
+                {t("departmentManagement.reset")}
               </Button>
             </div>
           </CardContent>
@@ -239,9 +241,9 @@ export default function DepartmentsPage() {
 
         <Card className="border border-sidebar-border py-5 shadow-sm">
           <CardHeader className="border-b border-sidebar-border">
-            <CardTitle>Department Directory</CardTitle>
+            <CardTitle>{t("departmentManagement.directory")}</CardTitle>
             <CardDescription>
-              Every department currently available in the appointment system.
+              {t("departmentManagement.directoryDescription")}
             </CardDescription>
           </CardHeader>
 
@@ -249,17 +251,17 @@ export default function DepartmentsPage() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Description</TableHead>
-                  <TableHead>Reference</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
+                  <TableHead>{t("common.name")}</TableHead>
+                  <TableHead>{t("departmentManagement.description")}</TableHead>
+                  <TableHead>{t("departmentManagement.reference")}</TableHead>
+                  <TableHead className="text-right">{t("departmentManagement.actions")}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {filteredCategories.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={4} className="py-10 text-center text-muted-foreground">
-                       No departments match your search yet.
+                       {t("departmentManagement.none")}
                     </TableCell>
                   </TableRow>
                 ) : (
@@ -276,7 +278,7 @@ export default function DepartmentsPage() {
                       <TableCell className="max-w-md whitespace-normal text-sm text-muted-foreground">
                         <span className="inline-flex items-start gap-2">
                           <HugeiconsIcon icon={TextAlignLeftIcon} strokeWidth={1.8} className="mt-0.5 size-4 shrink-0" />
-                          {category.description?.trim() || "No description provided."}
+                          {category.description?.trim() || t("departmentManagement.noDescription")}
                         </span>
                       </TableCell>
                       <TableCell className="font-mono text-xs text-muted-foreground">
@@ -291,7 +293,7 @@ export default function DepartmentsPage() {
                             onClick={() => handleEdit(category.uuid)}
                           >
                             <HugeiconsIcon icon={Edit02Icon} strokeWidth={1.8} />
-                            Edit
+                            {t("departmentManagement.edit")}
                           </Button>
                           <Button
                             variant="destructive"
@@ -305,7 +307,7 @@ export default function DepartmentsPage() {
                             }
                           >
                             <HugeiconsIcon icon={Delete02Icon} strokeWidth={1.8} />
-                            Delete
+                            {t("departmentManagement.delete")}
                           </Button>
                         </div>
                       </TableCell>
@@ -321,19 +323,19 @@ export default function DepartmentsPage() {
       <Dialog open={Boolean(deleteTarget)} onOpenChange={(open) => !open && setDeleteTarget(null)}>
         <DialogContent>
           <DialogHeader>
-             <DialogTitle>Delete Department</DialogTitle>
+             <DialogTitle>{t("departmentManagement.deleteTitle")}</DialogTitle>
              <DialogDescription>
                {deleteTarget
-                 ? `This will permanently remove "${deleteTarget.name}" from the system.`
-                 : "This action will permanently remove the selected department."}
+                 ? t("departmentManagement.deleteNamedDescription", { name: deleteTarget.name })
+                 : t("departmentManagement.deleteDescription")}
              </DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <Button variant="outline" onClick={() => setDeleteTarget(null)} disabled={isDeleting}>
-              Cancel
+              {t("departmentManagement.cancel")}
             </Button>
             <Button variant="destructive" onClick={handleDelete} disabled={isDeleting}>
-               {isDeleting ? "Deleting..." : "Delete Department"}
+               {isDeleting ? t("departmentManagement.deleting") : t("departmentManagement.deleteTitle")}
             </Button>
           </DialogFooter>
         </DialogContent>

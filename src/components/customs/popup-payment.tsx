@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "../ui/input"
 import { useAuthUserStore } from "@/store/auth/userAuth.store"
 import { toast } from "react-toastify"
+import { useTranslation } from "@/lib/i18n"
 import { useAppointmentStore } from "@/store/appointments/appointment.store"
 import { usePaymentStore } from "@/store/payments/payment.store"
 import { PaymentTemporarilyUnavailableError } from "@/store/payments/payment.store"
@@ -51,6 +52,8 @@ function normalizeTzPhone(phone: string): string {
 }
 
 export const PayingForAppointment = ({ appointmentId, fee, disabled }: Props) => {
+     const { t, language } = useTranslation()
+     const locale = language === "sw" ? "sw-TZ" : "en-US"
      const { user } = useAuthUserStore()
      const { createPayment, getPaymentStatus } = usePaymentStore()
 
@@ -87,11 +90,11 @@ export const PayingForAppointment = ({ appointmentId, fee, disabled }: Props) =>
                          clearInterval(interval)
                          useAppointmentStore.getState().initialize()
                          if (status === "success") {
-                              toast.success("Payment confirmed successfully")
+                              toast.success(t("sharedAudit.paymentConfirmed"))
                          } else if (status === "failed") {
-                              toast.error("Payment failed. You can retry.")
+                              toast.error(t("sharedAudit.paymentFailed"))
                          } else {
-                              toast.success(`Payment ${status}`)
+                              toast.success(t("sharedAudit.paymentStatus", { status }))
                          }
                          setWaiting(false)
                     }
@@ -105,7 +108,7 @@ export const PayingForAppointment = ({ appointmentId, fee, disabled }: Props) =>
           }, 10000)
 
           return () => clearInterval(interval)
-     }, [waiting, paymentUuid, getPaymentStatus])
+     }, [waiting, paymentUuid, getPaymentStatus, t])
 
      const handlePay = async () => {
           if (!isValidPhone) return
@@ -144,7 +147,7 @@ export const PayingForAppointment = ({ appointmentId, fee, disabled }: Props) =>
                <Dialog open={open} onOpenChange={setOpen}>
                     <DialogTrigger asChild>
                          <Button className="rounded-md" disabled={disabled}>
-                              Pay Appointment
+                              {t("sharedAudit.payAppointment")}
                          </Button>
                     </DialogTrigger>
 
@@ -152,10 +155,10 @@ export const PayingForAppointment = ({ appointmentId, fee, disabled }: Props) =>
                          {/* HEADER (Card style) */}
                          <div className="bg-linear-to-r from-blue-600 to-indigo-600 text-white p-5">
                               <DialogTitle className="text-lg font-semibold">
-                                   Mobile Payment
+                                   {t("sharedAudit.mobilePayment")}
                               </DialogTitle>
                               <DialogDescription className="text-sm text-blue-100 mt-1">
-                                   Secure payment via mobile money
+                                   {t("sharedAudit.secureMobilePayment")}
                               </DialogDescription>
                          </div>
 
@@ -171,16 +174,14 @@ export const PayingForAppointment = ({ appointmentId, fee, disabled }: Props) =>
                                              </div>
                                              <div className="space-y-2">
                                                   <p className="font-semibold">
-                                                       Payment is temporarily unavailable
+                                                       {t("sharedAudit.paymentUnavailable")}
                                                   </p>
                                                   <p className="text-sm leading-relaxed text-amber-800 dark:text-amber-200">
-                                                       We could not connect to the payment service right now.
-                                                       Your appointment is still saved and no money has been
-                                                       charged.
+                                                       {t("sharedAudit.paymentUnavailableDescription")}
                                                   </p>
                                                   <div className="flex items-center gap-2 rounded-lg bg-white/60 px-3 py-2 text-xs font-medium dark:bg-black/10">
                                                        <HugeiconsIcon icon={Clock01Icon} className="h-4 w-4 shrink-0" />
-                                                       Please close this window and try paying again later.
+                                                       {t("sharedAudit.tryPaymentLater")}
                                                   </div>
                                              </div>
                                         </div>
@@ -190,26 +191,14 @@ export const PayingForAppointment = ({ appointmentId, fee, disabled }: Props) =>
                               {/* PAYMENT MESSAGE */}
                               {!paymentUnavailable && (
                               <div className="text-sm text-muted-foreground leading-relaxed space-y-2">
-                                   <p>
-                                        When you continue, you will receive a{" "}
-                                        <span className="font-medium text-foreground">
-                                             payment prompt
-                                        </span>{" "}
-                                        on your phone.
-                                   </p>
+                                   <p>{t("sharedAudit.paymentPrompt")}</p>
 
-                                   <p>
-                                        Enter your{" "}
-                                        <span className="font-medium text-foreground">
-                                             mobile money PIN
-                                        </span>{" "}
-                                        to complete the transaction.
-                                   </p>
+                                   <p>{t("sharedAudit.pinPrompt")}</p>
 
                                    <div className="text-xs bg-muted/50 border rounded-md px-3 py-2 flex justify-between items-center">
-                                        <span>Transaction Fee</span>
+                                        <span>{t("sharedAudit.transactionFee")}</span>
                                         <span className="font-medium text-foreground">
-                                             {Number(fee).toLocaleString()} TZS
+                                             {new Intl.NumberFormat(locale, { style: "currency", currency: "TZS", maximumFractionDigits: 0 }).format(Number(fee))}
                                         </span>
                                    </div>
                               </div>
@@ -218,7 +207,7 @@ export const PayingForAppointment = ({ appointmentId, fee, disabled }: Props) =>
                               {/* SUPPORTED NETWORKS */}
                               {!paymentUnavailable && <div className="space-y-3">
                                    <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                                        Supported Networks
+                                        {t("sharedAudit.supportedNetworks")}
                                    </p>
 
                                    <div className="flex items-center justify-between gap-2">
@@ -246,16 +235,10 @@ export const PayingForAppointment = ({ appointmentId, fee, disabled }: Props) =>
 
                               {/* NOTE */}
                               {!paymentUnavailable && <div className="rounded-lg border bg-muted/40 dark:bg-muted/10 p-3 text-xs leading-relaxed text-muted-foreground">
-                                   <p>
-                                        Only{" "}
-                                        <span className="font-medium text-foreground">
-                                             mobile money payments
-                                        </span>{" "}
-                                        are supported at the moment.
-                                   </p>
+                                   <p>{t("sharedAudit.mobileOnly")}</p>
 
                                    <p className="mt-1">
-                                        Credit/Debit card support will be available soon.
+                                        {t("sharedAudit.cardsComingSoon")}
                                    </p>
                               </div>}
 
@@ -272,7 +255,7 @@ export const PayingForAppointment = ({ appointmentId, fee, disabled }: Props) =>
 
                                    {phone && !isValidPhone && (
                                         <p className="text-xs text-red-500">
-                                             Enter valid Tanzanian number
+                                             {t("sharedAudit.invalidPhone")}
                                         </p>
                                    )}
                               </div>}
@@ -285,7 +268,7 @@ export const PayingForAppointment = ({ appointmentId, fee, disabled }: Props) =>
                                         disabled={loading}
                                         className="w-fit rounded-md"
                                    >
-                                        {paymentUnavailable ? "Close" : "Cancel"}
+                                        {paymentUnavailable ? t("sharedAudit.close") : t("sharedAudit.cancel")}
                                    </Button>
 
                                    {!paymentUnavailable && <Button
@@ -293,7 +276,7 @@ export const PayingForAppointment = ({ appointmentId, fee, disabled }: Props) =>
                                         disabled={!isValidPhone || loading || disabled}
                                         className="w-fit rounded-md"
                                    >
-                                        {loading ? "Processing..." : "Pay Now"}
+                                        {loading ? t("sharedAudit.processing") : t("sharedAudit.payNow")}
                                    </Button>}
                               </div>
                          </div>
@@ -310,23 +293,18 @@ export const PayingForAppointment = ({ appointmentId, fee, disabled }: Props) =>
 
                          {/* TITLE */}
                          <DialogTitle className="text-lg font-semibold">
-                              Waiting for Payment Confirmation
+                              {t("sharedAudit.waitingPayment")}
                          </DialogTitle>
 
                          {/* MESSAGE */}
                          <DialogDescription className="text-sm text-muted-foreground leading-relaxed">
-                              A payment request has been sent to your phone.
-                              <br />
-                              Please enter your{" "}
-                              <span className="font-medium text-foreground">
-                                   mobile money PIN
-                              </span>{" "}
-                              to complete the transaction.
+                              {t("sharedAudit.requestSent")}<br />
+                              {t("sharedAudit.pinPrompt")}
                          </DialogDescription>
 
                          {/* EXTRA INFO */}
                          <div className="text-xs text-muted-foreground bg-muted/40 border rounded-md p-3">
-                              Do not close this window until you complete the payment.
+                              {t("sharedAudit.doNotClose")}
                          </div>
 
                          {/* ACTION */}
@@ -335,7 +313,7 @@ export const PayingForAppointment = ({ appointmentId, fee, disabled }: Props) =>
                               onClick={() => setWaiting(false)}
                               className="w-full"
                          >
-                              Close
+                              {t("sharedAudit.close")}
                          </Button>
                     </DialogContent>
                </Dialog>

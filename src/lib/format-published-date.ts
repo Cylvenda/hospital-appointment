@@ -1,10 +1,10 @@
 export function formatPublishedDate(
   publishedAt?: string | null,
   createdAt?: string | null,
-  options?: Intl.DateTimeFormatOptions
+  options?: Intl.DateTimeFormatOptions,
+  locale = "en-US",
+  recentLabel = "Recently published"
 ) {
-  const locale = "en-US"
-
   const parseDate = (value?: string | null) => {
     if (!value) return null
     const parsed = new Date(value)
@@ -23,5 +23,5 @@ export function formatPublishedDate(
     return options ? createdDate.toLocaleDateString(locale, options) : createdDate.toLocaleDateString(locale)
   }
 
-  return "Recently published"
+  return recentLabel
 }

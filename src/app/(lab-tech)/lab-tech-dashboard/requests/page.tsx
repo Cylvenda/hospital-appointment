@@ -17,7 +17,8 @@ import { Search01Icon, FilterIcon, RefreshIcon, Medicine01Icon, ArrowRight01Icon
 import { cn } from "@/lib/utils"
 
 export default function LabRequestsPage() {
-     const { t } = useTranslation()
+     const { t, language } = useTranslation()
+     const locale = language === "sw" ? "sw-TZ" : "en-US"
      const router = useRouter()
      const { checkAuth } = useAuthUserStore()
      const { requests, loading, initialize, initialized } = useLaboratoryStore()
@@ -63,13 +64,13 @@ export default function LabRequestsPage() {
      const getStatusBadge = (status: string) => {
           switch (status.toLowerCase()) {
                case "pending":
-                    return <Badge variant="outline" className="bg-amber-50 text-amber-600 border-amber-200 dark:bg-amber-900/20 dark:border-amber-900">Pending</Badge>
+                    return <Badge variant="outline" className="bg-amber-50 text-amber-600 border-amber-200 dark:bg-amber-900/20 dark:border-amber-900">{t("labTech.pending")}</Badge>
                case "processing":
-                    return <Badge variant="outline" className="bg-blue-50 text-blue-600 border-blue-200 dark:bg-blue-900/20 dark:border-blue-900">In Progress</Badge>
+                    return <Badge variant="outline" className="bg-blue-50 text-blue-600 border-blue-200 dark:bg-blue-900/20 dark:border-blue-900">{t("labTech.inProgress")}</Badge>
                case "completed":
-                    return <Badge variant="outline" className="bg-emerald-50 text-emerald-600 border-emerald-200 dark:bg-emerald-900/20 dark:border-emerald-900">Completed</Badge>
+                    return <Badge variant="outline" className="bg-emerald-50 text-emerald-600 border-emerald-200 dark:bg-emerald-900/20 dark:border-emerald-900">{t("labTech.completed")}</Badge>
                case "cancelled":
-                    return <Badge variant="outline" className="bg-rose-50 text-rose-600 border-rose-200 dark:bg-rose-900/20 dark:border-rose-900">Cancelled</Badge>
+                    return <Badge variant="outline" className="bg-rose-50 text-rose-600 border-rose-200 dark:bg-rose-900/20 dark:border-rose-900">{t("appointments.cancelled")}</Badge>
                default:
                     return <Badge variant="outline" className="capitalize">{status}</Badge>
           }
@@ -180,8 +181,8 @@ export default function LabRequestsPage() {
                                         {filteredRequests.map((req) => (
                                              <TableRow key={req.id} className="hover:bg-primary/[0.02] transition-colors">
                                                   <TableCell className="font-medium text-muted-foreground text-xs whitespace-nowrap">
-                                                       {new Date(req.requestedAt).toLocaleDateString()}<br/>
-                                                       {new Date(req.requestedAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                                                       {new Date(req.requestedAt).toLocaleDateString(locale)}<br/>
+                                                       {new Date(req.requestedAt).toLocaleTimeString(locale, {hour: '2-digit', minute:'2-digit'})}
                                                   </TableCell>
                                                   <TableCell className="font-bold">{req.patientName}</TableCell>
                                                   <TableCell className="text-muted-foreground">{req.doctorName}</TableCell>

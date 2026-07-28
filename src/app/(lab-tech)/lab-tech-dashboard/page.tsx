@@ -31,7 +31,8 @@ import {
 import { useTranslation } from "@/lib/i18n"
 
 export default function LabTechDashboardPage() {
-     const { t } = useTranslation()
+     const { t, language } = useTranslation()
+     const locale = language === "sw" ? "sw-TZ" : "en-US"
      const router = useRouter()
      const { user, checkAuth } = useAuthUserStore()
      const { requests, results, loading, initialize, initialized } = useLaboratoryStore()
@@ -92,7 +93,7 @@ export default function LabTechDashboardPage() {
 
      return (
           <motion.div 
-               className="mx-auto w-full max-w-8xl space-y-8 p-4 md:p-8"
+               className="mx-auto w-full min-w-0 max-w-8xl space-y-5 p-1 sm:space-y-8 sm:p-2 md:p-4"
                initial="hidden"
                animate="visible"
                variants={containerVariants}
@@ -100,14 +101,14 @@ export default function LabTechDashboardPage() {
                {/* HERO SECTION */}
                <motion.div 
                     variants={itemVariants}
-                    className="relative overflow-hidden rounded-md bg-primary p-8 text-white shadow-2xl"
+                    className="relative overflow-hidden rounded-md bg-primary p-4 text-white shadow-2xl sm:p-6 md:p-8"
                >
                     <div className="relative z-10 flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
                          <div className="space-y-2">
-                              <h1 className="text-3xl md:text-4xl font-bold tracking-tight">
+                              <h1 className="text-2xl font-bold tracking-tight sm:text-3xl md:text-4xl">
                                    {t("labTech.welcome", { name: user?.first_name?.split(' ')[0] || "Lab Technician" })}
                               </h1>
-                              <p className="text-primary-foreground/80 max-w-md text-lg">
+                              <p className="max-w-md text-base text-primary-foreground/80 sm:text-lg">
                                    {t("labTech.labRequests", { count: pendingRequests.length })}
                               </p>
                          </div>
@@ -169,8 +170,8 @@ export default function LabTechDashboardPage() {
                     <motion.div variants={itemVariants} className="lg:col-span-2 lg:row-span-2">
                          <Card className="h-full rounded-md border-muted/40 shadow-xl overflow-hidden flex flex-col">
                               <CardHeader className="bg-muted/30 pb-4">
-                                   <div className="flex items-center justify-between">
-                                        <div>
+                                   <div className="flex flex-col gap-3 min-[420px]:flex-row min-[420px]:items-center min-[420px]:justify-between">
+                                        <div className="min-w-0">
                                               <CardTitle className="text-xl font-bold flex items-center gap-2">
                                                    <HugeiconsIcon icon={File01Icon} className="w-6 h-6 text-primary" />
                                                    {t("labTech.recentLabRequests")}
@@ -205,22 +206,22 @@ export default function LabTechDashboardPage() {
                                                             initial={{ opacity: 0, x: -20 }}
                                                             animate={{ opacity: 1, x: 0 }}
                                                             transition={{ delay: idx * 0.05 }}
-                                                            className="p-5 flex items-center justify-between hover:bg-primary/2 transition-colors group"
+                                                            className="group flex flex-col items-stretch gap-3 p-4 transition-colors hover:bg-primary/2 min-[420px]:flex-row min-[420px]:items-center min-[420px]:justify-between sm:p-5"
                                                        >
-                                                            <div className="flex items-center gap-4">
+                                                            <div className="flex min-w-0 items-center gap-3 sm:gap-4">
                                                                  <div className="relative">
                                                                       <div className="w-12 h-12 rounded-md bg-primary/5 flex items-center justify-center group-hover:bg-primary/10 transition-colors">
                                                                            <HugeiconsIcon icon={UserCircleIcon} className="w-6 h-6 text-primary/60" />
                                                                       </div>
                                                                  </div>
-                                                                 <div>
-                                                                      <p className="font-bold text-foreground group-hover:text-primary transition-colors">{req.patientName}</p>
-                                                                      <div className="flex items-center gap-2 mt-0.5">
+                                                                 <div className="min-w-0">
+                                                                      <p className="truncate font-bold text-foreground transition-colors group-hover:text-primary">{req.patientName}</p>
+                                                                      <div className="mt-0.5 flex min-w-0 flex-wrap items-center gap-2">
                                                                            <span className="text-[10px] bg-muted px-2 py-0.5 rounded-full text-muted-foreground font-bold uppercase tracking-wider">
                                                                                 {req.items.length > 0 ? req.items[0].testTypeName : t("labTech.multipleTests")}
                                                                            </span>
                                                                            <span className="text-[10px] text-muted-foreground/60 flex items-center gap-1">
-                                                                                <HugeiconsIcon icon={Calendar03Icon} className="w-3 h-3" /> {new Date(req.requestedAt).toLocaleDateString()}
+                                                                                <HugeiconsIcon icon={Calendar03Icon} className="w-3 h-3" /> {new Date(req.requestedAt).toLocaleDateString(locale)}
                                                                            </span>
                                                                       </div>
                                                                  </div>
@@ -228,7 +229,7 @@ export default function LabTechDashboardPage() {
                                                               <Button
                                                                   size="sm"
                                                                   variant="ghost"
-                                                                  className="rounded-xl bg-primary/5 text-primary hover:bg-primary hover:text-white transition-all px-4"
+                                                                  className="w-full rounded-xl bg-primary/5 px-4 text-primary transition-all hover:bg-primary hover:text-white min-[420px]:w-auto"
                                                                   onClick={() => router.push(`/lab-tech-dashboard/requests/${req.id}`)}
                                                              >
                                                                   {t("labTech.process")} <HugeiconsIcon icon={ArrowRight01Icon} className="ml-1 w-4 h-4" />
@@ -279,7 +280,7 @@ export default function LabTechDashboardPage() {
 
                     {/* QUICK NAVIGATION (Row 3) */}
                     <div className="lg:col-span-4 grid gap-6 md:grid-cols-2">
-                         <motion.div variants={itemVariants} className="grid grid-cols-2 gap-4">
+                         <motion.div variants={itemVariants} className="grid gap-4 min-[420px]:grid-cols-2">
                               <Card className="rounded-md border-none bg-purple-50/50 dark:bg-purple-900/10 shadow-sm transition-all hover:scale-[1.02] cursor-pointer group" onClick={() => router.push("/lab-tech-dashboard/test-types")}>
                                    <CardContent className="p-6 flex flex-col items-center justify-center text-center h-full gap-3">
                                         <div className="w-14 h-14 rounded-2xl bg-purple-500/10 flex items-center justify-center group-hover:bg-purple-500 group-hover:text-white transition-all shadow-sm">

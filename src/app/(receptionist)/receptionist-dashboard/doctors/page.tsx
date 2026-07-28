@@ -15,8 +15,10 @@ import {
 import { cn } from "@/lib/utils"
 import { DoctorScheduleManager } from "@/components/doctor-schedule-manager"
 import { DoctorProfileManager } from "@/components/doctor-profile-manager"
+import { useTranslation } from "@/lib/i18n"
 
 export default function ReceptionistDoctorsPage() {
+  const { t } = useTranslation()
   const { doctors, fetchDoctors, loading, error } = useAdminStore()
 
   useEffect(() => {
@@ -41,9 +43,9 @@ export default function ReceptionistDoctorsPage() {
        {/* HEADER */}
        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
-                 <h1 className="text-3xl font-bold tracking-tight">Medical Staff</h1>
+                 <h1 className="text-3xl font-bold tracking-tight">{t("medicalStaff.title")}</h1>
                  <p className="text-muted-foreground mt-1">
-                      Monitor real-time availability and manage doctor assignments.
+                      {t("medicalStaff.description")}
                  </p>
             </div>
             <Button
@@ -53,7 +55,7 @@ export default function ReceptionistDoctorsPage() {
                  disabled={loading}
             >
                  <HugeiconsIcon icon={RefreshIcon} className={cn("mr-2 h-4 w-4", loading && "animate-spin")} />
-                 Refresh Status
+                 {t("medicalStaff.refresh")}
             </Button>
        </div>
 
@@ -64,11 +66,11 @@ export default function ReceptionistDoctorsPage() {
                            <HugeiconsIcon icon={Cancel01Icon} className="w-8 h-8" />
                       </div>
                       <div className="space-y-1">
-                           <p className="text-lg font-bold text-rose-900">Failed to load staff data</p>
+                           <p className="text-lg font-bold text-rose-900">{t("medicalStaff.loadError")}</p>
                            <p className="text-sm text-rose-700/70">{error}</p>
                       </div>
                       <Button onClick={() => void fetchDoctors()} variant="outline" className="rounded-xl border-rose-200 text-rose-700 hover:bg-rose-100">
-                           Try Again
+                           {t("medicalStaff.tryAgain")}
                       </Button>
                  </CardContent>
             </Card>
@@ -78,7 +80,7 @@ export default function ReceptionistDoctorsPage() {
                       <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center text-muted-foreground">
                            <HugeiconsIcon icon={UserCircleIcon} className="w-8 h-8" />
                       </div>
-                      <p className="text-lg font-medium text-muted-foreground">No medical staff records found.</p>
+                      <p className="text-lg font-medium text-muted-foreground">{t("medicalStaff.none")}</p>
                  </CardContent>
             </Card>
        ) : (
@@ -108,7 +110,7 @@ export default function ReceptionistDoctorsPage() {
                                                     "text-[10px] font-black uppercase tracking-widest mt-0.5",
                                                     doctor.is_available ? "text-emerald-600" : "text-rose-600"
                                                )}>
-                                                    {doctor.is_available ? "Available for Appointment" : "Currently On Duty / Out"}
+                                                    {doctor.is_available ? t("medicalStaff.available") : t("medicalStaff.unavailable")}
                                                </p>
                                           </div>
                                      </div>
@@ -120,13 +122,13 @@ export default function ReceptionistDoctorsPage() {
                                                     <HugeiconsIcon icon={UserAccountIcon} className="w-4 h-4" />
                                                </div>
                                                <div>
-                                                    <p className="text-[9px] font-black uppercase tracking-tighter text-muted-foreground opacity-60">License Number</p>
+                                                    <p className="text-[9px] font-black uppercase tracking-tighter text-muted-foreground opacity-60">{t("medicalStaff.license")}</p>
                                                     <p className="text-sm font-bold font-mono">{doctor.license_number}</p>
                                                </div>
                                           </div>
                                           <div className="w-1 h-1 rounded-full bg-muted-foreground/20" />
                                           <div className="text-right">
-                                               <p className="text-[9px] font-black uppercase tracking-tighter text-muted-foreground opacity-60">System ID</p>
+                                               <p className="text-[9px] font-black uppercase tracking-tighter text-muted-foreground opacity-60">{t("medicalStaff.systemId")}</p>
                                                <p className="text-xs font-bold text-muted-foreground">#{doctor.uuid.slice(0, 6)}</p>
                                           </div>
                                      </div>

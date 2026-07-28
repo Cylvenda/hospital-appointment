@@ -5,8 +5,10 @@ import { useParams, useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { useAppointmentStore } from "@/store/appointments/appointment.store"
 import AppointmentDisplay from "@/components/customs/pattient-appointment"
+import { useTranslation } from "@/lib/i18n"
 
 export default function SingleAppointmentPage() {
+  const { t } = useTranslation()
   const params = useParams()
   const router = useRouter()
   const appointmentId = params.id as string
@@ -31,7 +33,7 @@ export default function SingleAppointmentPage() {
   if (loading && !appointment) {
     return (
       <div className="w-full rounded-3xl border border-dashed border-border bg-card p-10 text-center mt-6">
-        <p className="text-sm text-muted-foreground font-medium">Loading appointment details...</p>
+        <p className="text-sm text-muted-foreground font-medium">{t("patientAppointmentLists.loadingDetails")}</p>
       </div>
     )
   }
@@ -40,10 +42,10 @@ export default function SingleAppointmentPage() {
     return (
       <div className="flex w-full flex-col items-center gap-4 rounded-3xl border border-rose-200 bg-rose-50/60 p-10 text-center mt-6">
         <p className="text-sm font-bold text-rose-700">
-          {error || "We could not load this appointment right now."}
+          {t("patientAppointmentLists.detailLoadError")}
         </p>
         <Button onClick={() => void initialize()} variant="outline" className="rounded-xl border-rose-200 hover:bg-rose-100">
-          Try Again
+          {t("patientAppointmentLists.tryAgain")}
         </Button>
       </div>
     )
@@ -53,10 +55,10 @@ export default function SingleAppointmentPage() {
     return (
       <div className="flex w-full flex-col items-center gap-4 rounded-3xl border border-dashed border-border bg-card p-10 text-center mt-6">
         <p className="text-sm text-muted-foreground font-medium">
-          Appointment not found or you do not have access to it.
+          {t("patientAppointmentLists.notFound")}
         </p>
         <Button onClick={() => router.back()} variant="outline" className="rounded-xl">
-          Go Back
+          {t("patientAppointmentLists.goBack")}
         </Button>
       </div>
     )
@@ -70,12 +72,12 @@ export default function SingleAppointmentPage() {
           onClick={() => router.back()}
           className="rounded-xl font-bold shadow-sm"
         >
-          Back to Dashboard
+          {t("patientAppointmentLists.backToDashboard")}
         </Button>
         <div>
-          <h1 className="text-2xl font-black tracking-tight">Appointment Details</h1>
+          <h1 className="text-2xl font-black tracking-tight">{t("patientAppointmentLists.detailsTitle")}</h1>
           <p className="text-sm text-muted-foreground font-medium">
-            Review the complete details of your appointment.
+            {t("patientAppointmentLists.detailsDescription")}
           </p>
         </div>
       </div>

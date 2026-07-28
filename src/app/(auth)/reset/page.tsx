@@ -4,22 +4,24 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
 import Link from "next/link"
-import { ResetFormSchema } from "@/schema/user-form-schema"
+import { createResetFormSchema } from "@/schema/user-form-schema"
 import { FieldInput, FormInput } from "@/components/customs/form"
 import { Button } from "@/components/ui/button"
 import { Spinner } from "@/components/ui/spinner"
 import { authUserService } from "@/api/services/auth.service"
 import { useState } from "react"
 import { toast } from "react-toastify"
+import { useTranslation } from "@/lib/i18n"
 
-type ResetFormValues = z.infer<typeof ResetFormSchema>
+type ResetFormValues = z.infer<ReturnType<typeof createResetFormSchema>>
 
 const ForgetPassword = () => {
      const [loading, setLoading] = useState(false)
      const [submittedEmail, setSubmittedEmail] = useState("")
+     const { t } = useTranslation()
 
      const form = useForm<ResetFormValues>({
-          resolver: zodResolver(ResetFormSchema),
+          resolver: zodResolver(createResetFormSchema(t)),
           defaultValues: {
                email: "",
           },
@@ -29,7 +31,7 @@ const ForgetPassword = () => {
           try {
                setLoading(true)
                await authUserService.requestPasswordReset({ email: data.email })
-               toast.success("Password reset link sent. Please check your email.")
+               toast.success(t("i18nAudit.passwordReset.sent"))
                setSubmittedEmail(data.email)
                form.reset()
           } catch (error: unknown) {
@@ -38,7 +40,7 @@ const ForgetPassword = () => {
                const msg =
                     errorMessage?.detail ||
                     errorMessage?.email?.[0] ||
-                    "Could not send reset link. Please try again."
+                    t("i18nAudit.passwordReset.sendFailed")
                toast.error(msg)
           } finally {
                setLoading(false)
@@ -50,14 +52,13 @@ const ForgetPassword = () => {
 
                <div className="w-full max-w-md">
                     <FormInput
-                         title="Reset Password"
-                         description="Enter your email and we’ll send you a reset link"
+                         title={t("i18nAudit.passwordReset.title")}
+                         description={t("i18nAudit.passwordReset.description")}
                     >
                          {submittedEmail ? (
                               <div className="mt-4 space-y-5">
                                    <div className="rounded-2xl border border-emerald-200 bg-emerald-50/70 p-4 text-sm text-emerald-700">
-                                        A reset link has been sent to <span className="font-medium">{submittedEmail}</span>.
-                                        Open the email and follow the link to choose a new password.
+                                        {t("i18nAudit.passwordReset.sentTo", { email: submittedEmail })}
                                    </div>
 
                                    <div className="flex flex-col gap-3 sm:flex-row">
@@ -66,10 +67,10 @@ const ForgetPassword = () => {
                                              className="w-full bg-chart-3 p-5 hover:opacity-90"
                                              onClick={() => setSubmittedEmail("")}
                                         >
-                                             Send Another Link
+                                             {t("i18nAudit.passwordReset.sendAnother")}
                                         </Button>
                                         <Button asChild type="button" variant="outline" className="w-full p-5">
-                                             <Link href="/login">Back to Login</Link>
+                                             <Link href="/login">{t("i18nAudit.passwordReset.backToLogin")}</Link>
                                         </Button>
                                    </div>
                               </div>
@@ -82,8 +83,8 @@ const ForgetPassword = () => {
                                         name="email"
                                         control={form.control}
                                         type="email"
-                                        placeholder="Enter your email address"
-                                        label="Email Address"
+                                        placeholder={t("auth.enterEmailAddress")}
+                                        label={t("i18nAudit.passwordReset.emailAddress")}
                                    />
 
                                    <div className="flex justify-between text-sm">
@@ -91,14 +92,14 @@ const ForgetPassword = () => {
                                              href="/login"
                                              className="text-emerald-600 dark:text-emerald-400 hover:underline"
                                         >
-                                             Back to Login
+                                             {t("i18nAudit.passwordReset.backToLogin")}
                                         </Link>
 
                                         <Link
                                              href="/register"
                                              className="text-emerald-600 dark:text-emerald-400 hover:underline"
                                         >
-                                             Create account
+                                             {t("i18nAudit.passwordReset.createAccount")}
                                         </Link>
                                    </div>
 
@@ -107,7 +108,7 @@ const ForgetPassword = () => {
                                         disabled={loading}
                                              className="w-full bg-chart-3 p-5  transition hover:opacity-90 rounded-md"
                                    >
-                                        {loading ? <Spinner /> : "Send Reset Link"}
+                                        {loading ? <Spinner /> : t("i18nAudit.passwordReset.sendLink")}
                                    </Button>
                               </form>
                          )}

@@ -19,22 +19,22 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 <ProfileCompletionDialog />
                 <AppSidebar />
                 <SidebarInset>
-                    <header className="flex h-16 shrink-0 sticky top-0 z-50 bg-sidebar items-center justify-between gap-2 border-b border-b-sidebar-border  px-4 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
-                        <div className="flex min-w-0 items-center gap-2">
+                    <header className="sticky top-0 z-50 flex h-16 shrink-0 items-center justify-between gap-1 border-b border-b-sidebar-border bg-sidebar px-2 transition-[width,height] ease-linear sm:gap-2 sm:px-4 group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
+                        <div className="flex min-w-0 flex-1 items-center gap-1 sm:gap-2">
                             <SidebarTrigger className="-ml-1" />
                             <Separator
                                 orientation="vertical"
-                                className="mr-2 data-[orientation=vertical]:h-6"
+                                className="mr-1 hidden data-[orientation=vertical]:h-6 sm:block md:mr-2"
                             />
                             <CurrentPageBreadcrumb />
                         </div>
-                        <div className="flex items-center gap-2">
+                        <div className="flex shrink-0 items-center gap-1 sm:gap-2">
                             <LanguageToggle />
                             <ThemeToggle />
                             <NotificationDropdown />
                         </div>
                     </header>
-                    <div className="bg-sidebar min-h-screen w-full min-w-0 flex justify-center p-3 sm:p-4 md:p-6">{children}</div>
+                    <main className="flex min-h-[calc(100dvh-4rem)] w-full min-w-0 justify-center overflow-x-clip bg-sidebar p-2 sm:p-4 md:p-6">{children}</main>
                 </SidebarInset>
             </RoleAccessGuard>
         </SidebarProvider>

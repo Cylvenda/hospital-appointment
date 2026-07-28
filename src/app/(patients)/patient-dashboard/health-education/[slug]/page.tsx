@@ -14,16 +14,19 @@ import type { EducationalContent } from "@/store/health-education/health-educati
 import { useHealthEducationStore } from "@/store/health-education/health-education.store"
 import { toast } from "react-toastify"
 import { formatPublishedDate } from "@/lib/format-published-date"
+import { useTranslation } from "@/lib/i18n"
 import Image from "next/image"
 
 export default function ArticleDetailPage() {
+    const { t, language } = useTranslation()
+    const locale = language === "sw" ? "sw-TZ" : "en-US"
     const params = useParams()
     const router = useRouter()
     const slug = params.slug as string
     
     const [article, setArticle] = useState<EducationalContent | null>(null)
     const [loading, setLoading] = useState(true)
-    const [error, setError] = useState<string | null>(null)
+    const [hasError, setHasError] = useState(false)
     
     const { bookmarks, toggleBookmark } = useHealthEducationStore()
     const isBookmarked = bookmarks.some(b => b.content.slug === slug)
@@ -34,7 +37,7 @@ export default function ArticleDetailPage() {
                 const response = await healthEducationService.getContentBySlug(slug)
                 setArticle(mapContent(response.data))
             } catch {
-                setError("Failed to load article. It may have been removed.")
+                setHasError(true)
             } finally {
                 setLoading(false)
             }
@@ -48,31 +51,35 @@ export default function ArticleDetailPage() {
     const handleBookmark = async () => {
         try {
             await toggleBookmark(slug)
-            toast.success(isBookmarked ? "Removed from bookmarks" : "Saved to bookmarks")
+            toast.success(isBookmarked ? t("healthEducation.bookmarkRemoved") : t("healthEducation.bookmarkSaved"))
         } catch {
-            toast.error("Failed to update bookmark")
+            toast.error(t("healthEducation.bookmarkUpdateError"))
         }
     }
 
     const handleReaction = async (type: "LIKE" | "HELPFUL") => {
         try {
             const res = await healthEducationService.toggleReaction(slug, type)
-            toast.success(res.data.status === "reaction updated" ? `Marked as ${type.toLowerCase()}` : "Reaction removed")
+            toast.success(
+                res.data.status === "reaction updated"
+                    ? t("healthEducation.markedReaction", { reaction: type.toLowerCase() })
+                    : t("healthEducation.reactionRemoved")
+            )
         } catch {
-            toast.error("Failed to record reaction")
+            toast.error(t("healthEducation.reactionError"))
         }
     }
 
     if (loading) {
-        return <div className="p-8 text-center text-muted-foreground animate-pulse">Loading article details...</div>
+        return <div className="p-8 text-center text-muted-foreground animate-pulse">{t("healthEducation.loadingArticle")}</div>
     }
 
-    if (error || !article) {
+    if (hasError || !article) {
         return (
             <div className="p-8 text-center">
-                <h2 className="text-xl font-bold text-destructive">Error</h2>
-                <p className="text-muted-foreground mt-2">{error}</p>
-                <Button variant="outline" className="mt-4" onClick={() => router.back()}>Go Back</Button>
+                <h2 className="text-xl font-bold text-destructive">{t("healthEducation.errorTitle")}</h2>
+                <p className="text-muted-foreground mt-2">{t("healthEducation.articleLoadError")}</p>
+                <Button variant="outline" className="mt-4" onClick={() => router.back()}>{t("healthEducation.goBack")}</Button>
             </div>
         )
     }
@@ -85,7 +92,7 @@ export default function ArticleDetailPage() {
         >
             <Button variant="ghost" className="gap-2 -ml-4 text-muted-foreground hover:text-foreground" onClick={() => router.back()}>
                 <HugeiconsIcon icon={ArrowLeft01Icon} className="w-4 h-4" />
-                Back to Education
+                {t("healthEducation.backToEducation")}
             </Button>
 
             <article className="space-y-8">
@@ -109,11 +116,19 @@ export default function ArticleDetailPage() {
                         <div className="flex flex-col gap-2 text-sm text-muted-foreground">
                             <span className="flex items-center gap-2">
                                 <HugeiconsIcon icon={UserAccountIcon} className="w-4 h-4" />
-                                Written by {article.authorName}
+                                {t("healthEducation.writtenBy", { author: article.authorName })}
                             </span>
                             <span className="flex items-center gap-2">
                                 <HugeiconsIcon icon={Time01Icon} className="w-4 h-4" />
-                                Published on {formatPublishedDate(article.publishedAt, article.createdAt, { month: "long", day: "numeric", year: "numeric" })}
+                                {t("healthEducation.publishedOn", {
+                                    date: formatPublishedDate(
+                                        article.publishedAt,
+                                        article.createdAt,
+                                        { month: "long", day: "numeric", year: "numeric" },
+                                        locale,
+                                        t("healthEducation.recentlyPublished")
+                                    ),
+                                })}
                             </span>
                         </div>
                         
@@ -123,7 +138,7 @@ export default function ArticleDetailPage() {
                             onClick={handleBookmark}
                         >
                             <HugeiconsIcon icon={FavouriteIcon} className={`w-4 h-4 ${isBookmarked ? 'fill-current' : ''}`} />
-                            {isBookmarked ? "Saved" : "Save for later"}
+                            {isBookmarked ? t("healthEducation.saved") : t("healthEducation.saveForLater")}
                         </Button>
                     </div>
                 </header>
@@ -162,22 +177,22 @@ export default function ArticleDetailPage() {
 
                 <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-muted/30 p-6 rounded-2xl border border-muted/50">
                     <div>
-                        <h4 className="font-semibold text-lg">Was this article helpful?</h4>
-                        <p className="text-sm text-muted-foreground">Let us know to improve our content recommendations.</p>
+                        <h4 className="font-semibold text-lg">{t("healthEducation.helpfulQuestion")}</h4>
+                        <p className="text-sm text-muted-foreground">{t("healthEducation.helpfulDescription")}</p>
                     </div>
                     <div className="flex items-center gap-3">
                         <Button variant="outline" className="gap-2 hover:bg-primary hover:text-primary-foreground hover:border-primary transition-colors" onClick={() => handleReaction("HELPFUL")}>
                             <HugeiconsIcon icon={ThumbsUpIcon} className="w-4 h-4" />
-                            Yes, helpful
+                            {t("healthEducation.yesHelpful")}
                         </Button>
                     </div>
                 </div>
 
                 <div className="pt-10">
-                    <h3 className="text-2xl font-bold mb-6">Related Articles</h3>
+                    <h3 className="text-2xl font-bold mb-6">{t("healthEducation.relatedArticles")}</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="p-8 text-center text-muted-foreground bg-muted/20 rounded-2xl border border-muted/40">
-                            More content coming soon
+                            {t("healthEducation.moreComingSoon")}
                         </div>
                     </div>
                 </div>

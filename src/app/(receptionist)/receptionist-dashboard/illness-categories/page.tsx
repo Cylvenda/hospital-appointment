@@ -39,6 +39,7 @@ import {
 import { Textarea } from "@/components/ui/textarea"
 import { useAppointmentStore } from "@/store/appointments/appointment.store"
 import { cn } from "@/lib/utils"
+import { useTranslation } from "@/lib/i18n"
 
 const emptyForm = {
   name: "",
@@ -46,6 +47,7 @@ const emptyForm = {
 }
 
 export default function ReceptionistDepartmentsPage() {
+  const { t } = useTranslation()
   const {
     illnessCategories,
     fetchIllnessCategories,
@@ -80,10 +82,10 @@ export default function ReceptionistDepartmentsPage() {
     (category) => Boolean(category.description?.trim())
   ).length
 
-  const formTitle = editingId ? "Update Department" : "New Department"
+  const formTitle = editingId ? t("departmentManagement.update") : t("departmentManagement.add")
   const formDescription = editingId
-    ? "Modify the department details."
-    : "Create a new department."
+    ? t("departmentManagement.updateDescription")
+    : t("departmentManagement.addDescription")
 
   const isFormValid = form.name.trim().length > 0
 
@@ -107,15 +109,15 @@ export default function ReceptionistDepartmentsPage() {
 
       if (editingId) {
         await updateIllnessCategory(editingId, payload)
-        toast.success("Department updated successfully.")
+        toast.success(t("departmentManagement.updated"))
       } else {
         await createIllnessCategory(payload)
-        toast.success("Department added.")
+        toast.success(t("departmentManagement.created"))
       }
 
       resetForm()
     } catch {
-      toast.error(editingId ? "Failed to update department." : "Failed to add department.")
+      toast.error(editingId ? t("departmentManagement.updateError") : t("departmentManagement.createError"))
     } finally {
       setIsSaving(false)
     }
@@ -143,7 +145,7 @@ export default function ReceptionistDepartmentsPage() {
 
     try {
       await deleteIllnessCategory(deleteTarget.uuid)
-      toast.success("Department deleted.")
+      toast.success(t("departmentManagement.deleted"))
 
       if (editingId === deleteTarget.uuid) {
         resetForm()
@@ -151,7 +153,7 @@ export default function ReceptionistDepartmentsPage() {
 
       setDeleteTarget(null)
     } catch {
-      toast.error("Failed to delete department.")
+      toast.error(t("departmentManagement.deleteError"))
     } finally {
       setIsDeleting(false)
     }
@@ -176,9 +178,9 @@ export default function ReceptionistDepartmentsPage() {
         className="flex flex-col justify-between gap-6 lg:flex-row lg:items-end"
       >
         <div className="space-y-2">
-           <h1 className="text-4xl font-black tracking-tight">Departments</h1>
+           <h1 className="text-4xl font-black tracking-tight">{t("departmentManagement.title")}</h1>
            <p className="text-muted-foreground text-lg max-w-2xl">
-             Define and manage departments used for triage and doctor matching.
+             {t("departmentManagement.subtitle")}
            </p>
         </div>
 
@@ -192,7 +194,7 @@ export default function ReceptionistDepartmentsPage() {
             value={search}
             onChange={(event) => setSearch(event.target.value)}
             className="h-14 rounded-3xl border-2 border-muted bg-background pl-14 pr-6 focus:border-primary focus:ring-0 transition-all text-base font-medium shadow-sm"
-            placeholder="Filter categories..."
+            placeholder={t("departmentManagement.filter")}
           />
         </div>
       </motion.div>
@@ -205,13 +207,13 @@ export default function ReceptionistDepartmentsPage() {
         className="grid gap-6 md:grid-cols-3"
       >
         {[
-          { label: "Total Registered", value: illnessCategories.length, icon: DatabaseIcon, color: "text-blue-600", bg: "bg-blue-50" },
-          { label: "Active Results", value: filteredCategories.length, icon: FilterIcon, color: "text-indigo-600", bg: "bg-indigo-50" },
-          { label: "Detailed Entries", value: categoriesWithDescriptions, icon: MedicineBottle01Icon, color: "text-emerald-600", bg: "bg-emerald-50" },
+          { label: t("departmentManagement.totalRegistered"), value: illnessCategories.length, icon: DatabaseIcon, color: "text-blue-600", bg: "bg-blue-50" },
+          { label: t("departmentManagement.activeResults"), value: filteredCategories.length, icon: FilterIcon, color: "text-indigo-600", bg: "bg-indigo-50" },
+          { label: t("departmentManagement.detailedEntries"), value: categoriesWithDescriptions, icon: MedicineBottle01Icon, color: "text-emerald-600", bg: "bg-emerald-50" },
         ].map((stat, i) => (
           <motion.div key={i} variants={itemVariants}>
             <Card className="rounded-[2.5rem] border-none shadow-sm bg-card hover:shadow-md transition-shadow overflow-hidden group">
-              <CardContent className="p-8 flex items-center gap-6">
+              <CardContent className="flex items-center gap-4 p-4 sm:gap-6 sm:p-6 md:p-8">
                 <div className={cn("w-16 h-16 rounded-[1.5rem] flex items-center justify-center transition-transform group-hover:scale-110", stat.bg, stat.color)}>
                   <HugeiconsIcon icon={stat.icon} className="w-8 h-8" />
                 </div>
@@ -228,8 +230,8 @@ export default function ReceptionistDepartmentsPage() {
       <div className="grid gap-8 xl:grid-cols-[1fr_2fr]">
         {/* FORM */}
         <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}>
-          <Card className="rounded-[3rem] border-2 shadow-xl overflow-hidden sticky top-8">
-            <CardHeader className="bg-muted/30 p-8 border-b">
+          <Card className="overflow-hidden rounded-3xl border-2 shadow-xl xl:sticky xl:top-8 xl:rounded-[3rem]">
+            <CardHeader className="border-b bg-muted/30 p-4 sm:p-6 md:p-8">
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 rounded-2xl bg-primary text-white flex items-center justify-center shadow-lg shadow-primary/20">
                   <HugeiconsIcon icon={editingId ? Edit02Icon : PlusSignIcon} className="w-6 h-6" />
@@ -241,28 +243,28 @@ export default function ReceptionistDepartmentsPage() {
               </div>
             </CardHeader>
 
-            <CardContent className="p-8 space-y-6">
+            <CardContent className="space-y-5 p-4 sm:space-y-6 sm:p-6 md:p-8">
               <div className="space-y-3">
-                 <label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-1">Department Name</label>
+                 <label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-1">{t("departmentManagement.name")}</label>
                 <Input
                   value={form.name}
                   onChange={(event) =>
                     setForm((current) => ({ ...current, name: event.target.value }))
                   }
                   className="h-14 rounded-2xl border-2 bg-background focus:border-primary transition-all text-base font-bold px-6"
-                  placeholder="e.g. Cardiology"
+                  placeholder={t("departmentManagement.namePlaceholder")}
                 />
               </div>
 
               <div className="space-y-3">
-                <label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-1">Description</label>
+                <label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-1">{t("departmentManagement.description")}</label>
                 <Textarea
                   value={form.description}
                   onChange={(event) =>
                     setForm((current) => ({ ...current, description: event.target.value }))
                   }
                   className="min-h-[150px] rounded-2xl border-2 bg-background focus:border-primary transition-all text-base font-medium p-6 resize-none"
-                   placeholder="Provide a brief overview of this department..."
+                   placeholder={t("departmentManagement.descriptionPlaceholder")}
                 />
               </div>
 
@@ -272,7 +274,7 @@ export default function ReceptionistDepartmentsPage() {
                   disabled={!isFormValid || isSaving} 
                   className="h-14 rounded-2xl text-base font-black shadow-lg shadow-primary/20 transition-all hover:scale-[1.02] active:scale-95"
                 >
-                   {isSaving ? "Processing..." : editingId ? "Update Department" : "Register Department"}
+                   {isSaving ? t("departmentManagement.processing") : editingId ? t("departmentManagement.update") : t("departmentManagement.register")}
                 </Button>
                 {(editingId || form.name || form.description) && (
                   <Button
@@ -281,7 +283,7 @@ export default function ReceptionistDepartmentsPage() {
                     disabled={isSaving}
                     className="h-12 rounded-2xl font-bold text-muted-foreground hover:text-foreground"
                   >
-                    Discard Changes
+                    {t("departmentManagement.discard")}
                   </Button>
                 )}
               </div>
@@ -292,10 +294,10 @@ export default function ReceptionistDepartmentsPage() {
         {/* LIST */}
         <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}>
           <Card className="rounded-[3rem] border-2 shadow-xl overflow-hidden min-h-[600px]">
-            <CardHeader className="p-8 border-b">
+            <CardHeader className="border-b p-4 sm:p-6 md:p-8">
               <CardTitle className="text-2xl font-black flex items-center gap-3">
                  <HugeiconsIcon icon={Medicine01Icon} className="w-8 h-8 text-primary" />
-                 Department Directory
+                 {t("departmentManagement.directory")}
                </CardTitle>
             </CardHeader>
 
@@ -303,9 +305,9 @@ export default function ReceptionistDepartmentsPage() {
               <Table>
                 <TableHeader>
                   <TableRow className="bg-muted/50 hover:bg-muted/50">
-                     <TableHead className="px-8 h-14 text-xs font-black uppercase tracking-widest text-muted-foreground">Department</TableHead>
-                     <TableHead className="h-14 text-xs font-black uppercase tracking-widest text-muted-foreground">Description</TableHead>
-                     <TableHead className="h-14 text-xs font-black uppercase tracking-widest text-muted-foreground text-right px-8">Actions</TableHead>
+                     <TableHead className="px-8 h-14 text-xs font-black uppercase tracking-widest text-muted-foreground">{t("departmentManagement.title")}</TableHead>
+                     <TableHead className="h-14 text-xs font-black uppercase tracking-widest text-muted-foreground">{t("departmentManagement.description")}</TableHead>
+                     <TableHead className="h-14 text-xs font-black uppercase tracking-widest text-muted-foreground text-right px-8">{t("departmentManagement.actions")}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -317,8 +319,8 @@ export default function ReceptionistDepartmentsPage() {
                             <div className="w-20 h-20 rounded-full bg-muted flex items-center justify-center">
                               <HugeiconsIcon icon={Search01Icon} className="w-10 h-10 opacity-20" />
                             </div>
-                             <p className="text-xl font-bold opacity-40">No departments found</p>
-                             <p className="text-sm">Try adjusting your search criteria.</p>
+                             <p className="text-xl font-bold opacity-40">{t("departmentManagement.none")}</p>
+                             <p className="text-sm">{t("departmentManagement.adjustSearch")}</p>
                           </div>
                         </TableCell>
                       </TableRow>
@@ -338,7 +340,7 @@ export default function ReceptionistDepartmentsPage() {
                           </TableCell>
                           <TableCell className="max-w-md py-6">
                             <p className="text-sm font-medium text-muted-foreground line-clamp-2 leading-relaxed">
-                              {category.description?.trim() || "— No detailed description available —"}
+                              {category.description?.trim() || t("departmentManagement.noDescription")}
                             </p>
                           </TableCell>
                           <TableCell className="px-8 py-6 text-right">
@@ -378,26 +380,26 @@ export default function ReceptionistDepartmentsPage() {
       </div>
 
       <Dialog open={Boolean(deleteTarget)} onOpenChange={(open) => !open && setDeleteTarget(null)}>
-        <DialogContent className="rounded-[2.5rem] p-8 max-w-md border-2">
+        <DialogContent className="max-w-md rounded-2xl border-2 p-4 sm:rounded-[2.5rem] sm:p-6 md:p-8">
           <DialogHeader className="space-y-4">
             <div className="w-16 h-16 rounded-3xl bg-rose-100 text-rose-600 flex items-center justify-center mx-auto mb-2">
               <HugeiconsIcon icon={AlertCircleIcon} className="w-8 h-8" />
             </div>
-            <DialogTitle className="text-2xl font-black text-center">Confirm Deletion</DialogTitle>
+            <DialogTitle className="text-2xl font-black text-center">{t("departmentManagement.confirmDeletion")}</DialogTitle>
             <DialogDescription className="text-center text-base font-medium">
               {deleteTarget
-                ? `You are about to permanently remove "${deleteTarget.name}". This action cannot be undone.`
-                 : "This action will permanently remove the selected department."}
+                ? t("departmentManagement.deleteNamedDescription", { name: deleteTarget.name })
+                 : t("departmentManagement.deleteDescription")}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="flex flex-col sm:flex-row gap-3 pt-4 sm:justify-center">
             <Button variant="outline" onClick={() => setDeleteTarget(null)} disabled={isDeleting} className="h-14 rounded-md flex-1 font-bold">
               <HugeiconsIcon icon={Cancel01Icon} className="mr-2 w-5 h-5" />
-               Keep Department
+               {t("departmentManagement.keep")}
             </Button>
             <Button variant="destructive" onClick={handleDelete} disabled={isDeleting} className="h-14 rounded-md flex-1 font-black shadow-lg shadow-rose-200">
               <HugeiconsIcon icon={Tick02Icon} className="mr-2 w-5 h-5" />
-              {isDeleting ? "Deleting..." : "Confirm Delete"}
+              {isDeleting ? t("departmentManagement.deleting") : t("departmentManagement.confirmDelete")}
             </Button>
           </DialogFooter>
         </DialogContent>

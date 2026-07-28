@@ -33,7 +33,8 @@ export default function AppointmentDisplay({
      onCancel,
      hideViewDetails = false,
 }: Props) {
-     const { t } = useTranslation()
+     const { t, language } = useTranslation()
+     const locale = language === "sw" ? "sw-TZ" : "en-US"
      const router = useRouter()
      const [loading, setLoading] = useState(false)
 
@@ -149,7 +150,7 @@ export default function AppointmentDisplay({
                                    <div className="rounded-2xl border border-border/60 bg-card px-3 py-2.5 shadow-sm">
                                         <p className="text-[10px] font-black uppercase tracking-[0.22em] text-muted-foreground">{t("patientCard.fee")}</p>
                                         <p className="mt-1 text-xl font-black tracking-tight text-primary">
-                                             {Number(appointment.fee).toLocaleString()}
+                                             {new Intl.NumberFormat(locale, { maximumFractionDigits: 0 }).format(Number(appointment.fee))}
                                         </p>
                                         <p className="text-[10px] font-medium text-muted-foreground">{t("patientCard.tzs")}</p>
                                    </div>

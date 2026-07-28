@@ -16,7 +16,8 @@ import { ArrowLeft01Icon, Tick01Icon, Medicine01Icon, Alert01Icon, UserCircleIco
 import { useTranslation } from "@/lib/i18n"
 
 export default function LabRequestDetailsPage({ params }: { params: Promise<{ id: string }> }) {
-     const { t } = useTranslation()
+     const { t, language } = useTranslation()
+     const locale = language === "sw" ? "sw-TZ" : "en-US"
      const router = useRouter()
      const resolvedParams = use(params)
      const requestId = resolvedParams.id
@@ -121,9 +122,9 @@ export default function LabRequestDetailsPage({ params }: { params: Promise<{ id
 
      const getStatusBadge = (status: string) => {
           switch (status.toLowerCase()) {
-               case "pending": return <Badge variant="outline" className="bg-amber-50 text-amber-600 border-amber-200">Pending</Badge>
-               case "processing": return <Badge variant="outline" className="bg-blue-50 text-blue-600 border-blue-200">In Progress</Badge>
-               case "completed": return <Badge variant="outline" className="bg-emerald-50 text-emerald-600 border-emerald-200">Completed</Badge>
+               case "pending": return <Badge variant="outline" className="bg-amber-50 text-amber-600 border-amber-200">{t("labTech.pending")}</Badge>
+               case "processing": return <Badge variant="outline" className="bg-blue-50 text-blue-600 border-blue-200">{t("labTech.inProgress")}</Badge>
+               case "completed": return <Badge variant="outline" className="bg-emerald-50 text-emerald-600 border-emerald-200">{t("labTech.completed")}</Badge>
                default: return <Badge variant="outline" className="capitalize">{status}</Badge>
           }
      }
@@ -187,7 +188,7 @@ export default function LabRequestDetailsPage({ params }: { params: Promise<{ id
                                     <p className="text-xs text-muted-foreground uppercase tracking-wider font-bold mb-1">{t("labTech.requestDate")}</p>
                                    <p className="font-medium flex items-center gap-2">
                                         <HugeiconsIcon icon={Calendar03Icon} className="w-4 h-4 text-muted-foreground" />
-                                        {new Date(request.requestedAt).toLocaleString()}
+                                        {new Date(request.requestedAt).toLocaleString(locale)}
                                    </p>
                               </div>
                          </CardContent>

@@ -61,7 +61,7 @@ export const UpdateAppointmentDialog = ({ appointment }: Props) => {
                </DialogTrigger>
 
                <DialogContent className="sm:max-w-2xl rounded-md p-0 overflow-hidden border-none shadow-2xl">
-                    <div className="bg-primary p-8 text-white">
+                    <div className="bg-primary p-4 text-white sm:p-6 md:p-8">
                          <DialogHeader>
                               <div className="w-12 h-12 rounded-2xl bg-white/20 flex items-center justify-center mb-4 backdrop-blur-md">
                                    <HugeiconsIcon icon={Edit01Icon} className="w-6 h-6 text-white" />
@@ -73,7 +73,7 @@ export const UpdateAppointmentDialog = ({ appointment }: Props) => {
                          </DialogHeader>
                     </div>
 
-                    <div className="p-8 space-y-8">
+                    <div className="space-y-5 p-4 sm:space-y-8 sm:p-6 md:p-8">
                          <div className="space-y-4">
                               <div className="flex items-center gap-2 mb-2">
                                    <div className="w-1 h-4 bg-primary rounded-full" />
@@ -91,8 +91,8 @@ export const UpdateAppointmentDialog = ({ appointment }: Props) => {
                          </div>
                     </div>
 
-                    <DialogFooter className="p-8 bg-muted/30 border-t flex items-center justify-between gap-4">
-                         <Button variant="ghost" onClick={() => setOpen(false)} disabled={loading} className="rounded-md h-14 px-8 font-bold text-muted-foreground hover:text-foreground">
+                    <DialogFooter className="flex flex-col-reverse items-stretch justify-between gap-3 border-t bg-muted/30 p-4 sm:flex-row sm:items-center sm:gap-4 sm:p-6 md:p-8">
+                         <Button variant="ghost" onClick={() => setOpen(false)} disabled={loading} className="h-12 w-full rounded-md px-4 font-bold text-muted-foreground hover:text-foreground sm:h-14 sm:w-auto sm:px-8">
                               <HugeiconsIcon icon={Cancel01Icon} className="w-5 h-5 mr-2" />
                               {t("appointmentUpdate.discard")}
                          </Button>
