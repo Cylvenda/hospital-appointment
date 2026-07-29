@@ -89,7 +89,10 @@ export function RescheduleAppointment({ appointment }: { appointment: Appointmen
             <SelectContent>
               {days.map((day) => (
                 <SelectItem key={day.date} value={day.date}>
-                  {day.date} · {day.slot_count} slots
+                  {day.date} ·{" "}
+                  {t("sharedAudit.availableSlotsCount", {
+                    count: day.slot_count,
+                  })}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -107,7 +110,9 @@ export function RescheduleAppointment({ appointment }: { appointment: Appointmen
             </SelectContent>
           </Select>
           <Button onClick={save} disabled={!date || !startTime || saving}>
-            {saving ? "Saving..." : "Confirm Reschedule"}
+            {saving
+              ? t("sharedAudit.saving")
+              : t("sharedAudit.confirmReschedule")}
           </Button>
         </DialogContent>
       </Dialog>

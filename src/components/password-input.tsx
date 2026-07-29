@@ -6,11 +6,13 @@ import { HugeiconsIcon } from "@hugeicons/react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
+import { useTranslation } from "@/lib/i18n"
 
 export type PasswordInputProps = React.InputHTMLAttributes<HTMLInputElement>
 
 const PasswordInput = React.forwardRef<HTMLInputElement, PasswordInputProps>(
   ({ className, ...props }, ref) => {
+    const { t } = useTranslation()
     const [showPassword, setShowPassword] = React.useState(false)
 
     return (
@@ -34,7 +36,9 @@ const PasswordInput = React.forwardRef<HTMLInputElement, PasswordInputProps>(
             className="h-4 w-4 text-muted-foreground"
           />
           <span className="sr-only">
-            {showPassword ? "Hide password" : "Show password"}
+            {showPassword
+              ? t("accessibility.hidePassword")
+              : t("accessibility.showPassword")}
           </span>
         </Button>
       </div>

@@ -230,13 +230,15 @@ export function DatePicker({
         disabled={disabled}
         onClick={toggleOpen}
         className={cn(
-          "w-full justify-start text-left font-normal border-border bg-background hover:bg-muted/40",
+          "min-w-0 w-full justify-start overflow-hidden text-left font-normal border-border bg-background hover:bg-muted/40",
           !value && "text-muted-foreground",
           className
         )}
       >
-        <HugeiconsIcon icon={Calendar03Icon} className="mr-2 h-4 w-4 text-muted-foreground" />
-        {getDisplayValue() || resolvedPlaceholder}
+        <HugeiconsIcon icon={Calendar03Icon} className="mr-2 h-4 w-4 shrink-0 text-muted-foreground" />
+        <span className="min-w-0 truncate">
+          {getDisplayValue() || resolvedPlaceholder}
+        </span>
       </Button>
 
       {isOpen && (

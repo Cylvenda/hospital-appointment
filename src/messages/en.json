@@ -185,7 +185,8 @@
     "profileSaveError": "We could not save your profile right now.",
     "profileUpdated": "Profile updated successfully."
     ,"incompleteBannerTitle": "Clinical Profile Incomplete:",
-    "incompleteBannerDescription": "Please complete your registration details so the care team can prepare for your visits and activate scheduling options."
+    "incompleteBannerDescription": "Please complete your registration details so the care team can prepare for your visits and activate scheduling options.",
+    "accessRestrictedIncomplete": "Access restricted: Please complete your patient profile details to perform this action."
   },
   "staffProfile": {
     "title": "Profile",
@@ -776,6 +777,7 @@
     "deletePatientButton": "Delete Patient"
   },
   "labTech": {
+    "fallbackName": "Lab Technician",
     "welcome": "Welcome, {{name}}!",
     "labRequests": "{{count}} lab requests pending. Let's process them!",
     "refresh": "Refresh Queue",
@@ -810,6 +812,7 @@
     "edit": "Edit Test Type",
     "add": "Add Test Type",
     "testNameRequired": "Test Name",
+    "testNamePlaceholder": "e.g. Complete Blood Count (CBC)",
     "optionalDescription": "Optional description of the test",
     "active": "Active",
     "cancel": "Cancel",
@@ -974,6 +977,21 @@
     "inactive": "Inactive"
   },
   "workflowOperations": {
+    "allTitle": "Appointment Operations",
+    "allSummary": "Follow every visit from payment confirmation through arrival, consultation, laboratory, and completion.",
+    "allEmpty": "No appointments match this search.",
+    "awaitingPaymentTitle": "Awaiting Payment",
+    "awaitingPaymentSummary": "These selected slots are temporarily reserved until patient payment is confirmed.",
+    "awaitingPaymentEmpty": "No appointments are waiting for payment.",
+    "todayTitle": "Today’s Arrivals & Queue",
+    "todaySummary": "Coordinate confirmed arrivals, check patients in, and monitor their live care progress.",
+    "todayEmpty": "No patients are scheduled or moving through care today.",
+    "completedTitle": "Completed Visits",
+    "completedSummary": "Review consultations that doctors have completed and closed.",
+    "completedEmpty": "No completed visits are available.",
+    "cancelledTitle": "Cancelled & Missed",
+    "cancelledSummary": "Review cancelled, rescheduled, and no-show appointments whose slots were released.",
+    "cancelledEmpty": "No cancelled or missed appointments are available.",
     "stagePaymentLabel": "1. Payment",
     "stagePaymentDescription": "Slot saved",
     "stageArrivalLabel": "2. Arrival",
@@ -995,6 +1013,18 @@
     "emptyHelp": "This view refreshes automatically as appointments move through the workflow."
   },
   "analytics": {
+    "adminEyebrow": "Hospital performance",
+    "adminTitle": "Analytics & Reports",
+    "adminDescription": "Review appointment outcomes across the hospital and export the full administrative report.",
+    "receptionistEyebrow": "Front desk performance",
+    "receptionistTitle": "Analytics & Reports",
+    "receptionistDescription": "Review payment, arrival, queue, and visit outcomes handled by the front desk.",
+    "doctorEyebrow": "Clinical performance",
+    "doctorTitle": "My Analytics & Reports",
+    "doctorDescription": "Review your assigned consultations and export your personal clinical activity report.",
+    "labTechEyebrow": "Laboratory performance",
+    "labTechTitle": "My Analytics & Reports",
+    "labTechDescription": "Review your verified test results and export your personal laboratory activity report.",
     "myAppointments": "My appointments",
     "totalAppointments": "Total appointments",
     "allAvailableRecords": "All available records",
@@ -1016,7 +1046,8 @@
     "downloadDocx": "Download DOCX report",
     "reportDownloaded": "{{format}} report downloaded.",
     "reportDownloadFailed": "Could not download report.",
-    "dateRange": "Date range"
+    "dateRange": "Date range",
+    "filteredRange": "Filtered: {{startDate}} to {{endDate}}"
   },
   "booking": {
     "title": "Book Appointment",
@@ -1723,7 +1754,9 @@
     "toggleSidebar": "Toggle Sidebar",
     "breadcrumb": "Breadcrumb",
     "more": "More",
-    "loading": "Loading"
+    "loading": "Loading",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password"
   },
   "sharedAudit": {
     "paymentStatus": "Payment {{status}}",
@@ -1758,6 +1791,15 @@
     "rescheduleAppointment": "Reschedule appointment",
     "selectAvailableDay": "Select available day",
     "selectAvailableTime": "Select available time",
+    "availableSlotsCount": "{{count}} slots",
+    "saving": "Saving...",
+    "confirmReschedule": "Confirm Reschedule",
+    "saveDoctorProfile": "Save Doctor Profile",
+    "scheduleStart": "Start",
+    "scheduleEnd": "End",
+    "breakStart": "Break start",
+    "breakEnd": "Break end",
+    "saveSchedule": "Save Schedule",
     "paymentConfirmed": "Payment confirmed successfully",
     "paymentFailed": "Payment failed. You can retry.",
     "transactionFee": "Transaction Fee",
@@ -1932,6 +1974,7 @@
     "none": "No appointments found."
   },
   "healthEducation": {
+    "exploreTopics": "Explore topics",
     "title": "Manage Health Education",
     "subtitle": "Publish and edit articles, videos, and FAQs for patients.",
     "newCategory": "New Category",

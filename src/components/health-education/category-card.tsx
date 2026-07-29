@@ -3,6 +3,7 @@ import { HugeiconsIcon } from "@hugeicons/react"
 import { LibraryIcon } from "@hugeicons/core-free-icons"
 import { Card, CardContent } from "@/components/ui/card"
 import type { ContentCategory } from "@/store/health-education/health-education.types"
+import { useTranslation } from "@/lib/i18n"
 
 interface CategoryCardProps {
     category: ContentCategory
@@ -11,6 +12,8 @@ interface CategoryCardProps {
 }
 
 export function CategoryCard({ category, isSelected = false, onClick }: CategoryCardProps) {
+    const { t } = useTranslation()
+
     return (
         <motion.div className="min-w-0" whileHover={{ y: -2 }} whileTap={{ scale: 0.98 }}>
             <Card 
@@ -23,7 +26,9 @@ export function CategoryCard({ category, isSelected = false, onClick }: Category
                     </div>
                     <div className="min-w-0">
                         <h4 className="font-medium text-sm truncate">{category.name}</h4>
-                        <p className="text-xs text-muted-foreground line-clamp-1">{category.description || "Explore topics"}</p>
+                        <p className="text-xs text-muted-foreground line-clamp-1">
+                            {category.description || t("healthEducation.exploreTopics")}
+                        </p>
                     </div>
                 </CardContent>
             </Card>

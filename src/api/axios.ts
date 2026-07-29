@@ -1,12 +1,16 @@
 import axios from "axios"
 import { API_ENDPOINTS } from "./endpoints"
 import { toast } from "react-toastify"
+import { getTranslationValue } from "@/lib/i18n"
+import { useLanguageStore } from "@/store/language/language.store"
 
 const api = axios.create({
      baseURL: API_ENDPOINTS.API_ROOT,
      headers: { "Content-Type": "application/json" },
      withCredentials: true,
 })
+
+let refreshRequest: Promise<unknown> | null = null
 
 api.interceptors.response.use(
      (response) => response,
@@ -19,7 +23,14 @@ api.interceptors.response.use(
                originalRequest._retry = true
 
                try {
-                    await api.post(API_ENDPOINTS.USER_TOKEN_REFRESH)
+                    if (!refreshRequest) {
+                         refreshRequest = api
+                              .post(API_ENDPOINTS.USER_TOKEN_REFRESH)
+                              .finally(() => {
+                                   refreshRequest = null
+                              })
+                    }
+                    await refreshRequest
                     return api(originalRequest)
                } catch (refreshError) {
                     return Promise.reject(refreshError)
@@ -29,7 +40,12 @@ api.interceptors.response.use(
           // Handle incomplete profile backend blocks
           if (error.response?.status === 403 && error.response?.data?.profile_incomplete) {
                if (typeof window !== "undefined" && window.location.pathname !== "/patient-dashboard/profile") {
-                    toast.warning("Access Restricted: Please complete your patient profile details to perform this action.")
+                    toast.warning(
+                         getTranslationValue(
+                              "profile.accessRestrictedIncomplete",
+                              useLanguageStore.getState().language
+                         )
+                    )
                     window.location.href = "/patient-dashboard/profile"
                }
           }

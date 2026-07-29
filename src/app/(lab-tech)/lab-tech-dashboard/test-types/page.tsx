@@ -235,7 +235,7 @@ export default function TestTypesPage() {
                                      id="name"
                                      value={name}
                                      onChange={(e) => setName(e.target.value)}
-                                     placeholder="e.g. Complete Blood Count (CBC)"
+                                     placeholder={t("labTech.testNamePlaceholder")}
                                      required
                                  />
                              </div>

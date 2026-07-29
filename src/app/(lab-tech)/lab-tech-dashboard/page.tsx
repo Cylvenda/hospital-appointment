@@ -106,7 +106,11 @@ export default function LabTechDashboardPage() {
                     <div className="relative z-10 flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
                          <div className="space-y-2">
                               <h1 className="text-2xl font-bold tracking-tight sm:text-3xl md:text-4xl">
-                                   {t("labTech.welcome", { name: user?.first_name?.split(' ')[0] || "Lab Technician" })}
+                                   {t("labTech.welcome", {
+                                        name:
+                                             user?.first_name?.split(" ")[0] ||
+                                             t("labTech.fallbackName"),
+                                   })}
                               </h1>
                               <p className="max-w-md text-base text-primary-foreground/80 sm:text-lg">
                                    {t("labTech.labRequests", { count: pendingRequests.length })}

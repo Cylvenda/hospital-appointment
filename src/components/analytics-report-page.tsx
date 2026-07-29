@@ -38,33 +38,29 @@ const STATUS_ORDER: AppointmentStatus[] = [
   "rescheduled",
 ]
 
-const ROLE_COPY: Record<
+const ROLE_COPY_KEYS: Record<
   AnalyticsRole,
   { eyebrow: string; title: string; description: string }
 > = {
   admin: {
-    eyebrow: "Hospital performance",
-    title: "Analytics & Reports",
-    description:
-      "Review appointment outcomes across the hospital and export the full administrative report.",
+    eyebrow: "analytics.adminEyebrow",
+    title: "analytics.adminTitle",
+    description: "analytics.adminDescription",
   },
   receptionist: {
-    eyebrow: "Front desk performance",
-    title: "Analytics & Reports",
-    description:
-      "Review payment, arrival, queue, and visit outcomes handled by the front desk.",
+    eyebrow: "analytics.receptionistEyebrow",
+    title: "analytics.receptionistTitle",
+    description: "analytics.receptionistDescription",
   },
   doctor: {
-    eyebrow: "Clinical performance",
-    title: "My Analytics & Reports",
-    description:
-      "Review your assigned consultations and export your personal clinical activity report.",
+    eyebrow: "analytics.doctorEyebrow",
+    title: "analytics.doctorTitle",
+    description: "analytics.doctorDescription",
   },
   lab_tech: {
-    eyebrow: "Laboratory performance",
-    title: "My Analytics & Reports",
-    description:
-      "Review your verified test results and export your personal laboratory activity report.",
+    eyebrow: "analytics.labTechEyebrow",
+    title: "analytics.labTechTitle",
+    description: "analytics.labTechDescription",
   },
 }
 
@@ -155,7 +151,7 @@ export function AnalyticsReportPage({ role }: { role: AnalyticsRole }) {
     }
   }
 
-  const copy = ROLE_COPY[role]
+  const copy = ROLE_COPY_KEYS[role]
   const cards = [
     {
       label:
@@ -197,12 +193,12 @@ export function AnalyticsReportPage({ role }: { role: AnalyticsRole }) {
           <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
             <div className="max-w-3xl">
               <p className="mb-2 text-xs font-black uppercase tracking-[0.2em] text-primary">
-                {copy.eyebrow}
+                {t(copy.eyebrow)}
               </p>
               <h1 className="text-3xl font-black tracking-tight md:text-4xl">
-                {copy.title}
+                {t(copy.title)}
               </h1>
-              <p className="mt-2 text-muted-foreground">{copy.description}</p>
+              <p className="mt-2 text-muted-foreground">{t(copy.description)}</p>
             </div>
             <Button
               variant="outline"
@@ -223,8 +219,8 @@ export function AnalyticsReportPage({ role }: { role: AnalyticsRole }) {
             {t("common.filter")} {t("analytics.dateRange")}
           </CardTitle>
         </CardHeader>
-        <CardContent className="flex flex-wrap items-end gap-4">
-          <div className="flex flex-col gap-1">
+        <CardContent className="grid gap-4 sm:grid-cols-2 lg:flex lg:flex-wrap lg:items-end">
+          <div className="min-w-0">
             <label className="text-xs font-semibold text-muted-foreground">
               {t("reports.startDate")}
             </label>
@@ -237,10 +233,10 @@ export function AnalyticsReportPage({ role }: { role: AnalyticsRole }) {
                 }
               }}
               placeholder={t("sharedAudit.startDate")}
-              className="h-10 w-48"
+              className="h-10 min-w-0 w-full lg:w-48"
             />
           </div>
-          <div className="flex flex-col gap-1">
+          <div className="min-w-0">
             <label className="text-xs font-semibold text-muted-foreground">
               {t("reports.endDate")}
             </label>
@@ -248,7 +244,7 @@ export function AnalyticsReportPage({ role }: { role: AnalyticsRole }) {
               value={endDate}
               onChange={setEndDate}
               placeholder={t("sharedAudit.endDate")}
-              className="h-10 w-48"
+              className="h-10 min-w-0 w-full lg:w-48"
               min={startDate}
             />
           </div>
@@ -375,7 +371,10 @@ export function AnalyticsReportPage({ role }: { role: AnalyticsRole }) {
             </Button>
             {startDate && endDate && (
               <p className="text-xs text-muted-foreground text-center">
-                Filtered: {startDate} to {endDate}
+                {t("analytics.filteredRange", {
+                  startDate,
+                  endDate,
+                })}
               </p>
             )}
           </CardContent>

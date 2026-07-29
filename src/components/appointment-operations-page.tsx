@@ -53,39 +53,34 @@ const CLOSED_STATUSES: AppointmentStatus[] = [
   "rescheduled",
 ]
 
-const VIEW_COPY: Record<
+const VIEW_COPY_KEYS: Record<
   OperationsView,
   { title: string; summary: string; empty: string }
 > = {
   all: {
-    title: "Appointment Operations",
-    summary:
-      "Follow every visit from payment confirmation through arrival, consultation, laboratory, and completion.",
-    empty: "No appointments match this search.",
+    title: "workflowOperations.allTitle",
+    summary: "workflowOperations.allSummary",
+    empty: "workflowOperations.allEmpty",
   },
   "awaiting-payment": {
-    title: "Awaiting Payment",
-    summary:
-      "These selected slots are temporarily reserved until patient payment is confirmed.",
-    empty: "No appointments are waiting for payment.",
+    title: "workflowOperations.awaitingPaymentTitle",
+    summary: "workflowOperations.awaitingPaymentSummary",
+    empty: "workflowOperations.awaitingPaymentEmpty",
   },
   today: {
-    title: "Today’s Arrivals & Queue",
-    summary:
-      "Coordinate confirmed arrivals, check patients in, and monitor their live care progress.",
-    empty: "No patients are scheduled or moving through care today.",
+    title: "workflowOperations.todayTitle",
+    summary: "workflowOperations.todaySummary",
+    empty: "workflowOperations.todayEmpty",
   },
   completed: {
-    title: "Completed Visits",
-    summary:
-      "Review consultations that doctors have completed and closed.",
-    empty: "No completed visits are available.",
+    title: "workflowOperations.completedTitle",
+    summary: "workflowOperations.completedSummary",
+    empty: "workflowOperations.completedEmpty",
   },
   cancelled: {
-    title: "Cancelled & Missed",
-    summary:
-      "Review cancelled, rescheduled, and no-show appointments whose slots were released.",
-    empty: "No cancelled or missed appointments are available.",
+    title: "workflowOperations.cancelledTitle",
+    summary: "workflowOperations.cancelledSummary",
+    empty: "workflowOperations.cancelledEmpty",
   },
 }
 
@@ -255,7 +250,7 @@ export function AppointmentOperationsPage({ role, view }: Props) {
     )
   }
 
-  const copy = VIEW_COPY[view]
+  const copy = VIEW_COPY_KEYS[view]
 
   return (
     <div className="w-full max-w-8xl space-y-6">
@@ -270,10 +265,10 @@ export function AppointmentOperationsPage({ role, view }: Props) {
                   : t("workflowOperations.receptionEyebrow")}
               </div>
               <h1 className="text-3xl font-black tracking-tight md:text-4xl">
-                {copy.title}
+                {t(copy.title)}
               </h1>
               <p className="mt-2 text-sm leading-6 text-muted-foreground md:text-base">
-                {copy.summary}
+                {t(copy.summary)}
               </p>
             </div>
               <Button
@@ -332,7 +327,9 @@ export function AppointmentOperationsPage({ role, view }: Props) {
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h2 className="text-xl font-bold">
-              {view === "all" ? t("workflowOperations.registerTitle") : copy.title}
+              {view === "all"
+                ? t("workflowOperations.registerTitle")
+                : t(copy.title)}
             </h2>
             <p className="text-sm text-muted-foreground">
               {visibleAppointments.length}{" "}
@@ -355,7 +352,7 @@ export function AppointmentOperationsPage({ role, view }: Props) {
         {visibleAppointments.length === 0 ? (
           <div className="flex min-h-64 flex-col items-center justify-center rounded-3xl border border-dashed bg-muted/10 p-8 text-center">
             <CheckCircle2 className="mb-3 size-10 text-emerald-600" />
-            <p className="font-semibold">{copy.empty}</p>
+            <p className="font-semibold">{t(copy.empty)}</p>
             <p className="mt-1 text-sm text-muted-foreground">
               {t("workflowOperations.emptyHelp")}
             </p>

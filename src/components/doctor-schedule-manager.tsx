@@ -210,10 +210,10 @@ export function DoctorScheduleManager({ doctor }: { doctor: AdminDoctor }) {
                     <span className="font-semibold">{label}</span>
                   </div>
                   {[
-                    ["Start", "start_time"],
-                    ["End", "end_time"],
-                    ["Break start", "break_start_time"],
-                    ["Break end", "break_end_time"],
+                    [t("sharedAudit.scheduleStart"), "start_time"],
+                    [t("sharedAudit.scheduleEnd"), "end_time"],
+                    [t("sharedAudit.breakStart"), "break_start_time"],
+                    [t("sharedAudit.breakEnd"), "break_end_time"],
                   ].map(([fieldLabel, field]) => (
                     <div className="space-y-1" key={field}>
                       <Label className="text-xs">{fieldLabel}</Label>
@@ -270,7 +270,9 @@ export function DoctorScheduleManager({ doctor }: { doctor: AdminDoctor }) {
           </div>
 
           <Button onClick={save} disabled={saving}>
-            {saving ? "Saving..." : "Save Schedule"}
+            {saving
+              ? t("sharedAudit.saving")
+              : t("sharedAudit.saveSchedule")}
           </Button>
         </DialogContent>
       </Dialog>

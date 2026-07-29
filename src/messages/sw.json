@@ -185,7 +185,8 @@
     "profileSaveError": "Tumeshindwa kuhifadhi wasifu wako sasa hivi.",
     "profileUpdated": "Wasifu umesasishwa kwa mafanikio."
     ,"incompleteBannerTitle": "Wasifu wa Kliniki Haujamilika:",
-    "incompleteBannerDescription": "Tafadhali kamilisha maelezo yako ya usajili ili timu ya huduma iweze kujiandaa kwa ziara zako na kuwezesha chaguo za kupanga miadi."
+    "incompleteBannerDescription": "Tafadhali kamilisha maelezo yako ya usajili ili timu ya huduma iweze kujiandaa kwa ziara zako na kuwezesha chaguo za kupanga miadi.",
+    "accessRestrictedIncomplete": "Ufikiaji umezuiwa: Tafadhali kamilisha maelezo ya wasifu wako wa mgonjwa ili kufanya kitendo hiki."
   },
   "staffProfile": {
     "title": "Wasifu",
@@ -296,6 +297,7 @@
     "testUpdated": "Kipimo kimesasishwa kwa mafanikio"
   },
   "labTech": {
+    "fallbackName": "Mtaalamu wa Maabara",
     "welcome": "Karibu, {{name}}!",
     "labRequests": "Ombi {{count}} za maabara zinazosubiri. Tuzadilie!",
     "refresh": "Onyesha Upya Foleni",
@@ -330,6 +332,7 @@
     "edit": "Hariri Aina ya Kipimo",
     "add": "Ongeza Aina ya Kipimo",
     "testNameRequired": "Jina la Kipimo linahitajika",
+    "testNamePlaceholder": "mf. Kipimo Kamili cha Damu (CBC)",
     "optionalDescription": "Maelezo ya hiari ya kipimo",
     "active": "Hai",
     "cancel": "Ghairi",
@@ -816,6 +819,21 @@
     "deletePatientButton": "Futa Mgonjwa"
   },
   "workflowOperations": {
+    "allTitle": "Uendeshaji wa Miadi",
+    "allSummary": "Fuatilia kila ziara kuanzia uthibitisho wa malipo hadi kuwasili, ushauri, maabara na kukamilika.",
+    "allEmpty": "Hakuna miadi inayolingana na utafutaji huu.",
+    "awaitingPaymentTitle": "Inasubiri Malipo",
+    "awaitingPaymentSummary": "Nafasi hizi zilizochaguliwa zimehifadhiwa kwa muda hadi malipo ya mgonjwa yathibitishwe.",
+    "awaitingPaymentEmpty": "Hakuna miadi inayosubiri malipo.",
+    "todayTitle": "Wanaowasili na Foleni ya Leo",
+    "todaySummary": "Ratibu wanaowasili waliothibitishwa, waingize wagonjwa na ufuatilie maendeleo yao ya huduma.",
+    "todayEmpty": "Hakuna wagonjwa waliopangwa au wanaoendelea na huduma leo.",
+    "completedTitle": "Ziara Zilizokamilika",
+    "completedSummary": "Kagua ushauri ambao madaktari wamekamilisha na kufunga.",
+    "completedEmpty": "Hakuna ziara zilizokamilika zinazopatikana.",
+    "cancelledTitle": "Iliyofutwa na Kutohudhuria",
+    "cancelledSummary": "Kagua miadi iliyofutwa, iliyopangwa upya na ambayo mgonjwa hakuhudhuria.",
+    "cancelledEmpty": "Hakuna miadi iliyofutwa au iliyokosa kuhudhuriwa.",
     "stagePaymentLabel": "1. Malipo",
     "stagePaymentDescription": "Nafasi imehifadhiwa",
     "stageArrivalLabel": "2. Kuwasili",
@@ -871,6 +889,18 @@
     "manageDoctorSchedules": "Simamia Ratiba za Madaktari"
   },
   "analytics": {
+    "adminEyebrow": "Utendaji wa hospitali",
+    "adminTitle": "Takwimu na Ripoti",
+    "adminDescription": "Kagua matokeo ya miadi hospitalini na upakue ripoti kamili ya usimamizi.",
+    "receptionistEyebrow": "Utendaji wa mapokezi",
+    "receptionistTitle": "Takwimu na Ripoti",
+    "receptionistDescription": "Kagua matokeo ya malipo, kuwasili, foleni na ziara yanayoshughulikiwa na mapokezi.",
+    "doctorEyebrow": "Utendaji wa kliniki",
+    "doctorTitle": "Takwimu na Ripoti Zangu",
+    "doctorDescription": "Kagua ushauri uliopangiwa na upakue ripoti yako binafsi ya shughuli za kliniki.",
+    "labTechEyebrow": "Utendaji wa maabara",
+    "labTechTitle": "Takwimu na Ripoti Zangu",
+    "labTechDescription": "Kagua matokeo ya vipimo uliyothibitisha na upakue ripoti yako binafsi ya shughuli za maabara.",
     "myAppointments": "Miadi zangu",
     "totalAppointments": "Jumla ya miadi",
     "allAvailableRecords": "Rekodi zote zilizopo",
@@ -892,7 +922,8 @@
     "downloadDocx": "Pakua Ripoti ya DOCX",
     "reportDownloaded": "Ripoti ya {{format}} imepakuliwa.",
     "reportDownloadFailed": "Ripoti haikuweza kupakuliwa.",
-    "dateRange": "Muda wa tarehe"
+    "dateRange": "Muda wa tarehe",
+    "filteredRange": "Imechujwa: {{startDate}} hadi {{endDate}}"
   },
   "search": {
     "recordLookup": "Utafutaji wa rekodi",
@@ -1711,7 +1742,9 @@
     "toggleSidebar": "Fungua au Funga Upau wa Pembeni",
     "breadcrumb": "Njia ya Ukurasa",
     "more": "Zaidi",
-    "loading": "Inapakia"
+    "loading": "Inapakia",
+    "showPassword": "Onyesha nenosiri",
+    "hidePassword": "Ficha nenosiri"
   },
   "sharedAudit": {
     "paymentStatus": "Malipo: {{status}}",
@@ -1746,6 +1779,15 @@
     "rescheduleAppointment": "Panga miadi upya",
     "selectAvailableDay": "Chagua siku inayopatikana",
     "selectAvailableTime": "Chagua muda unaopatikana",
+    "availableSlotsCount": "nafasi {{count}}",
+    "saving": "Inahifadhi...",
+    "confirmReschedule": "Thibitisha Kupanga Upya",
+    "saveDoctorProfile": "Hifadhi Wasifu wa Daktari",
+    "scheduleStart": "Mwanzo",
+    "scheduleEnd": "Mwisho",
+    "breakStart": "Mwanzo wa mapumziko",
+    "breakEnd": "Mwisho wa mapumziko",
+    "saveSchedule": "Hifadhi Ratiba",
     "paymentConfirmed": "Malipo yamethibitishwa kwa mafanikio",
     "paymentFailed": "Malipo yameshindwa. Unaweza kujaribu tena.",
     "transactionFee": "Ada ya Muamala",
@@ -1920,6 +1962,7 @@
     "none": "Hakuna miadi iliyopatikana."
   },
   "healthEducation": {
+    "exploreTopics": "Chunguza mada",
     "title": "Simamia Elimu ya Afya",
     "subtitle": "Chapisha na hariri makala, video, na maswali ya mara kwa mara kwa wagonjwa.",
     "newCategory": "Kundi Jipya",

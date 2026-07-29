@@ -177,7 +177,9 @@ export function DoctorProfileManager({ doctor }: { doctor: AdminDoctor }) {
           </div>
 
           <Button onClick={save} disabled={saving}>
-            {saving ? "Saving..." : "Save Doctor Profile"}
+            {saving
+              ? t("sharedAudit.saving")
+              : t("sharedAudit.saveDoctorProfile")}
           </Button>
         </DialogContent>
       </Dialog>
