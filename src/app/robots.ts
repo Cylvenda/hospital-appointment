@@ -9,6 +9,6 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ["/api/", "/dashboard", "/_next/"],
       },
     ],
-    sitemap: "https://dpams.vercel.app/sitemap.xml",
+    sitemap: "https://appointment.cylvenda.co.tz/sitemap.xml",
   };
 }

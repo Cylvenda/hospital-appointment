@@ -3,25 +3,25 @@ import { MetadataRoute } from "next";
 export default function sitemap(): MetadataRoute.Sitemap {
   return [
     {
-      url: "https://dpams.vercel.app",
+      url: "https://appointment.cylvenda.co.tz",
       lastModified: new Date(),
       changeFrequency: "yearly",
       priority: 1,
     },
     {
-      url: "https://dpams.vercel.app/login",
+      url: "https://appointment.cylvenda.co.tz/login",
       lastModified: new Date(),
       changeFrequency: "monthly",
       priority: 0.8,
     },
     {
-      url: "https://dpams.vercel.app/register",
+      url: "https://appointment.cylvenda.co.tz/register",
       lastModified: new Date(),
       changeFrequency: "monthly",
       priority: 0.8,
     },
     {
-      url: "https://dpams.vercel.app/reset",
+      url: "https://appointment.cylvenda.co.tz/reset",
       lastModified: new Date(),
       changeFrequency: "monthly",
       priority: 0.6,

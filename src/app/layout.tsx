@@ -21,7 +21,7 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://dpams.vercel.app"),
+  metadataBase: new URL("https://appointment.cylvenda.co.tz"),
   title: {
     default: "Digital Patient Pre-Registration and Appointment Management System",
     template: "%s | DPAMS",
@@ -56,7 +56,7 @@ export const metadata: Metadata = {
     title: "Digital Patient Pre-Registration and Appointment Management System",
     description:
       "A secure and efficient system for managing patient appointments, doctors, and hospital workflows.",
-    url: "https://dpams.vercel.app",
+    url: "https://appointment.cylvenda.co.tz",
     siteName: "DPAMS",
     images: [
       {
