@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { useTranslation } from "@/lib/i18n"
+import { BrandIcon } from "@/components/pwa/brand-icon"
 import {
   Calendar01Icon,
   CheckmarkCircle02Icon,
@@ -18,7 +19,6 @@ import {
   AiPhone01Icon,
   Shield01Icon,
   SmartPhone01Icon,
-  StethoscopeIcon,
   UserAccountIcon,
 } from "@hugeicons/core-free-icons"
 
@@ -94,9 +94,7 @@ export default function Page() {
       <header className="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur-xl">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
           <Link href="/" className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-primary text-sm font-semibold text-primary-foreground shadow-lg shadow-primary/20">
-              <HugeiconsIcon icon={StethoscopeIcon} size={20} />
-            </div>
+            <BrandIcon priority className="shadow-lg shadow-primary/20" />
             <div>
               <p className="text-sm font-semibold tracking-[0.15em] text-primary uppercase">DPAMS</p>
               <p className="text-[10px] text-muted-foreground font-semibold">{t("landing.tagline")}</p>
@@ -548,9 +546,7 @@ export default function Page() {
           <div className="grid gap-8 lg:grid-cols-4">
             <div className="lg:col-span-2">
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-primary text-primary-foreground">
-                  <HugeiconsIcon icon={StethoscopeIcon} size={20} />
-                </div>
+                <BrandIcon />
                 <div>
                   <p className="font-semibold tracking-[0.15em] text-primary uppercase">DPAMS</p>
                   <p className="text-xs text-muted-foreground">{t("landing.tagline")}</p>

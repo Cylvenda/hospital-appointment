@@ -12,10 +12,11 @@ import {
      SidebarRail,
 } from "@/components/ui/sidebar"
 import { HugeiconsIcon } from "@hugeicons/react"
-import { LayoutBottomIcon, RoboticIcon, Settings05Icon, DashboardCircleIcon, UserAccountIcon, AllahFreeIcons, CallDoneIcon, CheckCheck, Loading, Bell, Book01Icon } from "@hugeicons/core-free-icons"
+import { RoboticIcon, Settings05Icon, DashboardCircleIcon, UserAccountIcon, AllahFreeIcons, CallDoneIcon, CheckCheck, Loading, Bell, Book01Icon } from "@hugeicons/core-free-icons"
 import { Separator } from "./ui/separator"
 import { useAuthUserStore } from "@/store/auth/userAuth.store"
 import { useTranslation } from "@/lib/i18n"
+import { BrandIcon } from "@/components/pwa/brand-icon"
 
 const navMain = [
      {
@@ -112,7 +113,7 @@ export function AppPatientSidebar({ ...props }: React.ComponentProps<typeof Side
                     <TeamSwitcher
                          teams={{
                               name: t("nav.meetingHub"),
-                              logo: <HugeiconsIcon icon={LayoutBottomIcon} strokeWidth={2} />,
+                              logo: <BrandIcon size={32} />,
                               role: roleLabel,
                          }}
                     />

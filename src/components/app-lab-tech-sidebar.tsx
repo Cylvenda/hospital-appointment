@@ -26,6 +26,7 @@ import {
 import { Separator } from "./ui/separator"
 import { useAuthUserStore } from "@/store/auth/userAuth.store"
 import { useTranslation } from "@/lib/i18n"
+import { BrandIcon } from "@/components/pwa/brand-icon"
 
 const navMain = [
      {
@@ -108,7 +109,7 @@ export function AppLabTechSidebar({ ...props }: React.ComponentProps<typeof Side
                     <TeamSwitcher
                          teams={{
                               name: t("nav.laboratoryHub"),
-                              logo: <HugeiconsIcon icon={Medicine01Icon} strokeWidth={2} />,
+                              logo: <BrandIcon size={32} />,
                               role: roleLabel,
                          }}
                     />

@@ -12,7 +12,7 @@ import {
      SidebarRail,
 } from "@/components/ui/sidebar"
 import { HugeiconsIcon } from "@hugeicons/react"
-import { LayoutBottomIcon, Settings05Icon, DashboardCircleIcon, Doctor01Icon, UserAccountIcon, Bell, StethoscopeIcon, Book01Icon, Search01Icon } from "@hugeicons/core-free-icons"
+import { Settings05Icon, DashboardCircleIcon, Doctor01Icon, UserAccountIcon, Bell, StethoscopeIcon, Book01Icon, Search01Icon } from "@hugeicons/core-free-icons"
 import {
      Ban,
      ChartNoAxesCombined,
@@ -24,6 +24,7 @@ import {
 import { Separator } from "./ui/separator"
 import { useAuthUserStore } from "@/store/auth/userAuth.store"
 import { useTranslation } from "@/lib/i18n"
+import { BrandIcon } from "@/components/pwa/brand-icon"
 
 const navMain = [
      {
@@ -143,7 +144,7 @@ export function AppReceptionistSidebar({ ...props }: React.ComponentProps<typeof
                     <TeamSwitcher
                          teams={{
                               name: t("nav.patientAppointment"),
-                              logo: <HugeiconsIcon icon={LayoutBottomIcon} strokeWidth={2} />,
+                              logo: <BrandIcon size={32} />,
                               role: roleLabel,
                          }}
                     />

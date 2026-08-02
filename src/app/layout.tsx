@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { ToastContainer } from "react-toastify";
 import { TooltipProvider } from "@/components/ui/tooltip"
@@ -8,6 +8,7 @@ import { NotificationBootstrap } from "@/components/notification-bootstrap";
 import { LanguageBootstrap } from "@/components/language-bootstrap";
 import { cn } from "@/lib/utils";
 import { Poppins, Inter } from "next/font/google";
+import { PWAProvider } from "@/components/pwa/pwa-provider";
 
 
 const inter = Inter({subsets:['latin'],variable:'--font-sans'});
@@ -29,6 +30,7 @@ export const metadata: Metadata = {
   description:
     "A secure and efficient system for managing patient appointments, doctors, and hospital workflows.",
   applicationName: "DPAMS",
+  manifest: "/manifest.webmanifest",
   keywords: [
     "DPAMS",
     "patient registration",
@@ -44,12 +46,17 @@ export const metadata: Metadata = {
     follow: true,
   },
   icons: {
-    icon: "/meeet.webp",
-    apple: "/meeet.webp",
-    other: [
-      { rel: "icon", type: "image/webp", sizes: "32x32", url: "/meeet.webp" },
-      { rel: "icon", type: "image/webp", sizes: "16x16", url: "/meeet.webp" },
+    icon: [
+      { url: "/icons/icon-192x192.png", type: "image/png", sizes: "192x192" },
+      { url: "/icons/icon-512x512.png", type: "image/png", sizes: "512x512" },
     ],
+    apple: [{ url: "/icons/apple-touch-icon.png", type: "image/png", sizes: "180x180" }],
+    shortcut: "/favicon.ico",
+  },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "DPAMS",
   },
   alternates: { canonical: "/" },
   openGraph: {
@@ -77,6 +84,16 @@ export const metadata: Metadata = {
       "A secure and efficient system for managing patient appointments, doctors, and hospital workflows.",
     images: ["/opengraph-image"],
   },
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#178444" },
+    { media: "(prefers-color-scheme: dark)", color: "#10251a" },
+  ],
 };
 
 export default function RootLayout({
@@ -108,6 +125,7 @@ export default function RootLayout({
                  <AuthBootstrap />
                  <NotificationBootstrap />
                  {children}
+                 <PWAProvider />
                </TooltipProvider>
             </ThemeProvider>
           </main>

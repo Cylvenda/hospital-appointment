@@ -12,7 +12,7 @@ import {
      SidebarRail,
 } from "@/components/ui/sidebar"
 import { HugeiconsIcon } from "@hugeicons/react"
-import { Search01Icon, LayoutBottomIcon, Settings05Icon, DashboardCircleIcon, UserAccountIcon, CallDoneIcon, Bell, Cancel01Icon } from "@hugeicons/core-free-icons"
+import { Search01Icon, Settings05Icon, DashboardCircleIcon, UserAccountIcon, CallDoneIcon, Bell, Cancel01Icon } from "@hugeicons/core-free-icons"
 import {
      ChartNoAxesCombined,
      ClipboardList,
@@ -20,6 +20,7 @@ import {
 import { Separator } from "./ui/separator"
 import { useAuthUserStore } from "@/store/auth/userAuth.store"
 import { useTranslation } from "@/lib/i18n"
+import { BrandIcon } from "@/components/pwa/brand-icon"
 
 const navMain = [
      {
@@ -107,7 +108,7 @@ export function AppDoctorSidebar({ ...props }: React.ComponentProps<typeof Sideb
                     <TeamSwitcher
                          teams={{
                               name: t("nav.patientAppointment"),
-                              logo: <HugeiconsIcon icon={LayoutBottomIcon} strokeWidth={2} />,
+                              logo: <BrandIcon size={32} />,
                               role: roleLabel,
                          }}
                     />
